@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daruma · Entrenamiento de la Plataforma · CESA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/topbar.css">
+<script defer src="/topbar.js"></script>
+<style>
+  :root{
+    /* ===== Tema oscuro (por defecto) ===== */
+    --bg:#0d0f14;
+    --panel:#141821;
+    --panel-2:#1b2030;
+    --line:#262d3d;
+    --line-soft:#1e2433;
+    --txt:#e8ecf4;
+    --txt-dim:#9aa4ba;
+    --txt-faint:#646e85;
+    --accent:#fb3748;        /* CESA error-100 */
+    --accent-soft:rgba(251,55,72,.12);
+    --gold:#ffdb43;          /* CESA warning-100 */
+    --success:#84ebb4;       /* CESA success-100 */
+    --radius:14px;
+    --shadow:0 10px 40px rgba(0,0,0,.45);
+    --blue:#305fff;          /* CESA azul secundario-003 */
+    --on-accent:#fff;        /* texto/ícono sobre fondos de color de módulo */
+    --glow-1:color-mix(in srgb, var(--blue) 12%, transparent);
+    --glow-2:color-mix(in srgb, var(--accent) 8%, transparent);
+    /* Paleta por módulo — tonos derivados del azul CESA */
+    --m1:#7075ef; --m2:#5abeff; --m3:#7897ff; --m4:#5a7ebc;
+    --m5:#5aa9ff; --m6:#839ecd; --m7:#64748b;
+    font-synthesis:none;
+    font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
+  }
+  [data-theme="light"]{
+    /* ===== Tema claro (tokens CESA) ===== */
+    --bg:#F3F5FB;
+    --panel:#FFFFFF;
+    --panel-2:#F3F5FB;
+    --line:#D5D8DF;
+    --line-soft:#E7E9EF;
+    --txt:#041F3E;
+    --txt-dim:#657188;
+    --txt-faint:#929BAC;
+    --accent:#D00416;        /* CESA error-200 */
+    --accent-soft:rgba(208,4,22,.08);
+    --gold:#DFB400;          /* CESA warning-200 */
+    --success:#1FC16B;       /* CESA success-200 */
+    --shadow:0 10px 30px rgba(16,24,40,.12);
+    --blue:#013998;          /* CESA azul primario */
+    --on-accent:#fff;
+    --m1:#232be6; --m2:#019bff; --m3:#305fff; --m4:#013998;
+    --m5:#027bff; --m6:#416ab2;
+    --glow-1:color-mix(in srgb, var(--blue) 6%, transparent);
+    --glow-2:color-mix(in srgb, var(--accent) 4%, transparent);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  }
+  body{
+    background:
+      radial-gradient(1200px 600px at 85% -10%, var(--glow-1), transparent 60%),
+      radial-gradient(900px 500px at -5% 110%, var(--glow-2), transparent 60%),
+      var(--bg);
+    color:var(--txt);
+    height:100vh;overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color .2s,color .2s;
+  }
+  .app{display:grid;grid-template-rows:auto 1fr;height:100vh}
+
+  /* ===== HEADER ===== */
+  header{
+    padding:16px 26px 14px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 92%,transparent),color-mix(in srgb,var(--bg) 60%,transparent));
+    backdrop-filter:blur(8px);
+    position:relative;z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand .daruma{
+    font-weight:800;font-size:21px;letter-spacing:-.5px;
+    display:flex;align-items:center;gap:10px;cursor:pointer
+  }
+  .brand .dot{width:12px;height:12px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, color-mix(in srgb,var(--blue) 55%,#fff), var(--blue));
+    box-shadow:0 0 16px color-mix(in srgb,var(--blue) 60%,transparent);display:inline-block}
+  .brand .sub{color:var(--txt-dim);font-size:13px;font-weight:500;letter-spacing:.2px}
+
+  /* links de contexto a otros HTML */
+  .ctx{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:10px;padding:3px;gap:2px;margin-left:6px}
+  .ctx a{
+    text-decoration:none;background:none;border:none;color:var(--txt-dim);font-size:12.5px;font-weight:600;
+    padding:7px 12px;border-radius:8px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:7px}
+  .ctx a svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+  .ctx a:hover{background:var(--panel);color:var(--txt)}
+  .ctx a.home.on{background:var(--blue);color:#fff;box-shadow:0 2px 10px color-mix(in srgb,var(--blue) 40%,transparent)}
+
+  .brand .tag{
+    margin-left:auto;font-size:11px;color:var(--txt-faint);
+    border:1px solid var(--line);padding:4px 10px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:1px;
+  }
+  .theme-toggle{width:34px;height:34px;border-radius:10px;background:var(--panel-2);
+    border:1px solid var(--line);color:var(--txt-dim);cursor:pointer;display:grid;place-items:center;
+    transition:.15s;flex-shrink:0}
+  .theme-toggle:hover{border-color:var(--blue);color:var(--blue)}
+  .theme-toggle svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+  /* KPI + búsqueda */
+  .toolbar{display:flex;gap:14px;align-items:center;margin-top:13px;flex-wrap:wrap}
+  .kpis{display:flex;gap:8px}
+  .kpi{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    padding:7px 13px;min-width:74px;cursor:default;transition:.2s;
+  }
+  .kpi b{display:block;font-size:19px;font-weight:800;line-height:1}
+  .kpi span{font-size:10px;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.7px}
+  .kpi.k1 b{color:var(--blue)} .kpi.k2 b{color:var(--success)}
+  .kpi.k3 b{color:var(--gold)} .kpi.k4 b{color:var(--accent)}
+
+  .search{position:relative;flex:1;min-width:220px;max-width:420px}
+  .search input{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);
+    color:var(--txt);padding:10px 14px 10px 38px;border-radius:10px;font-size:14px;
+    outline:none;transition:.2s;
+  }
+  .search input:focus{border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 18%,transparent)}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    width:16px;height:16px;stroke:var(--txt-faint)}
+  .search .clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--txt-faint);cursor:pointer;font-size:18px;
+    padding:4px;display:none}
+
+  /* ===== VIEWS ===== */
+  .view{height:100%;overflow:hidden}
+  .view[hidden]{display:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:var(--txt-faint)}
+
+  /* ===== HOME ===== */
+  #homeView{overflow-y:auto;padding:34px 38px 80px}
+  .home-wrap{max-width:1120px;margin:0 auto}
+  .hero{margin-bottom:30px}
+  .hero h1{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.8px;line-height:1.08}
+  .hero h1 .hl{color:var(--blue)}
+  .hero p{margin-top:14px;color:var(--txt-dim);font-size:15.5px;line-height:1.7;max-width:760px}
+  .hero .frame{margin-top:18px;display:inline-flex;align-items:center;gap:10px;background:var(--panel);
+    border:1px solid var(--line-soft);border-left:3px solid var(--gold);border-radius:12px;
+    padding:12px 16px;font-size:13.5px;color:var(--txt-dim)}
+  .hero .frame b{color:var(--gold);font-weight:700}
+
+  .sect-label{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:var(--txt-faint);
+    margin:30px 0 14px;display:flex;align-items:center;gap:10px}
+  .sect-label::after{content:'';flex:1;height:1px;background:var(--line-soft)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+  .card{
+    background:var(--panel);border:1px solid var(--line-soft);border-radius:16px;
+    padding:20px;position:relative;overflow:hidden;transition:.2s;display:flex;flex-direction:column;
+  }
+  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cc)}
+  .card.ready{cursor:pointer}
+  .card.ready:hover{border-color:var(--cc);transform:translateY(-3px);box-shadow:var(--shadow)}
+  .card.soon{opacity:.62}
+  .card-top{display:flex;align-items:flex-start;gap:13px;margin-bottom:12px}
+  .card-ic{width:46px;height:46px;flex-shrink:0;border-radius:12px;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--cc) 16%,transparent);color:var(--cc)}
+  .card-ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2}
+  .card-n{font-size:11px;font-weight:700;color:var(--txt-faint);letter-spacing:.5px}
+  .card h3{font-size:17px;font-weight:800;line-height:1.2;margin-top:2px}
+  .card .marco{font-size:12px;color:var(--txt-faint);margin-top:6px;font-style:italic}
+  .card p{font-size:13.5px;color:var(--txt-dim);line-height:1.6;margin-top:4px;flex:1}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:10px}
+  .badge{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.6px}
+  .badge.ok{background:color-mix(in srgb,var(--success) 20%,transparent);color:var(--success)}
+  .badge.wip{background:var(--panel-2);color:var(--txt-faint)}
+  .card .go{font-size:13px;font-weight:700;color:var(--cc);display:inline-flex;align-items:center;gap:6px}
+  .card .meta{font-size:11.5px;color:var(--txt-faint);margin-top:10px;display:flex;gap:7px;flex-wrap:wrap}
+  .card .meta .pill{background:var(--panel-2);border:1px solid var(--line);padding:2px 8px;border-radius:9px}
+
+  /* ===== RESULTADOS DE BÚSQUEDA (home) ===== */
+  .results{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+  .result-item{display:flex;align-items:flex-start;gap:13px;background:var(--panel);
+    border:1px solid var(--line-soft);border-left:4px solid var(--rc);border-radius:12px;
+    padding:13px 16px;cursor:pointer;transition:.15s}
+  .result-item:hover{border-color:var(--rc);transform:translateX(2px)}
+  .result-ic{width:36px;height:36px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--rc) 16%,transparent);color:var(--rc);margin-top:1px}
+  .result-ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+  .result-mod{font-size:11px;font-weight:700;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.4px}
+  .result-label{font-size:14.5px;font-weight:800;margin-top:1px}
+  .result-snip{font-size:12.5px;color:var(--txt-dim);margin-top:3px;line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .results .no-results{padding:20px 4px}
+  .result-item.faq{--rc:#64748b;cursor:default}
+  .result-item.faq:hover{transform:none;border-color:var(--line-soft)}
+  .result-item.faq .result-snip.full{display:block;-webkit-line-clamp:unset;overflow:visible}
+
+  /* ===== MODULE (master/detail) ===== */
+  .body{display:grid;grid-template-columns:minmax(290px,340px) 1fr;height:100%;overflow:hidden}
+  .master{border-right:1px solid var(--line);overflow-y:auto;padding:18px 14px 60px}
+  .detail{overflow-y:auto;padding:28px 40px 90px}
+
+  .m-head{padding:4px 6px 16px;border-bottom:1px solid var(--line-soft);margin-bottom:12px}
+  .m-head .mt{display:flex;align-items:center;gap:11px}
+  .m-head .mt .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;
+    background:color-mix(in srgb,var(--mc) 16%,transparent);color:var(--mc)}
+  .m-head .mt .ic svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2}
+  .m-head h2{font-size:17px;font-weight:800;line-height:1.15}
+  .m-head .sm{font-size:11.5px;color:var(--txt-faint);margin-top:3px}
+
+  .nav-item{display:flex;align-items:flex-start;gap:11px;padding:10px 12px;border-radius:10px;
+    cursor:pointer;transition:.15s;margin:2px 0;position:relative}
+  .nav-item:hover{background:var(--panel-2)}
+  .nav-item.active{background:color-mix(in srgb,var(--mc) 15%,transparent);
+    box-shadow:inset 0 0 0 1px var(--mc)}
+  .nav-num{width:23px;height:23px;flex-shrink:0;border-radius:7px;background:var(--panel-2);
+    color:var(--mc);font-weight:800;font-size:11px;display:grid;place-items:center;border:1px solid var(--line);margin-top:1px}
+  .nav-item.active .nav-num{background:var(--mc);color:var(--on-accent);border-color:transparent}
+  .nav-name{flex:1;font-size:13px;line-height:1.35;color:var(--txt)}
+  .nav-item.active .nav-name{font-weight:600}
+  .nav-roles{display:flex;gap:4px;align-items:center;margin-top:2px;flex-shrink:0}
+  .rdotsm{width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 0 2px var(--panel)}
+
+  /* ===== FILTRO Y BADGES DE ROL ===== */
+  .role-filter{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .rchip{font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;cursor:pointer;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--txt-dim);transition:.15s}
+  .rchip:hover{border-color:var(--rc);color:var(--txt)}
+  .rchip.on{background:color-mix(in srgb,var(--rc) 24%,transparent);border-color:var(--rc);color:var(--txt)}
+  .role-badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+  .role-badge{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;
+    padding:6px 13px;border-radius:20px;background:color-mix(in srgb,var(--rc) 18%,transparent);
+    border:1px solid color-mix(in srgb,var(--rc) 55%,transparent);color:var(--txt)}
+  .role-badge .rbdot{width:8px;height:8px;border-radius:50%;background:var(--rc);flex-shrink:0}
+
+  /* ===== PROGRESO ===== */
+  .m-progress{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .m-progress-bar{flex:1;height:6px;border-radius:4px;background:var(--panel-2);overflow:hidden}
+  .m-progress-fill{height:100%;background:var(--mc);border-radius:4px;transition:width .3s}
+  .m-progress-txt{font-size:11px;color:var(--txt-faint);white-space:nowrap;font-weight:700}
+
+  .nav-item.seen:not(.active) .nav-num{background:color-mix(in srgb,var(--mc) 14%,transparent);color:var(--mc)}
+  .nav-check{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:3}
+
+  .card-progress{display:flex;align-items:center;gap:8px;margin-top:10px}
+  .card-progress-bar{flex:1;height:5px;border-radius:4px;background:var(--panel-2);overflow:hidden}
+  .card-progress-fill{height:100%;background:var(--cc);border-radius:4px;transition:width .3s}
+  .card-progress span{font-size:10.5px;color:var(--txt-faint);white-space:nowrap;font-weight:700}
+
+  .continue-card{display:flex;align-items:center;gap:14px;background:var(--panel);
+    border:1px solid var(--line-soft);border-left:4px solid var(--cc);border-radius:14px;
+    padding:14px 18px;margin-bottom:22px;cursor:pointer;transition:.15s}
+  .continue-card:hover{border-color:var(--cc);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .cc-ic{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--cc) 18%,transparent);color:var(--cc)}
+  .cc-ic svg{width:18px;height:18px;fill:currentColor}
+  .cc-tx{flex:1;min-width:0}
+  .cc-lbl{font-size:11px;font-weight:700;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.4px}
+  .cc-name{font-size:14.5px;font-weight:800;margin-top:2px}
+  .cc-go{font-size:13px;font-weight:700;color:var(--cc);flex-shrink:0}
+
+  .back-home{display:inline-flex;align-items:center;gap:7px;background:var(--panel-2);
+    border:1px solid var(--line);color:var(--txt-dim);padding:8px 14px;border-radius:10px;
+    font-size:13px;cursor:pointer;margin-bottom:18px;transition:.15s}
+  .back-home:hover{border-color:var(--blue);color:var(--txt)}
+  .back-mobile{display:none}
+
+  .d-crumb{font-size:12px;color:var(--txt-dim);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .d-crumb .ci{display:inline-flex;align-items:center;gap:6px}
+  .d-crumb .ci b{width:8px;height:8px;border-radius:2px;display:inline-block}
+  .d-crumb .arr{color:var(--txt-faint)}
+  .d-wrap{max-width:840px}
+  .d-title{font-size:26px;font-weight:800;line-height:1.15;letter-spacing:-.5px;margin-bottom:8px}
+  .d-title .accent-bar{display:block;width:54px;height:4px;border-radius:3px;margin-top:14px}
+  .d-lead{font-size:15.5px;line-height:1.75;color:var(--txt-dim);margin:14px 0 6px}
+
+  .block{margin:22px 0}
+  .b-label{font-size:11px;text-transform:uppercase;letter-spacing:1.3px;color:var(--txt-faint);
+    margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .b-label::after{content:'';flex:1;height:1px;background:var(--line-soft)}
+
+  /* steps */
+  .steps{display:flex;flex-direction:column;gap:10px}
+  .step{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line-soft);
+    border-radius:12px;padding:14px 16px;transition:.15s}
+  .step:hover{border-color:color-mix(in srgb,var(--mc) 45%,var(--line-soft))}
+  .step .sn{width:26px;height:26px;flex-shrink:0;border-radius:8px;background:color-mix(in srgb,var(--mc) 18%,transparent);
+    color:var(--mc);font-weight:800;font-size:12px;display:grid;place-items:center}
+  .step .st{font-size:14.5px;font-weight:700;line-height:1.4}
+  .step .sd{font-size:13.5px;color:var(--txt-dim);line-height:1.6;margin-top:3px}
+  .step .sd b{color:var(--txt)}
+
+  /* bullets */
+  .bullets{display:flex;flex-direction:column;gap:8px}
+  .bullets .bl{display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.6;color:var(--txt-dim)}
+  .bullets .bl b{color:var(--txt)}
+  .bullets .dotb{width:7px;height:7px;border-radius:50%;background:var(--mc);margin-top:7px;flex-shrink:0}
+
+  /* notes */
+  .note{display:flex;gap:13px;align-items:flex-start;border-radius:12px;padding:14px 16px;font-size:13.8px;line-height:1.6}
+  .note .ni{width:24px;height:24px;flex-shrink:0;border-radius:7px;display:grid;place-items:center;font-size:14px}
+  .note b{font-weight:700}
+  .note.tip{background:color-mix(in srgb,var(--blue) 10%,transparent);border:1px solid color-mix(in srgb,var(--blue) 30%,transparent)}
+  .note.tip .ni{background:color-mix(in srgb,var(--blue) 25%,transparent);color:var(--blue)}
+  .note.tip b{color:var(--blue)}
+  .note.warn{background:color-mix(in srgb,var(--gold) 12%,transparent);border:1px solid color-mix(in srgb,var(--gold) 32%,transparent)}
+  .note.warn .ni{background:color-mix(in srgb,var(--gold) 26%,transparent);color:var(--gold)}
+  .note.warn b{color:var(--gold)}
+  .note.crit{background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent)}
+  .note.crit .ni{background:color-mix(in srgb,var(--accent) 24%,transparent);color:var(--accent)}
+  .note.crit b{color:var(--accent)}
+  .note.lock{background:var(--panel);border:1px solid var(--line)}
+  .note.lock .ni{background:var(--panel-2);color:var(--txt-dim)}
+  .note.lock b{color:var(--txt)}
+
+  /* phases / roles cards */
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+  .flow .ph{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;
+    padding:13px 14px;position:relative;border-top:3px solid var(--mc)}
+  .flow .ph .pn{font-size:11px;font-weight:800;color:var(--mc)}
+  .flow .ph .pname{font-size:14px;font-weight:700;margin:3px 0 5px;line-height:1.25}
+  .flow .ph .pd{font-size:12.5px;color:var(--txt-dim);line-height:1.5}
+
+  .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .role{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:15px 16px;border-left:3px solid var(--rcolor)}
+  .role .rname{font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .role .rdot{width:9px;height:9px;border-radius:50%;background:var(--rcolor)}
+  .role .rd{font-size:13px;color:var(--txt-dim);line-height:1.6;margin-top:7px}
+
+  /* table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
+  .tbl th{background:var(--panel-2);color:var(--txt);text-align:left;padding:11px 14px;font-weight:700;font-size:12.5px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:11px 14px;color:var(--txt-dim);line-height:1.55;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td b,.tbl th b{color:var(--txt)}
+  .tbl .rowh{color:var(--txt);font-weight:700;background:var(--panel)}
+
+  /* checklist */
+  .check{display:flex;flex-direction:column;gap:9px}
+  .check .ck{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line-soft);
+    border-radius:10px;padding:12px 14px;font-size:13.8px;line-height:1.55;color:var(--txt-dim);cursor:pointer;transition:.15s}
+  .check .ck:hover{border-color:var(--mc)}
+  .check .box{width:20px;height:20px;flex-shrink:0;border-radius:6px;border:2px solid var(--txt-faint);
+    display:grid;place-items:center;transition:.15s;margin-top:1px}
+  .check .ck.done .box{background:var(--mc);border-color:var(--mc)}
+  .check .ck.done .box svg{opacity:1}
+  .check .box svg{width:12px;height:12px;stroke:var(--on-accent);stroke-width:3.5;fill:none;opacity:0}
+  .check .ck.done .ctxt{color:var(--txt-faint);text-decoration:line-through}
+
+  /* pager + foot */
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:34px;padding-top:20px;border-top:1px solid var(--line-soft)}
+  .pager button{background:var(--panel-2);border:1px solid var(--line);color:var(--txt-dim);
+    padding:11px 16px;border-radius:11px;font-size:13.5px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:2px;max-width:46%}
+  .pager button:hover:not(:disabled){border-color:var(--mc);color:var(--txt)}
+  .pager button:disabled{opacity:.35;cursor:default}
+  .pager button.next{text-align:right;align-items:flex-end}
+  .pager .pl{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--txt-faint)}
+  .pager .pv{font-size:13.5px;font-weight:600}
+
+  .foot{margin-top:30px;padding-top:18px;border-top:1px solid var(--line-soft);
+    font-size:11.5px;color:var(--txt-faint);line-height:1.8}
+  .foot a{color:var(--blue);text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+
+  .no-results{text-align:center;color:var(--txt-faint);padding:50px 20px;font-size:13px}
+  mark{background:var(--gold);color:#0d0f14;border-radius:3px;padding:0 2px}
+
+  /* ===== PDF bar + figuras + lightbox ===== */
+  .pdfbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--line);border-left:3px solid var(--mc);border-radius:13px;padding:14px 16px;margin:0 0 22px}
+  .pdfbar .pdfic{width:40px;height:40px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--mc) 18%,transparent);color:var(--mc)}
+  .pdfbar .pdfic svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2}
+  .pdfbar .pdftx{flex:1;min-width:160px}
+  .pdfbar .pdftx b{display:block;font-size:13.5px;font-weight:700}
+  .pdfbar .pdftx span{font-size:11.5px;color:var(--txt-faint)}
+  .pdfbar .pdfbtns{display:flex;gap:8px;flex-wrap:wrap}
+  .pdfbar a.btn,.pdfbar button.btn{display:inline-flex;align-items:center;gap:7px;background:var(--panel-2);
+    border:1px solid var(--line);color:var(--txt-dim);padding:8px 13px;border-radius:9px;font-size:12.5px;font-weight:600;
+    text-decoration:none;cursor:pointer;transition:.15s}
+  .pdfbar a.btn:hover,.pdfbar button.btn:hover{border-color:var(--mc);color:var(--txt)}
+  .pdfbar a.btn.primary{background:var(--mc);color:var(--on-accent);border-color:transparent}
+  .pdfbar a.btn svg,.pdfbar button.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+  .pdfembed{margin:0 0 22px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#1a1f2b}
+  .pdfembed embed,.pdfembed iframe{width:100%;height:560px;border:0;display:block;background:#fff}
+
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:6px 0 4px}
+  .fig{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;cursor:zoom-in;transition:.18s}
+  .fig:hover{border-color:var(--mc);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .fig .fim{position:relative;background:#0a1430;aspect-ratio:16/9;overflow:hidden}
+  .fig .fim img{width:100%;height:100%;object-fit:cover;display:block}
+  .fig .zoom{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:7px;background:rgba(13,15,20,.7);
+    display:grid;place-items:center;color:#fff;opacity:0;transition:.18s}
+  .fig:hover .zoom{opacity:1}
+  .fig .zoom svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+  .fig .fcap{font-size:12px;color:var(--txt-dim);line-height:1.45;padding:9px 12px;display:flex;gap:7px;align-items:flex-start}
+  .fig .fcap .pn{font-size:10px;font-weight:800;color:var(--mc);background:color-mix(in srgb,var(--mc) 16%,transparent);
+    padding:1px 6px;border-radius:7px;flex-shrink:0;margin-top:1px}
+
+  .lightbox{position:fixed;inset:0;z-index:100;background:rgba(7,9,13,.93);display:none;
+    align-items:center;justify-content:center;padding:30px;backdrop-filter:blur(4px)}
+  .lightbox.on{display:flex}
+  .lightbox img{max-width:96vw;max-height:84vh;border-radius:10px;box-shadow:0 20px 70px rgba(0,0,0,.6)}
+  .lb-cap{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:var(--panel-2);
+    border:1px solid var(--line);color:var(--txt-dim);font-size:13px;padding:9px 18px;border-radius:22px;max-width:80vw;text-align:center}
+  .lb-close{position:absolute;top:20px;right:24px;width:42px;height:42px;border-radius:11px;background:var(--panel-2);
+    border:1px solid var(--line);color:var(--txt);font-size:22px;cursor:pointer;display:grid;place-items:center;transition:.15s}
+  .lb-close:hover{border-color:var(--accent);color:#fff}
+  .lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--txt);font-size:22px;cursor:pointer;display:grid;place-items:center;transition:.15s}
+  .lb-nav:hover{border-color:var(--accent);color:#fff}
+  .lb-prev{left:20px} .lb-next{right:20px}
+  @media(max-width:880px){.pdfembed embed,.pdfembed iframe{height:380px}}
+
+  @media(max-width:880px){
+    .body{grid-template-columns:1fr}
+    .detail{display:none}
+    .body.show-detail .master{display:none}
+    .body.show-detail .detail{display:block}
+    .back-mobile{display:inline-flex!important;align-items:center;gap:6px;background:var(--panel-2);
+      border:1px solid var(--line);color:var(--txt);padding:8px 14px;border-radius:10px;font-size:13px;cursor:pointer;margin-bottom:14px}
+    .kpis .kpi:nth-child(n+3){display:none}
+    #homeView{padding:24px 18px 70px}
+    .detail{padding:22px 18px 80px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <span id="lnkHome" hidden></span>
+    </div>
+    <div class="toolbar">
+      <div class="kpis">
+        <div class="kpi k1"><b id="kpiModulos">–</b><span>Módulos</span></div>
+        <div class="kpi k2"><b id="kpiDisponibles">–</b><span>Disponibles</span></div>
+        <div class="kpi k3"><b id="kpiSecciones">–</b><span>Secciones</span></div>
+        <div class="kpi k4"><b id="kpiVistas">–</b><span>Vistas</span></div>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="text" placeholder="Buscar paso, rol, regla o concepto…" autocomplete="off">
+        <button class="clear" id="clearBtn">×</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HOME ===== -->
+  <section class="view" id="homeView">
+    <div class="home-wrap">
+      <div class="hero">
+        <h1>Aprende a operar <span class="hl">Daruma</span>,<br>módulo por módulo.</h1>
+        <p>Daruma centraliza el <b>registro de qué ha pasado</b> en la institución. Este entrenamiento te guía por cada módulo con el paso a paso del instructivo oficial, los roles que intervienen y las reglas críticas que no puedes saltarte. Empieza por el módulo que necesites.</p>
+        <div class="frame">🧭 Marco del entrenamiento: <b>Registro de qué ha pasado</b> — 6 módulos (Documentos · Riesgos · Planes de acción · Oportunidades · Auditorías · Procesos).</div>
+      </div>
+      <div id="continueBox"></div>
+      <div class="sect-label" id="resultsLabel">Módulos del entrenamiento</div>
+      <div class="results" id="searchResults" hidden></div>
+      <div class="grid" id="cardGrid"></div>
+      <div class="foot">
+        Daruma · Entrenamiento de la plataforma · CESA · consolidación 2026-06-06.<br>
+        Contexto: <a href="arquitectura-macroprocesos.html">Macroprocesos</a> ·
+        <a href="README.md">Índice del entrenamiento (README)</a> ·
+        <a href="#" onclick="resetProgress();return false;">↺ Reiniciar mi progreso</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MODULE ===== -->
+  <section class="view" id="moduleView" hidden>
+    <div class="body" id="body">
+      <aside class="master" id="master"></aside>
+      <main class="detail" id="detail"></main>
+    </div>
+  </section>
+</div>
+
+<!-- ===== LIGHTBOX (visor de referencias del PDF) ===== -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose" title="Cerrar (Esc)">×</button>
+  <button class="lb-nav lb-prev" id="lbPrev" title="Anterior (←)">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext" title="Siguiente (→)">›</button>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<script>
+/* ============================================================
+   ICONOS (paths SVG)
+   ============================================================ */
+const IC = {
+  doc:'<path d="M14 3v5h5M7 3h8l5 5v13H7z"/><path d="M9 13h6M9 17h6"/>',
+  risk:'<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v5M12 18h.01"/>',
+  plan:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7H3V5h12"/>',
+  oport:'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12c1 1 1 2 1 3h6c0-1 0-2 1-3a7 7 0 0 0-4-12z"/>',
+  audit:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M9 11h4M11 9v4"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/>',
+  proc:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/><path d="M6.5 10v2a2 2 0 0 0 2 2h1M17.5 10v2a2 2 0 0 0-2 2h-1"/>'
+};
+const RHEX=['#e63946','#2a9d8f','#4895ef','#9b5de5','#f2b705','#f15bb5'];
+
+/* ============================================================
+   ROLES — quién hace / quién avanza cada sección
+   ============================================================ */
+function moduleRoleNames(m){
+  const rs=(m.sections||[]).find(s=>s.id==='roles');
+  const block=rs&&(rs.blocks||[]).find(b=>b.type==='roles');
+  return block? block.items.map(r=>r.name) : [];
+}
+function roleColor(m,name){
+  const names=moduleRoleNames(m);
+  const i=names.indexOf(name);
+  return i>=0? RHEX[i%RHEX.length] : '#64748b';
+}
+function sectionRoles(s){
+  if(s.roles)return s.roles;
+  if(s.role)return [s.role];
+  return [];
+}
+
+/* ============================================================
+   DATOS — Instructivos Daruma
+   Tipos de bloque: lead, steps, bullets, note, phases, roles, table, checklist
+   ============================================================ */
+const MODULES = [
+  /* ---------- 1 · DOCUMENTOS ---------- */
+  {
+    id:'documentos', n:1, status:'ready', color:'var(--m4)', hex:'#013998', icon:IC.doc,
+    title:'Módulo de Documentos',
+    marco:'Registro · Documentos relacionados',
+    proceso:'Soporta «Producción y gestión documental» — Gestión documental (Macroproceso 7 · Soporte institucional).',
+    summary:'Ciclo de vida del documento, codificación automática, lienzo HTML, revisión con Lupa y publicación con perímetro de seguridad.',
+    md:'documentos/documentos.md',
+    imgDir:'documentos/img', imgPrefix:'pag',
+    /* capturas reales extraídas del instructivo oficial (PPTX), verificadas una por una */
+    pages:{
+      ciclo:[{p:2,cap:'Las 5 fases inalterables del ciclo de vida'}],
+      roles:[{p:3,cap:'Matriz de roles del flujo documental'}],
+      acceso:[{p:4,cap:'Ruta de acceso al módulo Documentos'},{p:5,cap:'Formulario de creación de la solicitud'}],
+      codificacion:[{p:6,cap:'Formulario de codificación: referencia, área y proceso origen'}],
+      equipo:[{p:7,cap:'Encabezado del documento con el equipo asignado'},{p:8,cap:'Panel «Roles & Firmas»: Administradores, Elaboradores, Revisores, Aprobadores'}],
+      elaboracion:[{p:10,cap:'Editor HTML nativo del documento'},{p:11,cap:'Ingreso a la plataforma Nido dentro del documento'}],
+      revision:[{p:13,cap:'Menú «Agregar comentario / Agregar sugerencia»'},{p:14,cap:'Selección de texto para comentar'},{p:16,cap:'Botones «Devolver a Elaboración» / «Firmar Revisión»'},{p:19,cap:'Aceptar o rechazar una sugerencia'},{p:20,cap:'Reenvío del flujo: Anotación Global'}],
+      publicacion:[{p:22,cap:'Línea de tiempo: Control de cambios → Publicación → Aprobación'},{p:24,cap:'Listado de documentos publicados'}],
+      checklist:[{p:25,cap:'Checklist definitivo para una publicación impecable'}],
+    },
+    sections:[
+      { id:'ciclo', label:'Ciclo de vida (5 fases)',
+        lead:'Todo documento sigue una progresión lógica de cinco fases inalterables: cada etapa habilita la siguiente.',
+        blocks:[
+          {type:'phases', items:[
+            {n:'01',name:'Solicitud',desc:'Origen del caso y registro de la necesidad operativa.'},
+            {n:'02',name:'Configuración',desc:'Metadatos, codificación automática y equipo de roles.'},
+            {n:'03',name:'Elaboración',desc:'Redacción del contenido en el lienzo HTML.'},
+            {n:'04',name:'Revisión',desc:'Auditoría con sugerencias y comentarios iterativos.'},
+            {n:'05',name:'Publicación',desc:'Control de cambios, seguridad y vigencia.'},
+          ]},
+        ]},
+      { id:'roles', label:'Matriz de roles',
+        lead:'El éxito del flujo depende de una matriz de roles estrictamente definida.',
+        blocks:[
+          {type:'roles', items:[
+            {name:'Administrador General',desc:'Controla el flujo maestro, configura metadatos críticos y ejecuta la publicación. Permanece automatizado en la ruta principal.'},
+            {name:'Elaborador',desc:'Recibe la tarea, redacta el contenido en HTML, inserta imágenes y aplica las correcciones.'},
+            {name:'Revisor',desc:'Evalúa el contenido sin editar la fuente. Inserta sugerencias de forma y anotaciones de fondo.'},
+            {name:'Aprobador',desc:'Firma el avance final, valida el perímetro de seguridad y otorga el estatus «Vigente».'},
+          ]},
+        ]},
+      { id:'acceso', label:'Ruta de acceso y solicitud', role:'Administrador General',
+        lead:'El Administrador General abre el caso. Una solicitud detallada garantiza una aprobación ágil y sin fricciones.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Inicie sesión en Daruma',d:'Esquina inferior derecha → <b>Listado de Módulos</b> → <b>Documentos</b>.'},
+            {t:'Abra una nueva solicitud',d:'Menú izquierdo → <b>Solicitudes → Nuevo</b>.'},
+            {t:'Descripción de la solicitud',d:'Sea detallado: incluya el <b>tipo de documento exacto</b> (ej. Manual, Instructivo) y los objetivos claros.'},
+            {t:'Subtipo clave',d:'Seleccione obligatoriamente <b>«Creación de nuevo documento»</b>.'},
+            {t:'Asignación inicial',d:'Defina Área destino y proceso (si aplica) y el <b>Siguiente Responsable</b> (Administrador General).'},
+            {t:'Documento y fecha',d:'En creación, el campo <b>Documento se deja vacío</b>. Defina la <b>Fecha de cierre</b> (límite sugerido). → Guardar.'},
+          ]},
+          {type:'note',kind:'tip',text:'El campo <b>Documento</b> solo se llena en otros casos: eliminar documento o crear una nueva versión.'},
+        ]},
+      { id:'codificacion', label:'Definición y codificación', role:'Administrador General',
+        lead:'El sistema automatiza las variables críticas para evitar errores de codificación.',
+        blocks:[
+          {type:'note',kind:'crit',text:'<b>Campos automatizados (NO editar):</b> Código, Versión, Fecha de vigencia y Plantilla se asignan al elegir el <b>Tipo</b>. Alterarlos corrompe permanentemente la arquitectura del código.'},
+          {type:'bullets', items:[
+            '<b>Campos obligatorios:</b> Nombre del documento, Unidad, Área, Proceso y Referencia de codificación.',
+          ]},
+          {type:'note',kind:'warn',text:'<b>Nota crítica:</b> para un documento nuevo, la <b>Referencia siempre debe ser exactamente «V1»</b>.'},
+        ]},
+      { id:'equipo', label:'Configuración del equipo', role:'Administrador General',
+        lead:'La configuración del equipo bloquea la ruta de navegación del documento.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Acceso',d:'Clic en el ícono de responsables (grupo de personas) en la <b>esquina superior derecha</b>.'},
+            {t:'Grupos a definir',d:'<b>Administradores · Elaboradores · Revisores · Aprobadores.</b> El Administrador General queda fijado automáticamente; se pueden sumar co-administradores.'},
+          ]},
+          {type:'note',kind:'lock',text:'<b>Punto de no retorno:</b> al hacer clic en <b>Guardar</b>, el sistema sella el equipo y bloquea el avance para cualquiera que no posea el rol designado en la etapa activa.'},
+        ]},
+      { id:'elaboracion', label:'Elaboración (lienzo HTML)', role:'Elaborador',
+        lead:'El módulo de Tareas hipervincula directamente al lienzo de redacción HTML.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Notificación',d:'Alerta en el panel izquierdo. Un clic en el nombre del documento abre la etapa de <b>Elaboración</b>.'},
+            {t:'Entorno de trabajo',d:'Se despliega el <b>editor HTML nativo</b> con barra de formato y lienzo de diseño gráfico.'},
+          ]},
+          {type:'b-sub',text:'Inserción de imágenes complejas'},
+          {type:'steps', items:[
+            {t:'Paso 1 · Recorte',d:'Use la herramienta de recortes del sistema (Snipping Tool) para capturar solo el área visual necesaria.'},
+            {t:'Paso 2 · Inserción directa',d:'Pegue en el editor con <b>Ctrl + V / Cmd + V</b> y use la barra de alineación para centrar.'},
+          ]},
+          {type:'note',kind:'warn',text:'<b>Ajuste final:</b> presione <b>Guardar</b> (esquina superior izquierda) inmediatamente después de insertar la imagen para evitar pérdidas de formato.'},
+        ]},
+      { id:'revision', label:'Revisión y función Lupa', role:'Revisor',
+        lead:'La función «Lupa» permite una auditoría de lectura sin interferencias.',
+        blocks:[
+          {type:'bullets', items:[
+            '<b>Transición operativa:</b> el Elaborador firma el avance y el documento entra en la bandeja de Revisión.',
+            '<b>Visualización externa:</b> antes de intervenir, el Revisor usa el ícono de <b>Lupa</b> (esquina superior derecha).',
+            '<b>Beneficio de auditoría:</b> oculta los paneles de edición y muestra el documento tal como se verá publicado.',
+          ]},
+          {type:'b-sub',text:'Sugerencias (forma) vs. Comentarios (fondo)'},
+          {type:'table', head:['','Sugerencias — Forma','Comentarios — Fondo'], rows:[
+            ['Uso','Ortografía, mayúsculas, ajustes directos al texto.','Redacción de párrafos, alertas de contenido, feedback estructural.'],
+            ['Mecánica','Modifica el texto directo: elimina en rojo, agrega en verde.','Notas al margen ancladas a un fragmento subrayado.'],
+            ['Resolución','Un clic en «Aceptar» y desaparece del historial visual.','El Elaborador edita manualmente el HTML. Persisten en el historial.'],
+          ]},
+          {type:'b-sub',text:'Ciclo de corrección iterativa (bidireccional)'},
+          {type:'steps', items:[
+            {t:'Devolución',d:'El Revisor deja una <b>Anotación Global</b> y selecciona «Devolver a Elaboración».'},
+            {t:'Aceptación',d:'Módulo Tareas → Sugerencias → «Mostrar todos» → <b>Aceptar</b>.'},
+            {t:'Ajuste manual',d:'Abre Comentarios, edita el HTML según la indicación y guarda.'},
+            {t:'Reenvío',d:'El Elaborador responde en la Anotación Global («Ajustes realizados») y presiona <b>«Avanzar a Revisión»</b>.'},
+          ]},
+        ]},
+      { id:'publicacion', label:'Publicación y seguridad', roles:['Revisor','Administrador General','Aprobador'],
+        lead:'La firma de aprobación final otorga vigencia oficial y disponibilidad.',
+        blocks:[
+          {type:'b-sub',text:'Regla de oro para la V1 — omitir justificación de cambios'},
+          {type:'steps', items:[
+            {t:'El gatillo',d:'El Revisor da el OK final y selecciona «Avanzar a Control de Cambios».'},
+            {t:'Menú de administrador',d:'Botón de configuración (3 puntos) → <b>Control de Versiones</b>.'},
+            {t:'Regla estricta V1',d:'Escriba obligatoriamente <b>«No Aplica»</b> en <b>ambos campos</b> (Justificación y Cambios). Guardar y avanzar.'},
+          ]},
+          {type:'b-sub',text:'Perímetro de seguridad (nivel de publicación)'},
+          {type:'table', head:['Nivel','Alcance'], rows:[
+            ['Público','URL abierta: cualquiera con el enlace visualiza el documento, aun sin pertenecer a la institución.'],
+            ['Institucional','Solo usuarios con credenciales activas de Daruma, sin importar su área.'],
+            ['Privado','Máxima restricción: solo procesos y áreas designadas en la configuración inicial.'],
+          ]},
+          {type:'b-sub',text:'Firma final → Vigente'},
+          {type:'steps', items:[
+            {t:'Cierre del flujo',d:'El Aprobador firma. El flujo termina de manera <b>irreversible</b>.'},
+            {t:'Disponibilidad',d:'El documento pasa a estado <b>«Vigente»</b> y se integra al repositorio oficial.'},
+            {t:'Ruta de consulta',d:'Menú izquierdo → <b>«Mis documentos vigentes»</b>.'},
+            {t:'Copias controladas',d:'Usuarios con permisos especiales generan copias físicas desde el ícono de impresión.'},
+          ]},
+        ]},
+      { id:'checklist', label:'Checklist definitivo',
+        lead:'Verifica esto antes de dar por publicado un documento impecable.',
+        blocks:[
+          {type:'checklist', items:[
+            'Solicitud registrada con detalle exhaustivo y asignada como «Creación de nuevo documento».',
+            'Plantilla, versión y códigos autogenerados preservados sin modificaciones manuales.',
+            'Matriz de roles (Administrador · Elaborador · Revisor · Aprobador) estrictamente asignada.',
+            'Sugerencias de forma aceptadas y comentarios de fondo resueltos vía iteración HTML.',
+            'Perímetro de seguridad (Público · Institucional · Privado) validado antes de la firma final.',
+          ]},
+        ]},
+    ]
+  },
+
+  /* ---------- 2 · RIESGOS ---------- */
+  {
+    id:'riesgos', n:2, status:'ready', color:'var(--m1)', hex:'#232be6', icon:IC.risk,
+    title:'Gestión del Riesgo',
+    marco:'Registro · Riesgos / cómo se mitiga',
+    proceso:'Soporta «Gestión integrada de procesos, riesgos, control y auditoría» (Macroproceso 1 · Gobierno institucional).',
+    summary:'Ciclo de vida del riesgo, equipos y contexto, traducción de la matriz Excel, riesgo inherente y residual, controles y trazabilidad.',
+    md:'riesgos/riesgos.md',
+    imgDir:'riesgos/img', imgPrefix:'pag',
+    /* capturas reales extraídas del instructivo oficial (PPTX), verificadas una por una */
+    pages:{
+      ciclo:[{p:2,cap:'Las 6 etapas del ciclo de vida del riesgo'}],
+      roles:[{p:3,cap:'Líder, Controlador, Analizador, Aprobador'}],
+      etapa1:[{p:4,cap:'Ruta de acceso: Definición de equipos'},{p:5,cap:'Listado de equipos con sus líderes'},{p:6,cap:'Formulario de referencias del contexto operativo'}],
+      etapa2:[{p:7,cap:'Matriz Excel de riesgos (origen de la información)'},{p:8,cap:'Formulario de identificación del riesgo'},{p:9,cap:'Elementos de análisis: causas registradas como variables'}],
+      etapa3:[{p:10,cap:'El rol Analizador asume el control'},{p:11,cap:'Menú: Periodicidad, Plan de tratamiento, Efecto esperado de controles'}],
+      etapa4:[{p:13,cap:'Formulario «Definición de Controles»'},{p:14,cap:'Notas de evaluación del control'},{p:15,cap:'Criterios de evaluación: documentación, ejecución, evidencia'}],
+      etapa5:[{p:16,cap:'Periodicidad de seguimiento y análisis del riesgo residual'}],
+      etapa6:[{p:17,cap:'Supervisión continua y materialización'},{p:18,cap:'Menú: Materializar riesgo'}],
+      trazabilidad:[{p:19,cap:'Inactivar un control: Estado «Deshabilitado» sin eliminarlo'}],
+    },
+    sections:[
+      { id:'ciclo', label:'Ciclo de vida (6 etapas)',
+        lead:'El software requiere una progresión lógica: cada etapa desbloquea la siguiente, transformando datos aislados en un ecosistema de prevención trazable.',
+        blocks:[
+          {type:'phases', items:[
+            {n:'01',name:'Configuración',desc:'Definición de equipos y contexto operativo.'},
+            {n:'02',name:'Identificación',desc:'Mapeo del riesgo desde su origen.'},
+            {n:'03',name:'Análisis',desc:'Evaluación del riesgo inherente sin controles.'},
+            {n:'04',name:'Controles',desc:'Registro y evaluación de barreras de protección.'},
+            {n:'05',name:'Aprobación',desc:'Validación oficial del flujo.'},
+            {n:'06',name:'Supervisión',desc:'Monitoreo continuo y gestión de materializaciones.'},
+          ]},
+        ]},
+      { id:'roles', label:'Roles',
+        lead:'Antes de crear un riesgo, el sistema requiere identificar a los participantes. Un mismo usuario puede asumir múltiples roles según las necesidades del proceso.',
+        blocks:[
+          {type:'roles', items:[
+            {name:'Líder',desc:'Encargado de la gestión general del equipo.'},
+            {name:'Controlador',desc:'Diseña, registra y califica la efectividad de las barreras.'},
+            {name:'Analizador',desc:'Evalúa el impacto y la probabilidad (Riesgo Inherente).'},
+            {name:'Aprobador',desc:'Valida el riesgo residual y autoriza el paso a supervisión.'},
+          ]},
+        ]},
+      { id:'etapa1', label:'Etapa 1 · Equipos y contexto', role:'Líder',
+        lead:'Arquitectura de equipos, roles y creación del contexto operativo (el entorno físico del riesgo).',
+        blocks:[
+          {type:'b-sub',text:'Definición de equipos'},
+          {type:'steps', items:[
+            {t:'Ruta de acceso',d:'Listado de Módulos → <b>Riesgos</b> → <b>Definición de equipos</b>.'},
+            {t:'Datos del equipo',d:'Nombre · Abreviatura · Notas · Estado (activo).'},
+            {t:'Asistentes',d:'Agregue cada participante con <b>Usuario + Rol</b> (botón «Nuevo participante»). → Guardar.'},
+          ]},
+          {type:'b-sub',text:'Creación del contexto operativo'},
+          {type:'note',kind:'tip',text:'El contexto es el <b>paso final de configuración</b> que habilita el botón <b>Nuevo Riesgo</b>.'},
+          {type:'steps', items:[
+            {t:'Contextos → Nuevo → Definición',d:'Abra el formulario de contexto.'},
+            {t:'Metodología',d:'Seleccione siempre <b>Procesos</b> para alinear la matriz con la estructura organizacional.'},
+            {t:'Equipo y Nombre',d:'Título idéntico o muy similar al del equipo o proceso (ej. «Contexto de Calidad»).'},
+            {t:'Abreviatura',d:'Siglas representativas (ej. «CC»). → Guardar.'},
+          ]},
+        ]},
+      { id:'etapa2', label:'Etapa 2 · Matriz Excel → Daruma',
+        lead:'Migrar la información requiere entender la nueva arquitectura de datos: los campos estáticos de la hoja de cálculo se vuelven variables de búsqueda.',
+        blocks:[
+          {type:'note',kind:'tip',text:'¿Dudas con la matriz de Excel? Está en el <b>SharePoint de transformación</b>. Al entregar el proceso se envía un correo con el repositorio oficial.'},
+          {type:'b-sub',text:'Formulario principal (Nuevo Riesgo)'},
+          {type:'steps', items:[
+            {t:'Propietario / Área',d:'<b>Proceso origen:</b> seleccione el proceso dueño exacto del riesgo.'},
+            {t:'Código y Nombre',d:'Transcriba los valores <b>idénticos</b> de su matriz.'},
+            {t:'Tipo de Riesgo',d:'<b>Fuente del Riesgo:</b> clasifique la naturaleza (ej. Marco Normativo).'},
+            {t:'Descripción',d:'Detalle general del evento. Asigne al usuario responsable. → Guardar.'},
+          ]},
+          {type:'b-sub',text:'Etapa 2.5 · Causas y consecuencias'},
+          {type:'note',kind:'warn',text:'Daruma <b>no usa texto libre</b> para causas/consecuencias: usa <b>variables reutilizables</b> para generar reportes estadísticos.'},
+          {type:'steps', items:[
+            {t:'Crear variables',d:'Riesgos → <b>Elementos de análisis</b>: construya cada premisa (Tipo: «¿Cómo podría ocurrir? Evento», Causas…).'},
+            {t:'Asignar al riesgo',d:'Seleccione las variables recién creadas en el formulario principal.'},
+          ]},
+        ]},
+      { id:'etapa3', label:'Etapa 3 · Riesgo inherente', role:'Analizador',
+        lead:'El rol Analizador evalúa el riesgo en su estado puro, asumiendo ausencia total de controles.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Analizar Riesgo',d:'Clic en el <b>ícono de la cadena</b>.'},
+            {t:'Impacto y Probabilidad',d:'Defina ambos niveles (Criterios Independientes).'},
+            {t:'Cálculo',d:'El sistema calcula el <b>Riesgo Inherente</b>.'},
+          ]},
+          {type:'b-sub',text:'Parámetros futuros — monitoreo y proyección'},
+          {type:'bullets', items:[
+            '<b>El Cuándo · Periodicidad:</b> cada cuánto el sistema exigirá revisión. Recomendado: «Cuando se requiera» y fecha del próximo recordatorio.',
+            '<b>El Objetivo · Efecto Esperado:</b> a dónde proyecta llevar el riesgo (<b>Riesgo Residual</b>) tras aplicar los controles.',
+          ]},
+          {type:'note',kind:'tip',text:'Registre en notas: «Se realizó la definición del riesgo acorde a la matriz o nuevos procesos». Después de <b>Guardar</b> → nota → <b>Siguiente</b>.'},
+        ]},
+      { id:'etapa4', label:'Etapa 4 · Controles', role:'Controlador',
+        lead:'Diseñar un control implica parametrizar su comportamiento, no solo describirlo. Clic en el ícono de la «página plegada».',
+        blocks:[
+          {type:'b-sub',text:'Registro estructural del control'},
+          {type:'bullets', items:[
+            '<b>Nombre y Descripción.</b>',
+            '<b>Tipo de control:</b> Preventivo o Detectivo.',
+            '<b>Frecuencia:</b> según se requiera (alineado a la matriz original).',
+            '<b>Estado:</b> marque siempre «Activo» y «Obligatorio». Asigne usuario responsable.',
+          ]},
+          {type:'note',kind:'tip',text:'Cierre: notas «Se realiza el registro del control» y avance (Guardar → nota → Siguiente).'},
+          {type:'b-sub',text:'Criterios de evaluación (ícono de la cadena)'},
+          {type:'table', head:['Criterio','Valor'], rows:[
+            ['Responsabilidad','¿Tiene responsable asignado? → Adecuado'],
+            ['Tipo de control','Manual'],
+            ['Naturaleza del control','Preventivo'],
+            ['Frecuencia','Adecuado'],
+            ['Documentación','¿Está documentado? → Adecuado'],
+            ['Ejecución','Ejecución del control sin desviaciones.'],
+            ['Evidencia','Selección de trazabilidad acorde a su proceso.'],
+          ]},
+          {type:'note',kind:'tip',text:'<b>Motor de cálculo:</b> al finalizar, el sistema recalcula la matriz (ej. Inherente SDRIP 12.0 «Alto» → Residual SDRIP 4.0 «Moderado»). Verifique en la <b>Ficha del Riesgo</b> antes de enviar a aprobación.'},
+        ]},
+      { id:'etapa5', label:'Etapa 5 · Aprobación', role:'Aprobador',
+        lead:'El Aprobador (definido al inicio) es la puerta de enlace hacia el monitoreo continuo.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Abrir la Ficha del Riesgo',d:'Ícono del <b>ojo</b>.'},
+            {t:'Auditar',d:'Verifique la coherencia del riesgo y los controles (desplácese hasta la parte inferior).'},
+            {t:'Aprobar',d:'Si es correcto: registre <b>«Aprobado»</b> en notas → <b>Siguiente</b>.'},
+            {t:'No aprobar',d:'Seleccione el botón <b>Anterior</b>.'},
+          ]},
+        ]},
+      { id:'etapa6', label:'Etapa 6 · Supervisión', role:'Controlador',
+        lead:'La etapa final es donde el riesgo «vive». Permite registrar brechas sin reiniciar el flujo.',
+        blocks:[
+          {type:'b-sub',text:'A · Materialización'},
+          {type:'steps', items:[
+            {t:'Materializar riesgo',d:'Menú de tres puntos → «Materializar riesgo».'},
+            {t:'Datos',d:'Ingrese <b>cantidad de veces</b> y <b>fecha exacta</b>.'},
+            {t:'Documentar',d:'Pequeña descripción de la materialización. → Guardar.'},
+          ]},
+          {type:'note',kind:'warn',text:'Si el riesgo se materializa, los controles no funcionan. Corríjalo sin retroceder: menú de tres puntos → <b>Controles</b>.'},
+          {type:'b-sub',text:'B · Monitoreo normal'},
+          {type:'bullets', items:['Revisiones periódicas basadas en la fecha estipulada.']},
+          {type:'b-sub',text:'Reemplazo de un control (versionado)'},
+          {type:'steps', items:[
+            {t:'Crear el nuevo control',d:'Siga la Etapa 4 para configurar el control V2.'},
+            {t:'Deshabilitar el anterior',d:'Clic en el nombre del control (hipervínculo) → Estado <b>«Deshabilitado»</b>, quite la marca de obligatorio.'},
+            {t:'Justificar',d:'Registre un <b>criterio de validación (comentario)</b> con el motivo. → Guardar.'},
+          ]},
+        ]},
+      { id:'trazabilidad', label:'Regla de oro · Trazabilidad', role:'Controlador',
+        lead:'En Daruma, los controles defectuosos o superados nunca se eliminan: borrarlos eliminaría el historial legal y operativo.',
+        blocks:[
+          {type:'table', head:['Control V1','→','Control V2'], rows:[
+            ['Estado: Inactivo / Obligatorio: No','','Estado: Activo / Obligatorio: Sí'],
+            ['Documente el motivo de su desactivación (ej. «Reemplazado por automatización»).','',''],
+          ]},
+          {type:'note',kind:'crit',text:'<b>El protocolo:</b> 1) Crear V2 → 2) Deshabilitar V1 → 3) Documentar motivo.'},
+        ]},
+    ]
+  },
+
+  /* ---------- 3 · PLANES DE ACCIÓN ---------- */
+  { id:'planes', n:3, status:'ready', color:'var(--m3)', hex:'#305fff', icon:IC.plan,
+    title:'Planes de acción', marco:'Registro · Plan de acción',
+    proceso:'Planes de acción derivados de hallazgos, riesgos y oportunidades.',
+    summary:'Flujo estrictamente secuencial con 5 roles para evitar conflicto de interés: creación, análisis de causas, formulación de acciones, aprobación, ejecución, seguimiento y cierre.',
+    md:'planes/planes.md',
+    imgDir:'planes/img', imgPrefix:'pag',
+    /* capturas reales extraídas del instructivo oficial (PPTX), verificadas una por una */
+    pages:{
+      ciclo:[{p:2,cap:'Las 4 fases del flujo secuencial del plan'}],
+      roles:[{p:3,cap:'Los 5 roles del plan de acción'}],
+      creacion:[{p:4,cap:'Acceso y formulario de creación inicial'},{p:5,cap:'Definición del plan'},{p:6,cap:'Parámetros del plan'}],
+      causas:[{p:7,cap:'Análisis de causas raíz'},{p:8,cap:'Modal «Análisis de causas» — ejemplo con 5 Porqués'}],
+      acciones:[{p:9,cap:'Modal «Número de acciones» a crear'}],
+      aprobacion:[{p:10,cap:'Tarea pendiente por aprobar'},{p:11,cap:'Modal «Aprobar plan»'}],
+      ejecucion:[{p:12,cap:'Listado de acciones con su Ponderación'},{p:13,cap:'Registro de avance: Cumplimiento alcance'},{p:14,cap:'Insertar enlace de soporte/evidencia'}],
+      seguimiento:[{p:15,cap:'Detalle de una acción en el entorno de Entrenamiento'},{p:16,cap:'Verificación del responsable de seguimiento'},{p:17,cap:'Ajuste del porcentaje de avance'},{p:19,cap:'Acciones en estado «Cerrado» con Alcance y Tiempo al 100%'}],
+      efectividad:[{p:20,cap:'Reporte específico del plan: Medición de la Eficacia por periodo'}],
+    },
+    sections:[
+      { id:'ciclo', label:'Flujo secuencial (4 fases)',
+        lead:'Cada plan de acción sigue una progresión estrictamente secuencial: cada fase desbloquea la siguiente. Nunca se puede saltar una fase.',
+        blocks:[
+          {type:'phases', items:[
+            {n:'01',name:'Creación',desc:'El Líder define parámetros, causas y acciones.'},
+            {n:'02',name:'Aprobación',desc:'El Encargado de Aprobar audita coherencia y aprueba o devuelve.'},
+            {n:'03',name:'Ejecución y Seguimiento',desc:'El Responsable ejecuta; el Seguimiento verifica evidencias.'},
+            {n:'04',name:'Cierre',desc:'Seguimiento de efectividad mes a mes y cierre formal del plan.'},
+          ]},
+          {type:'bullets', items:['Desde el listado de indexación se ve: ID del plan, nombre, tipo de plan, origen (Hallazgos, Oportunidades, Riesgos) y el registro que lo originó. Clic en el origen navega directamente al módulo de origen.']},
+        ]},
+      { id:'roles', label:'Roles (evitan conflicto de interés)',
+        lead:'5 roles distribuyen responsabilidades para que quien ejecuta nunca sea quien aprueba o verifica.',
+        blocks:[
+          {type:'roles', items:[
+            {name:'Líder del Plan',desc:'Crea el plan, define parámetros, hace el análisis de causas, diseña las acciones, asigna ejecutores y envía a aprobación.'},
+            {name:'Encargado de Aprobar',desc:'Audita la coherencia entre causas y acciones. Aprueba o solicita ajustes. No puede ser el mismo Líder.'},
+            {name:'Responsable de la Acción',desc:'Ejecuta tareas, sube evidencias y reporta avance (1% a 100%).'},
+            {name:'Responsable de Seguimiento',desc:'Verifica evidencias; puede reducir el porcentaje si no está de acuerdo. Debe ser distinto al Líder.'},
+            {name:'Responsable de Seguimiento de Efectividad',desc:'Evalúa mes a mes si las acciones siguen siendo efectivas y cierra el plan.'},
+          ]},
+        ]},
+      { id:'creacion', label:'Paso 1 · Creación (Líder)', role:'Líder del Plan',
+        lead:'Acceso: Listado de Módulos → Planes de acción. Use siempre la instancia de Entrenamiento para pruebas.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Tipo de plan',d:'Hallazgos, Oportunidades o Riesgos. El <b>origen DEBE coincidir</b> con el tipo elegido.'},
+            {t:'Proceso y Área',d:'El proceso al que pertenece o que está relacionado directamente con el origen.'},
+            {t:'Origen y Registro',d:'Si filtra por proceso y no aparece nada, <b>quite el proceso (clic en X)</b> para ver todos los registros disponibles, luego reseleccione.'},
+            {t:'Definición',d:'Objetivo central del plan, claro y directo.'},
+            {t:'Frecuencia de seguimiento',d:'Desde Diaria hasta Bianual. Define cada cuánto se validará si las acciones siguen siendo efectivas.'},
+            {t:'Cantidad de periodos',d:'Número de veces que se hará el seguimiento sobre esa frecuencia (ej. Mensual x 3 = 3 meses).'},
+            {t:'Responsables',d:'Líder, Encargado de aprobación (no puede ser el líder), Responsable de seguimiento (distinto al líder), Responsable de seguimiento de efectividad.'},
+            {t:'Sistema de Gestión',d:'Opcional; vincular si aplica.'},
+          ]},
+        ]},
+      { id:'causas', label:'Paso 2 · Análisis de causas raíz', role:'Líder del Plan',
+        lead:'El Líder elige una de 4 metodologías (una sola pestaña, texto libre). Ningún campo es obligatorio: el objetivo es la flexibilidad de pensamiento.',
+        blocks:[
+          {type:'bullets', items:[
+            '<b>5W2H:</b> Qué, Cómo, Cuándo, Quién, Dónde, Por qué.',
+            '<b>5 Porqués:</b> cadena de porqués hasta llegar a la causa raíz.',
+            '<b>5 M\'s:</b> Mano de obra, Método, Materia prima, Maquinaria, Medio ambiente.',
+            '<b>Causas y Efectos:</b> árbol lógico.',
+          ]},
+          {type:'note', kind:'tip', text:'<b>Priorización de causas:</b> todas las causas registradas se consideran Altas, porque todas generan la situación que motivó el plan.'},
+        ]},
+      { id:'acciones', label:'Paso 3 · Formulación de acciones', role:'Líder del Plan',
+        lead:'El Líder traduce las causas en acciones concretas y asignables.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Agregar varias acciones',d:'Menú 3 puntos → «Agregar varias acciones» (más eficiente que crearlas una a una). Indique cuántas acciones creará.'},
+            {t:'Por acción',d:'Descripción, Tipo (Correctiva o De mejora), Registro origen, Causa asociada.'},
+            {t:'Asignación',d:'<b>Solo un responsable por acción</b> (relación 1 a 1). Defina fecha inicial y final.'},
+            {t:'Envío',d:'Menú 3 puntos → «Solicitar aprobación del plan». Estado cambia a «Pendiente por aprobar».'},
+          ]},
+          {type:'note', kind:'crit', text:'<b>Regla de ponderación crítica:</b> el peso porcentual de todas las acciones debe sumar <b>exactamente 100%</b>. El sistema lo exige y bloquea el envío si no se cumple.'},
+        ]},
+      { id:'aprobacion', label:'Paso 4 · Aprobación (Encargado)', role:'Encargado de Aprobar',
+        lead:'El Encargado de Aprobar ingresa desde la bandeja de Tareas y revisa el análisis de causas y las acciones.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Aprobar',d:'Escriba nota de conformidad → ícono de palomita → Guardar. Estado pasa a «Pendiente por ejecutar».'},
+            {t:'Solicitar ajuste',d:'Ícono de avión de papel → escriba observación → Guardar. Devuelve el plan al Líder.'},
+          ]},
+        ]},
+      { id:'ejecucion', label:'Paso 5 · Ejecución (Responsable de la acción)', role:'Responsable de la Acción',
+        lead:'Puede ingresar desde Tareas o desde el listado de Planes de Acción → seleccionar el plan → seleccionar la acción.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Adjuntar soporte',d:'PDFs, imágenes o URLs. Ícono de carpeta → Archivo o Carpeta → ícono Subir archivo → cargue → aparece URL → OK.'},
+            {t:'Reporte de avance',d:'Actualice Cumplimiento (1%-100%). Puede guardar avances parciales (ej. 70%).'},
+          ]},
+          {type:'note', kind:'crit', text:'<b>Bloqueo crítico:</b> al marcar 100% y guardar, el estado pasa a «Finalizado» y <b>pierde permisos de edición permanentemente</b>. Cargue TODO el soporte antes de marcar 100%.'},
+        ]},
+      { id:'seguimiento', label:'Paso 6 · Seguimiento', role:'Responsable de Seguimiento',
+        lead:'El punto de entrada cambia lo que puede hacer el Responsable de Seguimiento.',
+        blocks:[
+          {type:'note', kind:'warn', text:'<b>Diferencia importante:</b> desde Tareas solo se puede «Concluir» (cierre). Para tener la opción completa, entre desde el ícono de ojo → «Añadir nota de seguimiento». Desde ahí puede ajustar el porcentaje si no está de acuerdo con la evidencia.'},
+          {type:'steps', items:[
+            {t:'Si reduce el porcentaje',d:'La acción vuelve a «En ejecución» y el responsable puede completar la evidencia faltante.'},
+            {t:'Si está de acuerdo',d:'«Añadir nota de seguimiento» → nota OK → Guardar. Luego, desde Tareas, puede «Concluir» (cerrar la acción).'},
+          ]},
+        ]},
+      { id:'efectividad', label:'Paso 7 · Efectividad y cierre', role:'Responsable de Seguimiento de Efectividad',
+        lead:'Una vez cerradas todas las acciones, aparecen los periodos de seguimiento definidos en la creación (ej. 3 periodos mensuales).',
+        blocks:[
+          {type:'steps', items:[
+            {t:'En cada periodo',d:'Registre una nota indicando si las acciones siguen siendo efectivas o no → Guardar → Siguiente. Los periodos completados se bloquean progresivamente.'},
+            {t:'Resultado',d:'Al lado derecho, despliegue «Resultado» para ver el historial completo de notas.'},
+            {t:'Cerrar el plan',d:'Parte superior → Concluir → marque si se alcanzaron los objetivos → Espacio de estandarización (opcional) → Conclusión → Guardar. Estado final: «Cerrado».'},
+          ]},
+          {type:'bullets', items:['El resumen final del plan se puede descargar en PDF desde el ícono de lupa (arriba a la derecha).']},
+        ]},
+      { id:'checklist', label:'Checklist clave',
+        blocks:[
+          {type:'checklist', items:[
+            'El origen del plan coincide exactamente con el tipo elegido (Hallazgos / Oportunidades / Riesgos).',
+            'Responsables cumplen la regla de independencia: Encargado de Aprobar y Responsable de Seguimiento son distintos al Líder.',
+            'El peso de todas las acciones suma exactamente 100%.',
+            'Todo el soporte/evidencia está cargado ANTES de marcar una acción al 100%.',
+            'Se registró una nota antes de avanzar en cada etapa del flujo.',
+          ]},
+        ]},
+    ]
+  },
+
+  /* ---------- 4 · OPORTUNIDADES ---------- */
+  { id:'oportunidades', n:4, status:'ready', color:'var(--m5)', hex:'#027bff', icon:IC.oport,
+    title:'Oportunidades de mejora', marco:'Registro · Oportunidades de mejora',
+    proceso:'Registro y gestión de oportunidades de mejora continua.',
+    summary:'Registro, priorización obligatoria, generación de plan de acción y cierre de oportunidades de mejora, con trazabilidad completa.',
+    md:'oportunidades/oportunidades.md',
+    imgDir:'oportunidades/img', imgPrefix:'pag',
+    /* capturas reales extraídas del instructivo oficial (PPTX), verificadas una por una */
+    pages:{
+      ciclo:[{p:2,cap:'Las 4 fases del ciclo de vida de la oportunidad'}],
+      registro:[{p:3,cap:'Ruta de acceso al módulo'},{p:4,cap:'Acceso y entorno de trabajo'},{p:5,cap:'Registro: Descripción y Justificación'},{p:6,cap:'Asignación de contexto y responsables'}],
+      guardado:[{p:7,cap:'Confirmación de guardado y siguiente paso'}],
+      priorizacion:[{p:9,cap:'Menú: Priorizar'},{p:10,cap:'Matriz Impacto × Urgencia y el cálculo de prioridad'}],
+      gestion:[{p:8,cap:'Estados de la oportunidad: Abierta, En Proceso, Cerrada, Rechazada'},{p:11,cap:'Listado con los planes de acción vinculados y su estado'},{p:12,cap:'Trazabilidad activa entre oportunidad y plan'}],
+      cierre:[{p:13,cap:'Cierre definitivo de la oportunidad'}],
+    },
+    sections:[
+      { id:'ciclo', label:'Ciclo de vida (4 fases)',
+        lead:'Toda oportunidad de mejora atraviesa 4 fases, con trazabilidad completa desde el registro hasta el cierre.',
+        blocks:[
+          {type:'phases', items:[
+            {n:'01',name:'Registro',desc:'Cualquier usuario describe la oportunidad identificada.'},
+            {n:'02',name:'Priorización',desc:'Obligatoria: sin ella el progreso se bloquea.'},
+            {n:'03',name:'Gestión y Plan de Acción',desc:'Se conecta con un plan de acción para resolverla.'},
+            {n:'04',name:'Cierre',desc:'Queda en modo solo lectura con justificación.'},
+          ]},
+        ]},
+      { id:'registro', label:'Registro de la oportunidad',
+        lead:'Acceso: Listado de Módulos → Oportunidades. Íconos arriba a la derecha: Nuevo (registrar), Ayuda (instructivo).',
+        blocks:[
+          {type:'note', kind:'warn', text:'<b>Regla crítica:</b> use SIEMPRE la instancia de Entrenamiento para pruebas, NUNCA Producción.'},
+          {type:'steps', items:[
+            {t:'Descripción',d:'<b>Obligatorio.</b> Es el núcleo del registro.'},
+            {t:'Responsable',d:'<b>Obligatorio.</b> Quien se asigne gestionará la oportunidad. Advertencia: si asigna a otra persona, usted pierde el control del ejercicio.'},
+            {t:'Unidad',d:'Seleccione la correspondiente.'},
+            {t:'Lista de áreas',d:'Selección múltiple: el área que registra + las áreas impactadas.'},
+            {t:'Proceso destino',d:'Selección múltiple; puede seleccionar todos.'},
+          ]},
+          {type:'bullets', items:[
+            '<b>Impacto:</b> opcional, pero detallarlo da más peso a la oportunidad.',
+            '<b>Justificación:</b> opcional, argumentos de soporte.',
+            '<b>Oportunidad FODA:</b> omitir por ahora, no se vincula en este momento.',
+            '<b>Sistema de Gestión:</b> vincular si aplica normativamente.',
+            '<b>Presupuesto:</b> solo si la oportunidad lo requiere.',
+          ]},
+        ]},
+      { id:'guardado', label:'Guardado y trazabilidad',
+        lead:'Complete lo requerido → Guardar.',
+        blocks:[
+          {type:'bullets', items:[
+            'Aparece un mensaje de confirmación en la parte superior.',
+            'La oportunidad pasa al listado de indexación, donde se ve: ID, nombre, tipo, origen y registro vinculado.',
+            'En la parte inferior del registro aparece el historial: nombre del usuario, acción ejecutada, estado, fecha y hora.',
+          ]},
+        ]},
+      { id:'priorizacion', label:'Priorización (obligatoria)',
+        lead:'Sin priorizar, el progreso se bloquea por completo.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Seleccione la oportunidad',d:'En el listado, marque la casilla a la izquierda.'},
+            {t:'Priorizar',d:'Menú 3 puntos → Priorizar.'},
+            {t:'Impacto y Urgencia',d:'Asigne ambos niveles (Bajo / Medio / Alto).'},
+            {t:'Cálculo automático',d:'El sistema calcula la prioridad: Alto Impacto + Alta Urgencia = Prioridad Alta.'},
+          ]},
+        ]},
+      { id:'gestion', label:'Gestión de estado y plan de acción',
+        lead:'Menú 3 puntos → Gestionar oportunidad.',
+        blocks:[
+          {type:'bullets', items:[
+            '<b>Estados posibles:</b> Inactivo, Abierta, En Proceso (al conectar con un plan de acción), Cerrada, Rechazada.',
+            '<b>Generar Plan de Acción:</b> seleccione la oportunidad → menú 3 puntos → Generar plan de acción → complete tipo (Oportunidades), proceso, área y descripción → Guardar.',
+            'El detalle del plan se gestiona en el módulo de Planes de Acción.',
+          ]},
+          {type:'note', kind:'tip', text:'Al conectar con un plan, cambie el estado a «En Proceso». Desde el listado de indexación, la oportunidad muestra el plan vinculado y su porcentaje de avance en tiempo real.'},
+        ]},
+      { id:'cierre', label:'Cierre',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Gestionar oportunidad',d:'Cambie el estado a Cerrada.'},
+            {t:'Justificación',d:'Ej. «se realizó el plan de acción con éxito».'},
+            {t:'Guardar',d:'Una vez cerrada, la oportunidad queda en modo solo lectura.'},
+          ]},
+        ]},
+      { id:'checklist', label:'Checklist clave',
+        blocks:[
+          {type:'checklist', items:[
+            'Descripción y Responsable completos antes de guardar.',
+            'Priorización (Impacto + Urgencia) realizada antes de avanzar.',
+            'Plan de acción generado y vinculado si la oportunidad lo requiere.',
+            'Estado actualizado a Cerrada con una justificación clara al finalizar.',
+          ]},
+        ]},
+    ]
+  },
+
+  /* ---------- 5 · AUDITORÍAS ---------- */
+  { id:'auditorias', n:5, status:'ready', color:'var(--m2)', hex:'#019bff', icon:IC.audit,
+    title:'Auditorías', marco:'Registro · Auditorías internas y externas',
+    proceso:'Planeación y ejecución de auditorías internas y externas.',
+    summary:'Programa de auditoría como contenedor maestro, auditorías internas (8 etapas) y externas (4 etapas), con roles separados para evitar conflicto de interés.',
+    md:'auditorias/auditorias.md',
+    imgDir:'auditorias/img', imgPrefix:'pag',
+    /* capturas reales extraídas del instructivo oficial (PPTX), verificadas una por una */
+    pages:{
+      arquitectura:[{p:2,cap:'Programa de Auditoría → Auditorías individuales'},{p:11,cap:'Línea de tiempo completa de las 8 etapas de una auditoría interna'}],
+      roles:[{p:3,cap:'Auditor Líder, Auditor, Auditado'}],
+      tipos:[{p:4,cap:'Matriz de flujos: Internas vs. Externas'}],
+      programa:[{p:5,cap:'Ruta de acceso al módulo'},{p:6,cap:'Programa de Auditoría vs. Auditoría'},{p:8,cap:'Detalle del programa de auditoría con sus auditorías asociadas'},{p:22,cap:'Programación de una auditoría'}],
+      interna1:[{p:9,cap:'Menú: Definición de parámetros, Agregar sesiones'},{p:10,cap:'Paso 1: Planeación y Parámetros'}],
+      interna2:[{p:12,cap:'Crear lista de chequeo con criterios ISO 9001:2015'},{p:13,cap:'Participantes y fecha real de ejecución'},{p:14,cap:'Formulario de registro de un hallazgo'},{p:15,cap:'Línea de tiempo en la etapa de Ejecución'},{p:16,cap:'Modal «¿Aceptar hallazgo?»'}],
+      interna3:[{p:17,cap:'Pasos 6 y 7: Tratamiento y Plan de Acción'},{p:19,cap:'Formulario «Evaluación y conclusión de la auditoría»'}],
+      externa:[{p:20,cap:'Por qué el flujo externo es más corto'},{p:25,cap:'Línea de tiempo de 4 etapas (auditoría externa)'},{p:26,cap:'Paso 3: Finalización'},{p:27,cap:'Reporte específico de la auditoría externa'}],
+    },
+    sections:[
+      { id:'arquitectura', label:'Arquitectura: Programa → Auditorías',
+        lead:'El Programa de Auditoría es el contenedor maestro; las auditorías individuales se anidan dentro de él.',
+        blocks:[
+          {type:'note', kind:'crit', text:'<b>Regla fundamental:</b> SIEMPRE cree el Programa antes de crear cualquier auditoría.'},
+          {type:'bullets', items:[
+            'Acceso: Listado de Módulos → Auditorías. Menú izquierdo: Auditorías internas / Auditorías externas / Listado maestro.',
+            'El listado maestro muestra solo las auditorías en las que usted participa.',
+            '<b>Colores de la línea de tiempo:</b> Verde = vigente/dentro de plazo, Rojo = vencida, Azul = programada a futuro.',
+          ]},
+        ]},
+      { id:'roles', label:'Roles principales',
+        lead:'3 roles participan en el flujo principal (existen roles complementarios como auditor de apoyo o entrevistador, pero no participan directamente en el flujo).',
+        blocks:[
+          {type:'roles', items:[
+            {name:'Auditor Líder / Coordinador',desc:'Aprueba la planeación y concluye la auditoría. No ejecuta directamente.'},
+            {name:'Auditor',desc:'Planea sesiones, crea la lista de chequeo y registra hallazgos.'},
+            {name:'Auditado',desc:'Acepta o rechaza hallazgos y formula planes de acción para las no conformidades.'},
+          ]},
+          {type:'note', kind:'warn', text:'Un usuario <b>no puede auto-asignarse todos los roles</b> (restricción de seguridad del sistema). El auditor tampoco puede auditar el proceso al que pertenece. El auditado <b>debe</b> aceptar los hallazgos o el flujo se bloquea. El calendario de sesiones es informativo: no sincroniza con Outlook.'},
+        ]},
+      { id:'tipos', label:'Tipos de auditoría',
+        blocks:[
+          {type:'table', head:['','Interna','Externa'], rows:[
+            ['Etapas','8 etapas secuenciales','4 etapas simplificadas'],
+            ['Roles','Participan los 3 roles','Solo el rol Auditado (el ente regulador no tiene acceso a Daruma)'],
+            ['Gestión','100% gestionada en Daruma, alta complejidad','El usuario interno transcribe los hallazgos del informe físico del ente regulador'],
+          ]},
+        ]},
+      { id:'programa', label:'Crear el Programa de Auditoría',
+        lead:'Ruta: Programación → Nuevo → Cancelar primero (para limpiar el formulario) → Nuevo.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Nombre',d:'Identificación del programa.'},
+            {t:'Objetivo',d:'Del programa, no de la auditoría individual.'},
+            {t:'Alcance',d:'Ej. «Auditorías 2026 de todos los procesos».'},
+            {t:'Criterios',d:'Normas a evaluar (ej. ISO 9001:2015). → Guardar.'},
+          ]},
+          {type:'bullets', items:['El programa queda creado y dentro de él se programarán las auditorías individuales.']},
+        ]},
+      { id:'interna1', label:'Interna · Etapas 1-2 (Planeación y Aprobación)', roles:['Auditor','Auditor Líder / Coordinador'],
+        lead:'Desde el programa: botón «Programar auditoría» o ícono de nueva auditoría. Formulario inicial: Tipo, Procesos a auditar (no puede seleccionar el proceso al que pertenece), Sistema de gestión, Descripción, Fechas, Relaciones y Responsables.',
+        blocks:[
+          {type:'b-sub', text:'Etapa 1 (Auditor) · Planeación y parámetros'},
+          {type:'steps', items:[
+            {t:'Definición de parámetros',d:'Menú 3 puntos → ajuste objetivo, alcance y criterios (heredados del programa, pero deben editarse para esta auditoría específica).'},
+            {t:'Requisitos/criterios',d:'Seleccione los que va a auditar (ej. artículos de ISO 9001). Si luego quiere agregar más, debe devolver el flujo hasta acá.'},
+            {t:'Sesión de inicio',d:'Tipo «Sesión de inicio», descripción, asistentes, fecha/hora programada, lugar → Guardar.'},
+          ]},
+          {type:'b-sub', text:'Etapa 2 (Auditor Líder) · Aprobación del plan'},
+          {type:'bullets', items:['Revisa parámetros y sesión de inicio.', '<b>Aprobar:</b> nota → palomita/check → Guardar → Siguiente.', '<b>Devolver:</b> nota con observaciones → Anterior.']},
+        ]},
+      { id:'interna2', label:'Interna · Etapas 3-5 (Checklist, Ejecución, Aceptación)', roles:['Auditor','Auditado'],
+        blocks:[
+          {type:'b-sub', text:'Etapa 3 (Auditor) · Lista de chequeo'},
+          {type:'bullets', items:['Botón «Crear lista de chequeos»: genera automáticamente preguntas preestablecidas según los requisitos elegidos (vienen de la norma).', 'No se recomienda cambiar las preguntas: están ligadas normativamente.']},
+          {type:'b-sub', text:'Etapa 4 (Auditor) · Ejecución'},
+          {type:'steps', items:[
+            {t:'Ejecutar sesión',d:'Seleccione la sesión de inicio, confirme o ajuste asistentes, registre fecha/hora REAL de ejecución → Guardar.'},
+            {t:'Registrar hallazgos',d:'Menú 3 puntos → «Registrar todos los hallazgos» (preferido: permite agregar N hallazgos libres) vs «Registrar hallazgos» (limitado a los ítems de la lista de chequeo).'},
+          ]},
+          {type:'bullets', items:['Por hallazgo: tipo (Conforme = verde / No conforme = rojo / Oportunidad de mejora), auditado, área, requisito, proceso auditado, descripción y evidencia.', 'Las conformidades quedan aceptadas automáticamente; solo las no conformidades requieren aceptación del auditado.']},
+          {type:'b-sub', text:'Etapa 5 (Auditado) · Aceptación de hallazgos'},
+          {type:'note', kind:'crit', text:'Botón «Aceptación de hallazgo» → seleccione la no conformidad → confirme. <b>Si no acepta, el flujo se bloquea.</b> Es condición obligatoria.'},
+        ]},
+      { id:'interna3', label:'Interna · Etapas 6-8 (Aprobación, Tratamiento, Conclusión)', roles:['Auditor Líder / Coordinador','Auditado'],
+        blocks:[
+          {type:'b-sub', text:'Etapa 6 (Auditor Líder) · Aprobación intermedia'},
+          {type:'bullets', items:['Da el visto bueno y avanza el flujo.']},
+          {type:'b-sub', text:'Etapa 7 (Auditado) · Tratamiento de hallazgos'},
+          {type:'steps', items:[
+            {t:'Tratamiento',d:'Menú 3 puntos → Tratamiento de hallazgos → seleccione el hallazgo → «Crear plan de acción».'},
+            {t:'Tipo',d:'«Hallazgos de auditoría»: complete proceso, área, descripción y responsables → Guardar.'},
+          ]},
+          {type:'b-sub', text:'Etapa 8 (Auditor Líder) · Evaluación y conclusión'},
+          {type:'note', kind:'crit', text:'Clic en «Evaluación y conclusión»: indique si se lograron los objetivos, escriba la conclusión → Guardar → confirmar cierre. <b>Punto de no retorno:</b> una vez cerrado no se puede editar ni devolver.'},
+          {type:'bullets', items:['Ver informe PDF: ícono de lupa → seleccione cada sección del informe para cargarla.']},
+        ]},
+      { id:'externa', label:'Auditoría externa (4 etapas)', role:'Auditado',
+        lead:'Mucho más simple: solo aparece el rol Auditado, porque los auditores externos no tienen acceso a Daruma.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Registrar hallazgos',d:'Ícono de hoja/ojito (arriba a la derecha) → Registrar hallazgos del informe físico entregado por el ente regulador.'},
+            {t:'Completar datos',d:'Área, requisito, proceso, tipo (conforme/no conforme), pregunta (copie del informe externo), descripción. Si una conformidad aplica a varios procesos, puede seleccionarlos todos.'},
+            {t:'Tratamiento',d:'Si aplica plan de acción → nota → Siguiente.'},
+            {t:'Conclusión',d:'Ícono de rayo → «Conclusión de la auditoría» → complete y guarde.'},
+          ]},
+          {type:'bullets', items:['Informe PDF: ícono de lupa → seleccione secciones para cargar el contenido.', 'Ver todas sus auditorías: menú izquierdo → Listado maestro.']},
+        ]},
+      { id:'checklist', label:'Checklist clave',
+        blocks:[
+          {type:'checklist', items:[
+            'El Programa de Auditoría existe antes de crear cualquier auditoría individual.',
+            'Ningún usuario se auto-asignó todos los roles; el auditor no audita su propio proceso.',
+            'Todos los hallazgos no conformes fueron aceptados por el auditado antes de avanzar.',
+            'La conclusión se revisó cuidadosamente antes de cerrar (es un punto de no retorno).',
+          ]},
+        ]},
+    ]
+  },
+
+  /* ---------- 6 · PROCESOS ---------- */
+  { id:'procesos', n:6, status:'ready', color:'var(--m6)', hex:'#416ab2', icon:IC.proc,
+    title:'Procesos', marco:'Registro · Arquitectura de procesos',
+    proceso:'Visualización institucional de macroprocesos, procesos y procedimientos (solo lectura).',
+    summary:'Mapa interactivo de 3 niveles para consultar cómo opera la institución: macroprocesos, procesos y procedimientos, con sus diagramas de flujo en Bizagi.',
+    md:'procesos/procesos.md',
+    imgDir:'procesos/img', imgPrefix:'pag',
+    pages:{
+      proposito:[{p:2,cap:'Propósito, alcance y estado del módulo'}],
+      arquitectura:[{p:3,cap:'Los 3 niveles: Macroprocesos, Procesos, Procedimientos'}],
+      acceso:[{p:4,cap:'Ruta de acceso: Portal'},{p:5,cap:'Mapa de procesos → Arquitectura de macroprocesos'}],
+      nivel1:[{p:6,cap:'Lienzo interactivo de macroprocesos'}],
+      nivel2:[{p:7,cap:'Anatomía de la vista de Proceso: panel izquierdo y derecho'},{p:8,cap:'Acceso a los procedimientos específicos (Nivel 3)'}],
+      trazabilidad:[{p:9,cap:'Quién elaboró, revisó y aprobó el documento'}],
+      nivel3:[{p:10,cap:'Visualización del diagrama de flujo en Bizagi'}],
+      reglas:[{p:11,cap:'Visualización y descarga permitida, sin afectar el repositorio central'}],
+    },
+    sections:[
+      { id:'proposito', label:'Propósito y alcance',
+        lead:'Un espacio centralizado para consultar, en solo lectura, cómo operan los procesos de la institución.',
+        blocks:[
+          {type:'bullets', items:[
+            '<b>Propósito — Visualización Centralizada:</b> un único punto de verdad para consultar ágilmente cómo operan los procesos.',
+            '<b>Alcance — Acceso Universal:</b> disponible para cualquier usuario con credenciales de Daruma, sin importar sus permisos de edición.',
+            '<b>Estado — Migración Continua:</b> el sistema está en construcción constante; se actualiza automáticamente a medida que los líderes oficializan sus procesos.',
+          ]},
+        ]},
+      { id:'arquitectura', label:'Arquitectura de 3 niveles',
+        lead:'Toda la documentación institucional se organiza en una jerarquía de 3 niveles.',
+        blocks:[
+          {type:'phases', items:[
+            {n:'01',name:'Macroprocesos',desc:'Las grandes categorías o pilares institucionales (ej. Soporte Institucional).'},
+            {n:'02',name:'Procesos',desc:'Agrupaciones de actividades y metodologías dentro de un pilar (ej. Gestión Documental).'},
+            {n:'03',name:'Procedimientos',desc:'El paso a paso detallado y los diagramas de flujo (ej. Planeación y valoración documental).'},
+          ]},
+        ]},
+      { id:'acceso', label:'Ingreso al portal',
+        lead:'Esta sección aloja toda la información de carácter público e institucional disponible para consulta.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Inicie sesión en Daruma',d:'Ubique el menú principal en la barra lateral izquierda.'},
+            {t:'Seleccione la sección Portal',d:'Dentro del menú Portal, haga clic en <b>Mapa de procesos</b>.'},
+            {t:'Arquitectura de macroprocesos',d:'Seleccione esta opción para ver el mapa oficial.'},
+          ]},
+          {type:'note', kind:'warn', text:'<b>Alerta:</b> es posible que visualice entornos de prueba (como versiones 7.1). Asegúrese de seleccionar siempre el mapa principal de Arquitectura para ver la información oficial actualizada.'},
+        ]},
+      { id:'nivel1', label:'Nivel 1 · Exploración del mapa general',
+        lead:'Al ingresar, visualizará el lienzo completo de los Macroprocesos de la institución.',
+        blocks:[
+          {type:'bullets', items:['El mapa es interactivo: cada bloque funciona como un hipervínculo hacia un pilar específico.']},
+          {type:'note', kind:'tip', text:'<b>Ejemplo de navegación:</b> seleccione el bloque «Soporte Institucional» para descender al siguiente nivel.'},
+        ]},
+      { id:'nivel2', label:'Nivel 2 · Procesos y procedimientos',
+        lead:'La vista de Proceso se divide en dos paneles complementarios.',
+        blocks:[
+          {type:'roles', items:[
+            {name:'Panel Izquierdo (Navegación)',desc:'Despliega el listado completo de los Procesos (Nivel 2) que componen este macroproceso.'},
+            {name:'Panel Derecho (Contexto)',desc:'Muestra la introducción, la descripción formal y el objetivo estratégico del macroproceso seleccionado.'},
+          ]},
+          {type:'b-sub', text:'Acceso a los procedimientos específicos'},
+          {type:'steps', items:[
+            {t:'Seleccione el proceso',d:'Use el panel izquierdo para elegir el proceso específico que desea investigar.'},
+            {t:'Ejemplo',d:'Al hacer clic en <b>Gestión Documental</b>, el sistema revela instantáneamente el Nivel 3: la lista de procedimientos atados exclusivamente a ese proceso.'},
+          ]},
+        ]},
+      { id:'trazabilidad', label:'Trazabilidad y control de calidad',
+        lead:'Antes de abrir cualquier diagrama, Daruma ofrece un resumen completo de control documental.',
+        blocks:[
+          {type:'bullets', items:[
+            'Al seleccionar un procedimiento, usted puede auditar inmediatamente quién <b>elaboró</b> el documento.',
+            'Quién lo <b>revisó</b>.',
+            'Quién lo <b>aprobó</b> (firma y fecha).',
+          ]},
+          {type:'note', kind:'tip', text:'<b>Nota de versiones:</b> el mapa siempre hipervincula la última versión aprobada.'},
+        ]},
+      { id:'nivel3', label:'Nivel 3 · Diagramas de flujo (Bizagi)',
+        lead:'El paso a paso detallado de cada procedimiento se visualiza a través de Bizagi.',
+        blocks:[
+          {type:'steps', items:[
+            {t:'Hipervínculo',d:'Haga clic en el hipervínculo del procedimiento seleccionado.'},
+            {t:'Enlace directo',d:'Daruma le presentará un enlace directo para visualizar el diagrama.'},
+            {t:'Descarga segura',d:'Al hacer clic, se inicia la descarga segura del archivo. Todos los diagramas institucionales están modelados y se visualizan a través de Bizagi.'},
+          ]},
+        ]},
+      { id:'reglas', label:'Reglas del sistema',
+        lead:'La interacción con los archivos descargados es completamente segura y no destructiva.',
+        blocks:[
+          {type:'table', head:['Regla','Detalle'], rows:[
+            ['Visualización y descarga permitida','El sistema genera una copia local del archivo Bizagi en su equipo para consulta detallada.'],
+            ['Modificación del original imposible','Cualquier cambio en el archivo descargado NO afecta el repositorio central de Daruma.'],
+            ['Control de versiones automático','El mapa garantiza acceso a la versión activa; el historial se resguarda en el módulo de Documentos.'],
+          ]},
+        ]},
+      { id:'checklist', label:'Puntos clave',
+        blocks:[
+          {type:'checklist', items:[
+            'Es una herramienta de lectura institucional: explore sin miedo a alterar la información.',
+            'El mapa evoluciona orgánicamente: nuevos levantamientos aprobados aparecen automáticamente.',
+            'Siempre seleccione el mapa principal de Arquitectura, no entornos de prueba.',
+            'Antes de abrir un diagrama, revise quién elaboró, revisó y aprobó el documento.',
+          ]},
+        ]},
+    ]
+  },
+];
+
+/* ============================================================
+   PREGUNTAS GENERALES (conceptos, no pasos) — se mezclan en la
+   búsqueda para resolver dudas tipo "¿qué es...?" o "¿por qué...?"
+   ============================================================ */
+const FAQ = [
+  { id:'que-es-daruma', q:'¿Qué es Daruma?',
+    a:'Daruma es el sistema de gestión de calidad (QMS) de la institución: centraliza el registro de qué ha pasado y cómo se gestiona, en 6 módulos — Procesos, Oportunidades, Planes de Acción, Riesgos, Gestión Documental y Auditorías. Este entrenamiento cubre los 6 módulos.' },
+  { id:'que-es-riesgo', q:'¿Qué es un riesgo?',
+    a:'Un riesgo es un evento que podría afectar el cumplimiento de los objetivos de un proceso. En Daruma se gestiona con un ciclo de 6 etapas: Configuración → Identificación → Análisis → Controles → Aprobación → Supervisión. El "riesgo inherente" es la evaluación sin controles; el "riesgo residual" es lo que queda después de aplicarlos.' },
+  { id:'que-es-oportunidad', q:'¿Qué es una oportunidad de mejora?',
+    a:'Es algo que un usuario identifica como mejorable en un proceso. Se registra, se prioriza obligatoriamente (Impacto + Urgencia) y, si aplica, se conecta a un plan de acción para resolverla, con trazabilidad completa hasta su cierre.' },
+  { id:'importancia-planes', q:'¿Qué es un plan de acción y por qué es importante?',
+    a:'Un plan de acción traduce un hallazgo, riesgo u oportunidad en acciones concretas con un responsable y fechas definidas. Es importante porque, sin un plan formal, nada garantiza que el problema se resuelva: exige analizar la causa raíz, asignar un único responsable por acción, medir el avance (%) y, después de cerrado, seguir evaluando su efectividad mes a mes.' },
+  { id:'que-es-hallazgo', q:'¿Qué es un hallazgo de auditoría?',
+    a:'Es lo que un auditor identifica durante la ejecución de una auditoría: puede ser Conforme, No conforme, o una Oportunidad de mejora. Las no conformidades requieren que el auditado las acepte obligatoriamente y, casi siempre, un plan de acción para tratarlas.' },
+  { id:'entrenamiento-vs-produccion', q:'¿Cuál es la diferencia entre Entrenamiento y Producción?',
+    a:'Entrenamiento es el ambiente para practicar y aprender: todos los ejercicios de capacitación se hacen ahí. Producción es el ambiente real de la institución. Regla crítica en todos los módulos: nunca haga pruebas en Producción.' },
+  { id:'importancia-gestion-documental', q:'¿Por qué es importante la gestión documental?',
+    a:'Porque garantiza que cualquier documento institucional (manuales, instructivos, políticas) pase por un ciclo controlado de elaboración, revisión y aprobación antes de publicarse, con trazabilidad de quién hizo qué y cuándo, y un nivel de seguridad (Público, Institucional o Privado) que define quién puede verlo.' },
+];
+
+/* ============================================================
+   ESTADO + UTILIDADES
+   ============================================================ */
+let state={mod:null, sec:0, query:'', checks:{}, roleFilter:null, visited:{}};
+let lastVisit=null; /* {mod, sec} — última sección vista, restaurada de localStorage */
+
+/* ============================================================
+   PROGRESO — qué viste y dónde quedaste (persistido en el navegador)
+   ============================================================ */
+const PROGRESS_KEY='daruma_entrenamiento_progreso_v1';
+function saveProgress(){
+  try{
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+      checks:state.checks, visited:state.visited, last:lastVisit,
+    }));
+  }catch(e){}
+}
+function loadProgress(){
+  try{
+    const raw=localStorage.getItem(PROGRESS_KEY);
+    if(!raw)return;
+    const data=JSON.parse(raw);
+    state.checks=data.checks||{};
+    state.visited=data.visited||{};
+    lastVisit=data.last||null;
+  }catch(e){}
+}
+function resetProgress(){
+  if(!confirm('¿Reiniciar todo tu progreso guardado (checklist y secciones vistas)?'))return;
+  state.checks={}; state.visited={}; lastVisit=null;
+  try{localStorage.removeItem(PROGRESS_KEY);}catch(e){}
+  if(state.mod){renderMaster();renderDetail();}else{renderCards();}
+  renderKpis();
+}
+function moduleProgress(m){
+  const total=m.sections.length;
+  let seen=0;
+  m.sections.forEach((s,i)=>{ if(state.visited[m.id+'-'+i])seen++; });
+  return {seen,total};
+}
+function renderKpis(){
+  const ready=MODULES.filter(m=>m.status==='ready');
+  let secciones=0, vistas=0;
+  ready.forEach(m=>{ const p=moduleProgress(m); secciones+=p.total; vistas+=p.seen; });
+  document.getElementById('kpiModulos').textContent=MODULES.length;
+  document.getElementById('kpiDisponibles').textContent=ready.length;
+  document.getElementById('kpiSecciones').textContent=secciones;
+  document.getElementById('kpiVistas').textContent=vistas;
+}
+function markVisited(m,i){
+  state.visited[m.id+'-'+i]=true;
+  lastVisit={mod:m.id, sec:i};
+  saveProgress();
+  renderKpis();
+  // Auto-otorgar insignia cuando se completan todas las secciones del módulo
+  try{
+    const p=moduleProgress(m);
+    if(p.seen>=p.total && typeof window.markModuleComplete==='function'){
+      window.markModuleComplete(m.id);
+    }
+  }catch{}
+}
+const cardGrid=document.getElementById('cardGrid');
+const master=document.getElementById('master');
+const detail=document.getElementById('detail');
+const bodyEl=document.getElementById('body');
+const qInput=document.getElementById('q');
+const clearBtn=document.getElementById('clearBtn');
+
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+/* ============================================================
+   TEMA — claro / oscuro (persistido en el navegador)
+   ============================================================ */
+const THEME_KEY='daruma_theme';
+const ICON_SUN='<circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>';
+const ICON_MOON='<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>';
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t==='light'?'light':'dark');
+  try{localStorage.setItem(THEME_KEY,t);}catch(e){}
+  const btn=document.getElementById('themeToggle');
+  const icon=document.getElementById('themeIcon');
+  if(!btn||!icon)return;
+  if(t==='light'){
+    icon.innerHTML=ICON_MOON;
+    btn.title='Cambiar a modo oscuro'; btn.setAttribute('aria-label','Cambiar a modo oscuro');
+  }else{
+    icon.innerHTML=ICON_SUN;
+    btn.title='Cambiar a modo claro'; btn.setAttribute('aria-label','Cambiar a modo claro');
+  }
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+  applyTheme(cur);
+}
+function initTheme(){
+  let t='dark';
+  try{ t=localStorage.getItem(THEME_KEY)||'dark'; }catch(e){}
+  applyTheme(t);
+  const btn=document.getElementById('themeToggle');
+  if(btn)btn.addEventListener('click',toggleTheme);
+}
+/* hace que un <div> clicable sea alcanzable y operable por teclado (Tab + Enter/Espacio) */
+function makeClickable(el,handler,role){
+  el.tabIndex=0;
+  el.setAttribute('role',role||'button');
+  el.addEventListener('click',handler);
+  el.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handler(e); }
+  });
+}
+/* resalta query respetando el HTML embebido en el contenido (solo resalta texto plano) */
+function hl(html,q){
+  if(!q)return html;
+  try{
+    const rx=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig');
+    return html.replace(/>([^<]+)</g,(m,txt)=>'>'+txt.replace(rx,'<mark>$1</mark>')+'<');
+  }catch(e){return html;}
+}
+function textOf(sec){
+  let t=sec.label+' '+(sec.lead||'');
+  (sec.blocks||[]).forEach(b=>{
+    if(b.text)t+=' '+b.text;
+    (b.items||[]).forEach(it=>{ t+=' '+(typeof it==='string'?it:(it.name||'')+' '+(it.desc||'')+' '+(it.t||'')+' '+(it.d||'')); });
+    (b.rows||[]).forEach(r=>t+=' '+r.join(' '));
+    (b.head||[]).forEach(h=>t+=' '+h);
+  });
+  return t.toLowerCase();
+}
+
+/* ============================================================
+   BÚSQUEDA INTELIGENTE (sin IA, 100% en el navegador)
+   - ignora acentos y mayúsculas
+   - ignora palabras de relleno (cómo, el, de, para…)
+   - empareja por prefijo para tolerar conjugaciones (cierro/cierre/cerrar)
+   ============================================================ */
+const STOPWORDS=new Set(['de','la','el','los','las','un','una','unos','unas','y','o','a','en','por','para',
+  'con','su','sus','que','es','esta','está','como','cómo','qué','que','cual','cuál','se','lo','le','les',
+  'del','al','mi','tu','si','no','sobre','entre','sin','puedo','debo','hay','hace','tiene','desde','hasta']);
+function normalize(s){
+  return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+function queryTokens(q){
+  return normalize(q).split(/[^a-z0-9]+/).filter(t=>t.length>=3 && !STOPWORDS.has(t));
+}
+function sectionScore(qTokens,m,sec){
+  if(!qTokens.length)return 0;
+  const labelN=normalize(sec.label);
+  const titleN=normalize(m.title);
+  const bodyN=normalize(textOf(sec));
+  let score=0;
+  qTokens.forEach(tk=>{
+    const stem=tk.slice(0,Math.min(5,tk.length));
+    if(labelN.includes(tk))score+=6;
+    else if(labelN.includes(stem))score+=3;
+    if(bodyN.includes(tk))score+=2;
+    else if(bodyN.includes(stem))score+=1;
+    if(titleN.includes(tk))score+=1; /* nudge suave hacia el módulo correcto, sin diluir el ranking por sección */
+  });
+  return score;
+}
+function snippetOf(sec){
+  if(sec.lead)return sec.lead;
+  for(const b of (sec.blocks||[])){
+    if(b.text)return b.text;
+    if(b.items&&b.items.length){
+      const it=b.items[0];
+      return typeof it==='string'?it:(it.d||it.desc||it.t||it.name||'');
+    }
+  }
+  return '';
+}
+function faqScore(qTokens,item){
+  if(!qTokens.length)return 0;
+  const qN=normalize(item.q);
+  const aN=normalize(item.a);
+  let score=0;
+  qTokens.forEach(tk=>{
+    const stem=tk.slice(0,Math.min(5,tk.length));
+    if(qN.includes(tk))score+=6;
+    else if(qN.includes(stem))score+=3;
+    if(aN.includes(tk))score+=2;
+    else if(aN.includes(stem))score+=1;
+  });
+  return score;
+}
+function globalSearch(q){
+  const qTokens=queryTokens(q);
+  if(!qTokens.length)return [];
+  const out=[];
+  /* el FAQ se inserta primero: en empate de puntaje, una respuesta directa
+     a "¿qué es...?" gana sobre un paso que solo menciona la palabra de paso */
+  FAQ.forEach(item=>{
+    const score=faqScore(qTokens,item);
+    if(score>0)out.push({type:'faq',item,score});
+  });
+  MODULES.forEach(m=>{
+    if(m.status!=='ready')return;
+    m.sections.forEach((sec,i)=>{
+      const score=sectionScore(qTokens,m,sec);
+      if(score>0)out.push({type:'section',m,sec,i,score});
+    });
+  });
+  out.sort((a,b)=>b.score-a.score);
+  return out.slice(0,8);
+}
+function renderSearchResults(q){
+  const box=document.getElementById('searchResults');
+  const label=document.getElementById('resultsLabel');
+  const results=globalSearch(q);
+  const qn=normalize(q);
+  cardGrid.hidden=true; box.hidden=false;
+  label.textContent=`Resultados para "${q}"`;
+  if(!results.length){
+    box.innerHTML=`<div class="no-results">Sin resultados para “${esc(q)}”. Probá con otra palabra (ej. el nombre del módulo, un rol, un concepto como "riesgo", o una acción como "guardar", "aprobar", "cerrar").</div>`;
+    return;
+  }
+  box.innerHTML=results.map(r=>{
+    if(r.type==='faq'){
+      return `<div class="result-item faq">
+        <div class="result-ic"><svg viewBox="0 0 24 24">${IC.info}</svg></div>
+        <div>
+          <div class="result-mod">Concepto general</div>
+          <div class="result-label">${hl(esc(r.item.q),qn)}</div>
+          <div class="result-snip full">${hl(esc(r.item.a),qn)}</div>
+        </div>
+      </div>`;
+    }
+    const {m,sec,i}=r;
+    return `<div class="result-item" style="--rc:${m.color}" data-mod="${m.id}" data-sec="${i}">
+      <div class="result-ic"><svg viewBox="0 0 24 24">${m.icon}</svg></div>
+      <div>
+        <div class="result-mod">${m.id==='procesos'?esc(m.title):`Módulo ${m.n} · ${esc(m.title)}`}</div>
+        <div class="result-label">${hl(esc(sec.label),qn)}</div>
+        <div class="result-snip">${hl(esc(snippetOf(sec)),qn)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.result-item[data-mod]').forEach(el=>{
+    makeClickable(el,()=>{
+      qInput.value='';state.query='';clearBtn.style.display='none';
+      openModule(el.dataset.mod,parseInt(el.dataset.sec,10));
+    });
+  });
+}
+
+/* ============================================================
+   HOME — tarjetas
+   ============================================================ */
+function renderCards(){
+  document.getElementById('searchResults').hidden=true;
+  cardGrid.hidden=false;
+  document.getElementById('resultsLabel').textContent='Módulos del entrenamiento';
+  cardGrid.innerHTML='';
+  MODULES.forEach(m=>{
+    const ready=m.status==='ready';
+    const c=document.createElement('div');
+    c.className='card '+(ready?'ready':'soon');
+    c.style.setProperty('--cc',m.color);
+    const nSec=m.sections.length;
+    const prog=ready?moduleProgress(m):null;
+    const pct=prog&&prog.total?Math.round(prog.seen/prog.total*100):0;
+    const progressHtml=ready?`
+      <div class="card-progress">
+        <div class="card-progress-bar"><div class="card-progress-fill" style="width:${pct}%"></div></div>
+        <span>${pct===100?'Completo 🎉':`${prog.seen}/${prog.total} vistas`}</span>
+      </div>`:'';
+    c.innerHTML=`
+      <div class="card-top">
+        <div class="card-ic"><svg viewBox="0 0 24 24">${m.icon}</svg></div>
+        <div>
+          ${m.id==='procesos'?'':`<div class="card-n">MÓDULO ${m.n}</div>`}
+          <h3>${esc(m.title)}</h3>
+          <div class="marco">${esc(m.marco)}</div>
+        </div>
+      </div>
+      <p>${esc(m.summary)}</p>
+      ${ready?`<div class="meta"><span class="pill">${nSec} secciones</span><span class="pill">${esc(m.md)}</span></div>`:''}
+      ${progressHtml}
+      <div class="card-foot">
+        <span class="badge ${ready?'ok':'wip'} cs-tip" data-tip="${ready?'Este módulo ya tiene contenido publicado — puedes abrirlo ahora.':'Este módulo todavía está en preparación por el equipo CESA.'}">${ready?'Disponible':'Próximamente'}</span>
+        ${ready?`<span class="go">Abrir instructivo →</span>`:`<span class="go" style="color:var(--txt-faint)">En preparación</span>`}
+      </div>`;
+    if(ready)makeClickable(c,()=>openModule(m.id));
+    cardGrid.appendChild(c);
+  });
+  renderContinueBox();
+}
+function renderContinueBox(){
+  const box=document.getElementById('continueBox');
+  const m=lastVisit&&MODULES.find(x=>x.id===lastVisit.mod&&x.status==='ready');
+  if(!m||!m.sections[lastVisit.sec]){ box.innerHTML=''; return; }
+  const s=m.sections[lastVisit.sec];
+  box.innerHTML=`
+    <div class="continue-card" style="--cc:${m.color}" id="continueBtn">
+      <div class="cc-ic"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg></div>
+      <div class="cc-tx">
+        <div class="cc-lbl">Continuar donde quedaste</div>
+        <div class="cc-name">${esc(m.title)} → ${esc(s.label)}</div>
+      </div>
+      <span class="cc-go">Continuar →</span>
+    </div>`;
+  makeClickable(document.getElementById('continueBtn'),()=>openModule(m.id,lastVisit.sec));
+}
+
+/* ============================================================
+   MÓDULO — master + detalle
+   ============================================================ */
+function openModule(id,sec=0){
+  if(state.mod!==id) state.roleFilter=null;
+  state.mod=id; state.sec=sec;
+  document.getElementById('homeView').hidden=true;
+  document.getElementById('moduleView').hidden=false;
+  document.getElementById('lnkHome').classList.remove('on');
+  renderMaster(); renderDetail();
+  bodyEl.classList.add('show-detail');
+}
+function showHome(){
+  state.mod=null;
+  document.getElementById('homeView').hidden=false;
+  document.getElementById('moduleView').hidden=true;
+  document.getElementById('lnkHome').classList.add('on');
+  bodyEl.classList.remove('show-detail');
+  updateHomeSearch(qInput.value);
+}
+function curMod(){return MODULES.find(m=>m.id===state.mod);}
+
+function renderMaster(){
+  const m=curMod(); if(!m)return;
+  const q=state.query.trim().toLowerCase();
+  master.style.setProperty('--mc',m.color);
+  const roleNames=moduleRoleNames(m);
+  let secs=m.sections.map((s,i)=>({s,i}));
+  if(q)secs=secs.filter(({s})=>textOf(s).includes(q));
+  if(state.roleFilter)secs=secs.filter(({s})=>sectionRoles(s).includes(state.roleFilter));
+  const chipsHtml=roleNames.length?`
+    <div class="role-filter">
+      <button class="rchip ${state.roleFilter?'':'on'}" data-role="" style="--rc:${m.color}">Todos</button>
+      ${roleNames.map(rn=>`<button class="rchip ${state.roleFilter===rn?'on':''}" data-role="${esc(rn)}" style="--rc:${roleColor(m,rn)}">${esc(rn)}</button>`).join('')}
+    </div>`:'';
+  const prog=moduleProgress(m);
+  const pct=prog.total?Math.round(prog.seen/prog.total*100):0;
+  master.innerHTML=`
+    <div class="m-head">
+      <div class="mt">
+        <div class="ic" style="--mc:${m.color}"><svg viewBox="0 0 24 24">${m.icon}</svg></div>
+        <div>
+          <h2>${esc(m.title)}</h2>
+          <div class="sm">${m.id==='procesos'?`${m.sections.length} secciones`:`Módulo ${m.n} · ${m.sections.length} secciones`}</div>
+        </div>
+      </div>
+      <div class="m-progress">
+        <div class="m-progress-bar"><div class="m-progress-fill" style="width:${pct}%"></div></div>
+        <span class="m-progress-txt">${prog.seen}/${prog.total} vistas${pct===100?' · ¡Completo! 🎉':''}</span>
+      </div>
+      ${chipsHtml}
+    </div>`;
+  master.querySelectorAll('.rchip').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.roleFilter=btn.dataset.role||null;
+      renderMaster();
+    });
+  });
+  if(!secs.length){
+    master.innerHTML+=`<div class="no-results">Sin coincidencias${state.roleFilter?` para el rol «${esc(state.roleFilter)}»`:''}${q?` y “${esc(q)}”`:''} en este módulo.</div>`;
+    return;
+  }
+  secs.forEach(({s,i})=>{
+    const it=document.createElement('div');
+    const seen=!!state.visited[m.id+'-'+i];
+    it.className='nav-item'+(i===state.sec?' active':'')+(seen?' seen':'');
+    it.style.setProperty('--mc',m.color);
+    const rls=sectionRoles(s);
+    const dotsHtml=rls.length?`<span class="nav-roles">${rls.map(rn=>`<span class="rdotsm" style="background:${roleColor(m,rn)}" title="${esc(rn)}"></span>`).join('')}</span>`:'';
+    const numHtml=seen&&i!==state.sec?`<svg viewBox="0 0 24 24" class="nav-check"><path d="M5 12l5 5L20 7"/></svg>`:i+1;
+    it.innerHTML=`<span class="nav-num">${numHtml}</span><span class="nav-name">${hl(esc(s.label),q)}</span>${dotsHtml}`;
+    makeClickable(it,()=>{state.sec=i;renderMaster();renderDetail();bodyEl.classList.add('show-detail');});
+    master.appendChild(it);
+  });
+}
+
+function renderBlock(b,m,q){
+  if(b.type==='b-sub')return `<div class="b-label">${hl(esc(b.text),q)}</div>`;
+  if(b.type==='lead')return `<p class="d-lead">${hl(esc(b.text),q)}</p>`;
+  if(b.type==='note'){
+    const ic={tip:'💡',warn:'⚠️',crit:'🚨',lock:'🔒'}[b.kind]||'•';
+    return `<div class="note ${b.kind}"><div class="ni">${ic}</div><div>${hl(b.text,q)}</div></div>`;
+  }
+  if(b.type==='steps'){
+    return `<div class="steps">${b.items.map((s,i)=>`
+      <div class="step"><span class="sn">${i+1}</span><div><div class="st">${hl(esc(s.t),q)}</div><div class="sd">${hl(s.d,q)}</div></div></div>`).join('')}</div>`;
+  }
+  if(b.type==='bullets'){
+    return `<div class="bullets">${b.items.map(t=>`<div class="bl"><span class="dotb"></span><span>${hl(t,q)}</span></div>`).join('')}</div>`;
+  }
+  if(b.type==='phases'){
+    return `<div class="flow">${b.items.map(p=>`
+      <div class="ph"><div class="pn">FASE ${p.n}</div><div class="pname">${hl(esc(p.name),q)}</div><div class="pd">${hl(esc(p.desc),q)}</div></div>`).join('')}</div>`;
+  }
+  if(b.type==='roles'){
+    return `<div class="roles">${b.items.map((r,i)=>`
+      <div class="role" style="--rcolor:${RHEX[i%RHEX.length]}"><div class="rname"><span class="rdot"></span>${hl(esc(r.name),q)}</div><div class="rd">${hl(esc(r.desc),q)}</div></div>`).join('')}</div>`;
+  }
+  if(b.type==='table'){
+    const head=b.head.map(h=>`<th>${hl(esc(h),q)}</th>`).join('');
+    const rows=b.rows.map(r=>`<tr>${r.map((c,ci)=>ci===0?`<td class="rowh">${hl(esc(c),q)}</td>`:`<td>${hl(esc(c),q)}</td>`).join('')}</tr>`).join('');
+    return `<table class="tbl"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+  }
+  if(b.type==='checklist'){
+    return `<div class="check">${b.items.map((t,i)=>{
+      const key=m.id+'-'+state.sec+'-'+i;const done=state.checks[key];
+      return `<div class="ck${done?' done':''}" data-k="${key}" role="checkbox" aria-checked="${done?'true':'false'}" tabindex="0"><span class="box"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><span class="ctxt">${hl(esc(t),q)}</span></div>`;
+    }).join('')}</div>`;
+  }
+  return '';
+}
+
+function renderDetail(){
+  const m=curMod(); if(!m)return;
+  const q=state.query.trim().toLowerCase();
+  const s=m.sections[state.sec];
+  detail.style.setProperty('--mc',m.color);
+  markVisited(m,state.sec);
+  const blocksHtml=(s.blocks||[]).map(b=>renderBlock(b,m,q)).join('');
+  const prev=state.sec>0?m.sections[state.sec-1]:null;
+  const next=state.sec<m.sections.length-1?m.sections[state.sec+1]:null;
+  /* barra del PDF de apoyo (nivel módulo) */
+  const pdfBar = m.pdf?`
+    <div class="pdfbar">
+      <div class="pdfic"><svg viewBox="0 0 24 24"><path d="M14 3v5h5M7 3h8l5 5v13H7z"/><path d="M9 13h6M9 17h4"/></svg></div>
+      <div class="pdftx"><b>${esc(m.pdfName||'Documento de apoyo (PDF)')}</b><span>PDF oficial${m.pdfPages?` · ${m.pdfPages} diapositivas`:''} · consulta la guía completa</span></div>
+      <div class="pdfbtns">
+        <a class="btn primary" href="${m.pdf}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M21 14v7H3V3h7"/></svg>Abrir PDF</a>
+        <button class="btn" onclick="togglePdf('${m.pdf}')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>Ver aquí</button>
+        <a class="btn" href="${m.pdf}" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Descargar</a>
+      </div>
+    </div>
+    <div class="pdfembed" id="pdfEmbed" hidden></div>`:'';
+  /* referencias visuales de la sección (imágenes extraídas del PDF) */
+  const figList=(m.pages&&m.imgDir&&m.pages[s.id])||[];
+  const figsHtml=figList.length?`
+    <div class="block">
+      <div class="b-label">Referencias visuales · tomadas del PDF de apoyo</div>
+      <div class="figs">${figList.map(f=>{
+        const src=`${m.imgDir}/${m.imgPrefix}-${String(f.p).padStart(2,'0')}.jpg`;
+        return `<figure class="fig" data-src="${src}" data-cap="${esc(f.cap)} · pág. ${f.p}">
+          <div class="fim"><img loading="lazy" src="${src}" alt="${esc(f.cap)}"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5M11 8v6M8 11h6"/></svg></span></div>
+          <figcaption class="fcap"><span class="pn">P${f.p}</span><span>${hl(esc(f.cap),q)}</span></figcaption>
+        </figure>`;
+      }).join('')}</div>
+    </div>`:'';
+  detail.innerHTML=`
+    <div class="d-wrap">
+      <button class="back-home" onclick="showHome()">↩ Todos los módulos</button>
+      <button class="back-mobile" onclick="bodyEl.classList.remove('show-detail')">‹ Secciones</button>
+      <div class="d-crumb">
+        ${m.id==='procesos'?`<span class="ci"><b style="background:${m.color}"></b>${esc(m.title)}</span>`:`<span class="ci"><b style="background:${m.color}"></b>Módulo ${m.n}</span>
+        <span class="arr">›</span><span>${esc(m.title)}</span>`}
+        <span class="arr">›</span><span>Sección ${state.sec+1}/${m.sections.length}</span>
+      </div>
+      <h1 class="d-title">${esc(s.label)}<span class="accent-bar" style="background:${m.color}"></span></h1>
+      ${sectionRoles(s).length?`<div class="role-badges">${sectionRoles(s).map(rn=>`<span class="role-badge" style="--rc:${roleColor(m,rn)}"><span class="rbdot"></span>${esc(rn)}</span>`).join('')}</div>`:''}
+      ${s.lead?`<p class="d-lead">${hl(esc(s.lead),q)}</p>`:''}
+      ${pdfBar}
+      ${figsHtml}
+      ${blocksHtml}
+      <div class="pager">
+        <button class="prev" ${prev?'':'disabled'} ${prev?`onclick="openModule('${m.id}',${state.sec-1})"`:''}>
+          <span class="pl">‹ Anterior</span><span class="pv">${prev?esc(prev.label):'—'}</span></button>
+        <button class="next" ${next?'':'disabled'} ${next?`onclick="openModule('${m.id}',${state.sec+1})"`:''}>
+          <span class="pl">Siguiente ›</span><span class="pv">${next?esc(next.label):'—'}</span></button>
+      </div>
+      <div class="foot">
+        Documentos de apoyo: <a href="${m.md}" target="_blank">${esc(m.md)}</a>${m.pdf?` · <a href="${m.pdf}" target="_blank">PDF oficial</a>`:''} ·
+        Contexto: ${esc(m.proceso)}<br>
+        <a href="arquitectura-macroprocesos.html">Macroprocesos</a> ·
+        <a href="README.md">Índice del entrenamiento</a>
+      </div>
+    </div>`;
+  /* checklist interactivo */
+  detail.querySelectorAll('.ck').forEach(ck=>{
+    const toggle=()=>{
+      const k=ck.dataset.k;state.checks[k]=!state.checks[k];
+      ck.classList.toggle('done');
+      ck.setAttribute('aria-checked',state.checks[k]?'true':'false');
+      saveProgress();
+    };
+    ck.addEventListener('click',toggle);
+    ck.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+  });
+  /* referencias visuales → lightbox */
+  detail.querySelectorAll('.fig').forEach((f,i)=>makeClickable(f,()=>openLightbox(i)));
+  detail.scrollTop=0;
+}
+
+/* ============================================================
+   PDF EMBEBIDO + LIGHTBOX
+   ============================================================ */
+function togglePdf(src){
+  const box=document.getElementById('pdfEmbed'); if(!box)return;
+  if(box.hidden){
+    box.hidden=false;
+    box.innerHTML=`<embed src="${src}#toolbar=1&navpanes=0&view=FitH" type="application/pdf">`;
+    box.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }else{ box.hidden=true; box.innerHTML=''; }
+}
+
+let lbList=[], lbIdx=0;
+function openLightbox(idx){
+  lbList=[...detail.querySelectorAll('.fig')].map(f=>({src:f.dataset.src,cap:f.dataset.cap}));
+  lbIdx=idx; showLb();
+  document.getElementById('lightbox').classList.add('on');
+}
+function showLb(){
+  const it=lbList[lbIdx]; if(!it)return;
+  document.getElementById('lbImg').src=it.src;
+  document.getElementById('lbImg').alt=it.cap;
+  document.getElementById('lbCap').textContent=it.cap;
+  const multi=lbList.length>1;
+  document.getElementById('lbPrev').style.display=multi?'grid':'none';
+  document.getElementById('lbNext').style.display=multi?'grid':'none';
+}
+function closeLb(){document.getElementById('lightbox').classList.remove('on');}
+function lbStep(d){lbIdx=(lbIdx+d+lbList.length)%lbList.length;showLb();}
+document.getElementById('lbClose').addEventListener('click',closeLb);
+document.getElementById('lbPrev').addEventListener('click',()=>lbStep(-1));
+document.getElementById('lbNext').addEventListener('click',()=>lbStep(1));
+document.getElementById('lightbox').addEventListener('click',e=>{if(e.target.id==='lightbox')closeLb();});
+
+/* ============================================================
+   BÚSQUEDA + ATAJOS
+   ============================================================ */
+qInput.addEventListener('input',e=>{
+  state.query=e.target.value;
+  clearBtn.style.display=e.target.value?'block':'none';
+  if(state.mod){renderMaster();}
+  else{ updateHomeSearch(e.target.value); }
+});
+clearBtn.addEventListener('click',()=>{qInput.value='';state.query='';clearBtn.style.display='none';
+  if(state.mod)renderMaster();else updateHomeSearch('');qInput.focus();});
+
+function updateHomeSearch(q){
+  const query=q.trim();
+  renderContinueBox();
+  if(!query){renderCards();return;}
+  renderSearchResults(query);
+}
+
+document.addEventListener('keydown',e=>{
+  /* lightbox tiene prioridad cuando está abierto */
+  if(document.getElementById('lightbox').classList.contains('on')){
+    if(e.key==='Escape')closeLb();
+    if(e.key==='ArrowRight')lbStep(1);
+    if(e.key==='ArrowLeft')lbStep(-1);
+    return;
+  }
+  if(e.key==='/'&&document.activeElement!==qInput){e.preventDefault();qInput.focus();}
+  if(e.key==='Escape'){
+    if(state.query){qInput.value='';state.query='';clearBtn.style.display='none';if(state.mod)renderMaster();else updateHomeSearch('');}
+    else if(state.mod){showHome();}
+    else qInput.blur();
+  }
+  if(state.mod&&(e.key==='ArrowRight'||e.key==='ArrowLeft')&&document.activeElement!==qInput){
+    const m=curMod();
+    if(e.key==='ArrowRight'&&state.sec<m.sections.length-1)openModule(m.id,state.sec+1);
+    if(e.key==='ArrowLeft'&&state.sec>0)openModule(m.id,state.sec-1);
+  }
+});
+
+/* init */
+initTheme();
+loadProgress();
+renderKpis();
+renderCards();
+</script>
+<!-- Tracking Daruma → Lovable Cloud -->
+<script type="module">
+(async () => {
+  const SUPABASE_URL = "https://mbvubjijrgcgnbxztbvy.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idnViamlqcmdjZ25ieHp0YnZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjc1NzQsImV4cCI6MjA5ODk0MzU3NH0.PltsAos0prjHtzawopdfgEwRvT1eqdNFiPAEYqjMce8";
+  const STORAGE_KEY = "sb-mbvubjijrgcgnbxztbvy-auth-token";
+
+  const readSession = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      const token = parsed?.access_token || parsed?.currentSession?.access_token;
+      const user  = parsed?.user || parsed?.currentSession?.user;
+      if (!token || !user) return null;
+      return { token, user };
+    } catch { return null; }
+  };
+
+  // El tooltip de bienvenida debe verlo cualquiera (con o sin cuenta), así que se dispara aquí,
+  // antes de los chequeos de sesión/acceso.
+  if (typeof cesaShowIntro === 'function') {
+    cesaShowIntro('entrenamiento', {
+      eyebrow: 'Cómo usar esta página',
+      title: 'Entrenamiento Daruma',
+      items: [
+        'Cada tarjeta es un módulo — ábrelo para aprender a operar Daruma paso a paso.',
+        'Todos los módulos están disponibles para cualquier visitante, sin necesidad de iniciar sesión.',
+        'Si inicias sesión con una cuenta autorizada, tu progreso se guarda automáticamente y verás una insignia al completar cada módulo.',
+        'Los módulos marcados "Próximamente" siguen en preparación por el equipo CESA.'
+      ]
+    });
+  }
+
+  // Todos los módulos son de acceso libre (renderCards()/openModule() ya no bloquean nada por sesión).
+  // Lo que sigue de aquí en adelante es solo tracking/insignias — opcional, requiere sesión autorizada.
+  const session = readSession();
+  if (!session) return;
+
+  // Verificar autorización: profile.training_access O correo en allowlist
+  let hasAccess = false;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&select=training_access`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${session.token}` },
+    });
+    const rows = await res.json();
+    hasAccess = !!(rows && rows[0] && rows[0].training_access);
+  } catch { hasAccess = false; }
+
+  // Si el perfil no tiene el flag pero el correo está pre-autorizado, activarlo automáticamente
+  if (!hasAccess && session.user.email) {
+    try {
+      const em = encodeURIComponent(session.user.email.toLowerCase());
+      const r2 = await fetch(`${SUPABASE_URL}/rest/v1/training_allowlist?email=eq.${em}&select=email`, {
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${session.token}` },
+      });
+      const allow = await r2.json();
+      if (allow && allow[0]) {
+        hasAccess = true;
+        // Sincronizar el flag en el perfil
+        fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}`, {
+          method: "PATCH",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${session.token}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal",
+          },
+          body: JSON.stringify({ training_access: true }),
+        }).catch(() => {});
+      }
+    } catch {}
+  }
+
+  // Sin training_access no hay tracking/insignias para esta cuenta, pero el contenido ya es
+  // de acceso libre igual — no hace falta bloquear nada aquí.
+  if (!hasAccess) return;
+
+  const post = async (table, row) => {
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${session.token}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates,return=minimal",
+        },
+        body: JSON.stringify(row),
+      });
+      if (!r.ok) { console.warn("[daruma] POST", table, r.status, await r.text()); return false; }
+      return true;
+    } catch(e){ console.warn("[daruma] POST error", table, e); return false; }
+  };
+
+  const logVisit = (section) =>
+    post("training_visits", { user_id: session.user.id, page: "entrenamiento-daruma", section: section || null });
+
+  // Visita inicial
+  logVisit(null);
+
+  // Interceptar showHome() y openModule() del script existente
+  const origShowHome = window.showHome;
+  window.showHome = function () { logVisit("home"); return origShowHome && origShowHome.apply(this, arguments); };
+
+  const origOpen = window.openModule;
+  window.openModule = function (mod, sec) {
+    logVisit(mod + (sec !== undefined ? ":" + sec : ""));
+    return origOpen && origOpen.apply(this, arguments);
+  };
+
+  // ---------- INSIGNIAS por módulo ----------
+  const BADGES = {
+    documentos:    { url:"/__l5e/assets-v1/6f863b50-b58f-4d89-9e26-eb8bcdacacf6/insignia-1.svg", label:"Maestro Documental",    color:"#004BFF" },
+    riesgos:       { url:"/__l5e/assets-v1/5d21872c-a3c5-4322-a510-fcc6f16df8cd/insignia-2.svg", label:"Guardián del Riesgo",   color:"#FFB22E" },
+    planes:        { url:"/__l5e/assets-v1/cd7bdd0a-ecde-4425-bc50-6818c31a7dcc/insignia-3.svg", label:"Estratega de Planes",   color:"#27D2AA" },
+    oportunidades: { url:"/__l5e/assets-v1/cef17eea-32e9-4277-ae4c-839098ea75ab/insignia-4.svg", label:"Impulsor de Mejora",    color:"#4427D2" },
+    auditorias:    { url:"/__l5e/assets-v1/56f754eb-5429-4d14-a10d-4ee85baed705/insignia-5.svg", label:"Auditor Experto",       color:"#D227B6" },
+    procesos:      { url:"/__l5e/assets-v1/77784f1f-1291-4d11-b410-35f219931b73/insignia-6.svg", label:"Arquitecto de Procesos", color:"#27C3D2" },
+  };
+  const MASTER_BADGE = { url:"/__l5e/assets-v1/3cce5de7-1a76-4aac-a849-b893abe794b8/insignia-7.svg", label:"Maestro Daruma · Ruta Completa", color:"#F2661A" };
+  const TOTAL_MODULES = Object.keys(BADGES).length;
+
+  const earned = new Set();
+
+  const fetchEarned = async () => {
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/module_completions?user_id=eq.${session.user.id}&select=module_slug`, {
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${session.token}` },
+      });
+      const rows = await r.json();
+      earned.clear();
+      (rows || []).forEach(x => earned.add(x.module_slug));
+      renderBadgeStrip();
+    } catch {}
+  };
+
+  const showBadgeAward = (badge, isMaster) => {
+    const ov = document.createElement("div");
+    ov.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(6px);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;font:400 15px/1.5 Outfit,system-ui,sans-serif";
+    ov.innerHTML = `
+      <div style="max-width:420px;width:100%;background:#fff;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.35);position:relative;overflow:hidden;animation:dkBadgeIn .5s cubic-bezier(.16,1,.3,1)">
+        <style>
+          @keyframes dkBadgeIn{from{opacity:0;transform:translateY(24px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+          @keyframes dkBadgeSpin{0%{transform:rotate(-25deg) scale(.4);opacity:0}60%{transform:rotate(8deg) scale(1.15);opacity:1}100%{transform:rotate(0) scale(1)}}
+          @keyframes dkGlow{0%,100%{box-shadow:0 0 0 0 ${badge.color}55}50%{box-shadow:0 0 0 22px ${badge.color}00}}
+        </style>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:${badge.color};text-transform:uppercase;margin-bottom:6px">
+          ${isMaster ? "🏆 Logro máximo" : "🎉 Insignia obtenida"}
+        </div>
+        <h2 style="font-size:24px;font-weight:700;color:#0f172a;margin:0 0 22px">${badge.label}</h2>
+        <div style="width:140px;height:140px;margin:0 auto 22px;border-radius:50%;background:${badge.color}15;display:flex;align-items:center;justify-content:center;animation:dkGlow 2s ease-in-out infinite">
+          <img src="${badge.url}" alt="${badge.label}" style="width:96px;height:96px;animation:dkBadgeSpin .8s cubic-bezier(.16,1,.3,1)">
+        </div>
+        <p style="color:#475569;margin:0 0 22px;font-size:14px">
+          ${isMaster
+            ? "Completaste los 6 módulos del Entrenamiento Daruma. Dominas por completo la operación de la plataforma."
+            : "Reconocimiento por haber completado este módulo del Entrenamiento Daruma."}
+        </p>
+        <button id="dk-badge-close" style="background:${badge.color};color:#fff;border:0;padding:10px 28px;border-radius:8px;cursor:pointer;font:500 14px Outfit">Continuar</button>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector("#dk-badge-close").onclick = () => ov.remove();
+    ov.onclick = (e) => { if (e.target === ov) ov.remove(); };
+  };
+
+  const renderBadgeStrip = () => {
+    const strip = document.getElementById("dk-badge-strip");
+    if (!strip) return;
+    const items = Object.entries(BADGES).map(([slug, b]) => {
+      const has = earned.has(slug);
+      return `<div title="${b.label}${has?"":" (bloqueada)"}" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;${has?"":"filter:grayscale(1);opacity:.35"}">
+        <img src="${b.url}" alt="${b.label}" style="width:22px;height:22px">
+      </div>`;
+    }).join("");
+    const allDone = earned.size >= TOTAL_MODULES;
+    const master = `<div title="${MASTER_BADGE.label}${allDone?"":" (se otorga al completar los 6 módulos)"}" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin-left:6px;padding-left:8px;border-left:1px solid #e5e7eb;${allDone?"":"filter:grayscale(1);opacity:.35"}">
+      <img src="${MASTER_BADGE.url}" alt="${MASTER_BADGE.label}" style="width:24px;height:24px">
+    </div>`;
+    strip.innerHTML = `<span style="font-size:11px;color:#64748b;font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-right:4px">Insignias ${earned.size}/${TOTAL_MODULES}</span>${items}${master}`;
+  };
+
+  // Barra inferior: estado + insignias + botón "completar módulo"
+  const bar = document.createElement("div");
+  bar.style.cssText = "position:fixed;bottom:14px;right:14px;background:#fff;border:1px solid #e5e7eb;padding:8px 12px;border-radius:12px;font:500 12px/1.4 Outfit,system-ui;box-shadow:0 -4px 20px rgba(0,0,0,.12);z-index:9999;display:flex;gap:10px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 28px)";
+  bar.innerHTML = `<span style="color:#64748b">Registrado como <b style="color:#013998">${session.user.email || "usuario"}</b></span>
+    <div id="dk-badge-strip" style="display:flex;gap:4px;align-items:center;padding:2px 4px"></div>
+    <button id="dk-complete" style="background:#013998;color:#fff;border:0;padding:5px 12px;border-radius:6px;cursor:pointer;font:500 12px Outfit">✓ Completar módulo</button>
+    <a href="/admin" style="color:#013998;text-decoration:none">Panel</a>`;
+  document.body.appendChild(bar);
+
+  fetchEarned();
+
+  const awardBadgeFor = async (slug) => {
+    const isNew = !earned.has(slug);
+    await post("module_completions", { user_id: session.user.id, module_slug: slug });
+    earned.add(slug);
+    renderBadgeStrip();
+    if (isNew && BADGES[slug]) {
+      showBadgeAward(BADGES[slug], false);
+      if (earned.size >= TOTAL_MODULES) {
+        setTimeout(() => showBadgeAward(MASTER_BADGE, true), 1200);
+      }
+    }
+  };
+
+  document.getElementById("dk-complete").onclick = async () => {
+    const st = window.state;
+    if (!st || !st.mod) { alert("Abre un módulo primero."); return; }
+    if (!BADGES[st.mod]) { alert("Este módulo aún no otorga insignia."); return; }
+    await awardBadgeFor(st.mod);
+  };
+
+  window.markModuleComplete = (slug) => awardBadgeFor(slug);
+})();
+</script>
+
+</body>
+</html>

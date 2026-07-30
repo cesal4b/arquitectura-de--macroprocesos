@@ -1,0 +1,217 @@
+/* ================================================================
+   CESA · Barra de navegación unificada (topbar)
+   Se inyecta en las tres páginas del proyecto para dar una
+   experiencia de navegación 100% consistente.
+   ================================================================ */
+
+.cesa-topbar,
+.cesa-topbar *{box-sizing:border-box}
+
+.cesa-topbar{
+  --tb-surface:#ffffff;
+  --tb-surface-2:#f0f2f8;
+  --tb-ink:#041F3E;
+  --tb-ink-2:#3a4256;
+  --tb-ink-3:#6b7488;
+  --tb-line:#D5D8DF;
+  --tb-brand:#013998;
+  --tb-brand-fg:#ffffff;
+  --tb-ease:cubic-bezier(.22,.61,.36,1);
+
+  position:fixed;top:0;left:0;right:0;z-index:9998;
+  font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  background:color-mix(in srgb,var(--tb-surface) 88%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--tb-line);
+  transition:box-shadow .2s var(--tb-ease), background .2s var(--tb-ease);
+}
+[data-theme="dark"] .cesa-topbar{
+  --tb-surface:#141821;
+  --tb-surface-2:#1b2030;
+  --tb-ink:#e8ecf4;
+  --tb-ink-2:#9aa4ba;
+  --tb-ink-3:#7a8399;
+  --tb-line:#262d3d;
+  --tb-brand:#5a7ebc;
+}
+.cesa-topbar.scrolled{box-shadow:0 6px 22px color-mix(in srgb,var(--tb-ink) 8%,transparent)}
+
+.cesa-topbar .tb-in{
+  max-width:1240px;margin:0 auto;padding:10px 22px;
+  display:flex;align-items:center;gap:14px;
+}
+
+/* -------- Logo -------- */
+.cesa-topbar .tb-logo{
+  display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--tb-ink);
+  white-space:nowrap;
+}
+.cesa-topbar .tb-logo-img{
+  width:46px;height:auto;flex:none;display:block;
+  color:var(--tb-brand);
+}
+[data-theme="dark"] .cesa-topbar .tb-logo-img{color:var(--tb-brand-fg)}
+.cesa-topbar .tb-logo-text{display:flex;flex-direction:column;line-height:1.15}
+.cesa-topbar .tb-logo-text strong{
+  font-weight:700;font-size:15px;letter-spacing:-.2px;color:var(--tb-ink);
+}
+.cesa-topbar .tb-logo-text small{
+  font-size:11.5px;font-weight:500;color:var(--tb-ink-3);letter-spacing:.1px;
+}
+.cesa-topbar .tb-spacer{flex:1}
+
+/* -------- Doc switcher (3 secciones del proyecto) -------- */
+.cesa-topbar .tb-docs{
+  display:inline-flex;background:var(--tb-surface-2);border:1px solid var(--tb-line);
+  border-radius:12px;padding:3px;gap:2px;
+}
+.cesa-topbar .tb-docs a{
+  display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  color:var(--tb-ink-2);font-size:13px;font-weight:600;
+  padding:8px 13px;border-radius:9px;transition:.16s var(--tb-ease);white-space:nowrap;
+}
+.cesa-topbar .tb-docs a svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.cesa-topbar .tb-docs a:hover{background:var(--tb-surface);color:var(--tb-ink)}
+.cesa-topbar .tb-docs a.on{
+  background:var(--tb-brand);color:var(--tb-brand-fg);
+  box-shadow:0 2px 10px color-mix(in srgb,var(--tb-brand) 30%,transparent);
+}
+.cesa-topbar .tb-docs a.on:hover{color:var(--tb-brand-fg)}
+
+/* -------- Acciones (tema, auth, burger) -------- */
+.cesa-topbar .tb-actions{display:flex;align-items:center;gap:6px}
+.cesa-topbar .tb-icon{
+  width:36px;height:36px;border-radius:10px;background:transparent;
+  border:1px solid transparent;color:var(--tb-ink-2);cursor:pointer;
+  display:grid;place-items:center;transition:.18s var(--tb-ease);
+  flex-shrink:0;text-decoration:none;position:relative;padding:0;
+}
+.cesa-topbar .tb-icon:hover{background:var(--tb-surface-2);border-color:var(--tb-line);color:var(--tb-brand)}
+.cesa-topbar .tb-icon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cesa-topbar .tb-icon[data-tip]::after{
+  content:attr(data-tip);position:absolute;top:calc(100% + 6px);left:50%;
+  transform:translateX(-50%) translateY(-4px);background:var(--tb-ink);color:var(--tb-surface);
+  font-size:11px;font-weight:600;padding:5px 9px;border-radius:6px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:.18s var(--tb-ease);
+}
+.cesa-topbar .tb-icon:hover[data-tip]::after{opacity:.95;transform:translateX(-50%) translateY(0)}
+.cesa-topbar .tb-icon.primary{background:var(--tb-brand);color:#fff;border-color:transparent}
+.cesa-topbar .tb-icon.primary:hover{background:color-mix(in srgb,var(--tb-brand) 88%,#000);color:#fff}
+
+.cesa-topbar .tb-burger{display:none}
+
+/* -------- Responsive -------- */
+@media(max-width:900px){
+  .cesa-topbar .tb-logo-text small{display:none}
+  .cesa-topbar .tb-docs a span{display:none}
+  .cesa-topbar .tb-docs a{padding:8px 10px}
+}
+@media(max-width:640px){
+  .cesa-topbar .tb-logo-text{display:none}
+}
+@media(max-width:560px){
+  .cesa-topbar .tb-in{gap:8px;padding:9px 14px}
+  .cesa-topbar .tb-docs{padding:2px;gap:1px}
+  .cesa-topbar .tb-docs a{padding:7px 8px}
+}
+
+/* -------- Drawer móvil (opcional / futuro) -------- */
+.cesa-drawer{
+  position:fixed;inset:0;background:color-mix(in srgb,#041F3E 40%,transparent);
+  z-index:9999;opacity:0;pointer-events:none;transition:.2s var(--tb-ease);
+  backdrop-filter:blur(4px);
+}
+.cesa-drawer.open{opacity:1;pointer-events:auto}
+.cesa-drawer .panel{
+  position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);
+  background:var(--tb-surface,#fff);border-left:1px solid var(--tb-line,#D5D8DF);
+  padding:22px 20px;display:flex;flex-direction:column;gap:6px;
+  transform:translateX(100%);transition:transform .25s var(--tb-ease);overflow-y:auto;
+  color:var(--tb-ink,#041F3E);font-family:'Outfit',system-ui,sans-serif;
+}
+[data-theme="dark"] .cesa-drawer .panel{background:#141821;border-color:#262d3d;color:#e8ecf4}
+.cesa-drawer.open .panel{transform:none}
+.cesa-drawer .panel h4{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#6b7488;margin:14px 4px 4px}
+.cesa-drawer .panel a{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;color:inherit;transition:.15s var(--tb-ease)}
+.cesa-drawer .panel a:hover{background:color-mix(in srgb,currentColor 6%,transparent)}
+.cesa-drawer .panel a.on{background:color-mix(in srgb,#013998 12%,transparent);color:#013998}
+[data-theme="dark"] .cesa-drawer .panel a.on{background:color-mix(in srgb,#5a7ebc 20%,transparent);color:#8ab0e8}
+.cesa-drawer .panel a svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.cesa-drawer .close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:10px;border:1px solid #D5D8DF;background:transparent;cursor:pointer;color:inherit;display:grid;place-items:center}
+.cesa-drawer .close svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+/* -------- Spacer para que el contenido no quede tapado -------- */
+body{padding-top:60px}
+@media(max-width:560px){body{padding-top:56px}}
+
+/* ================================================================
+   CESA · Tooltip reutilizable (globo con data-tip) en cualquier página
+   .cs-tip  → mecánica del globo, para cualquier elemento (tarjetas, iconos…)
+   .cs-term → además subraya punteado, para palabras sueltas dentro de texto
+   Uso: <span class="cs-term" data-tip="Explicación breve">palabra</span>
+        <div class="kpi cs-tip" data-tip="Explicación breve">…</div>
+   ================================================================ */
+.cs-tip{position:relative;cursor:help}
+.cs-tip::after{
+  content:attr(data-tip);position:absolute;bottom:calc(100% + 9px);left:0;
+  transform:translateY(4px);background:#041F3E;color:#fff;
+  font-size:12.5px;font-weight:500;line-height:1.45;padding:9px 12px;border-radius:6px;
+  width:max-content;max-width:min(300px,calc(100vw - 32px));white-space:normal;text-align:left;
+  opacity:0;pointer-events:none;transition:.16s cubic-bezier(.22,.61,.36,1);
+  box-shadow:0 10px 30px rgba(4,31,62,.25);z-index:60;
+}
+.cs-tip::before{
+  content:"";position:absolute;bottom:calc(100% + 4px);left:14px;
+  border:5px solid transparent;border-top-color:#041F3E;opacity:0;transition:.16s;
+}
+.cs-tip:hover::after,.cs-tip:focus-visible::after{opacity:1;transform:translateY(0)}
+.cs-tip:hover::before,.cs-tip:focus-visible::before{opacity:1}
+[data-theme="dark"] .cs-tip::after{background:#e8ecf4;color:#0d0f14;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+[data-theme="dark"] .cs-tip::before{border-top-color:#e8ecf4}
+@media(max-width:520px){.cs-tip::after{max-width:180px;font-size:12px}}
+
+/* Modificador: para triggers pegados a la parte superior de la pantalla (ej. bajo la topbar fija),
+   muestra el globo hacia abajo en vez de hacia arriba para que no quede tapado. */
+.cs-tip-below::after{bottom:auto;top:calc(100% + 9px);transform:translateY(-4px)}
+.cs-tip-below::before{bottom:auto;top:calc(100% + 4px);border-top-color:transparent;border-bottom-color:#041F3E}
+[data-theme="dark"] .cs-tip-below::before{border-bottom-color:#e8ecf4}
+.cs-tip-below:hover::after,.cs-tip-below:focus-visible::after{transform:translateY(0)}
+
+.cs-term{border-bottom:1px dotted currentColor;text-decoration:none}
+
+/* ================================================================
+   CESA · Modal de bienvenida (primera visita, por página)
+   Uso: ver <div class="cs-intro"> + script en cada página
+   ================================================================ */
+.cs-intro-overlay{
+  position:fixed;inset:0;z-index:99998;background:rgba(4,31,62,.5);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:.2s cubic-bezier(.22,.61,.36,1);
+}
+.cs-intro-overlay.show{opacity:1;pointer-events:auto}
+.cs-intro{
+  background:#fff;color:#041F3E;border-radius:16px;max-width:440px;width:100%;
+  padding:28px 26px 24px;box-shadow:0 30px 80px -20px rgba(4,31,62,.4);
+  transform:translateY(10px) scale(.98);transition:.22s cubic-bezier(.22,.61,.36,1);
+}
+.cs-intro-overlay.show .cs-intro{transform:none}
+[data-theme="dark"] .cs-intro{background:#141821;color:#e8ecf4}
+.cs-intro .cs-intro-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;
+  letter-spacing:.8px;text-transform:uppercase;color:#013998;background:rgba(2,123,255,.08);
+  padding:5px 11px;border-radius:999px;margin-bottom:14px}
+[data-theme="dark"] .cs-intro .cs-intro-eyebrow{color:#5aa9ff;background:rgba(90,169,255,.14)}
+.cs-intro h2{font-size:21px;font-weight:800;letter-spacing:-.3px;line-height:1.2;margin-bottom:10px}
+.cs-intro ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin:14px 0 20px}
+.cs-intro ul li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.5;
+  color:currentColor;opacity:.85}
+.cs-intro ul li .cs-intro-num{flex:none;width:22px;height:22px;border-radius:7px;background:#013998;color:#fff;
+  font-size:11px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+[data-theme="dark"] .cs-intro ul li .cs-intro-num{background:#5a7ebc}
+.cs-intro ul li b{font-weight:800}
+.cs-intro-close{width:100%;background:#013998;color:#fff;border:none;font:inherit;font-size:14px;
+  font-weight:700;padding:12px;border-radius:10px;cursor:pointer;transition:.15s}
+.cs-intro-close:hover{background:#012a70}
+[data-theme="dark"] .cs-intro-close{background:#5a7ebc}
+[data-theme="dark"] .cs-intro-close:hover{background:#4a6aa0}

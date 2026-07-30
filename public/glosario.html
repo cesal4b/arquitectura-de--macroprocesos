@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CESA · Glosario de Términos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/topbar.css">
+<script defer src="/topbar.js"></script>
+<style>
+  :root{
+    /* ===== Tema claro (tokens CESA — idénticos a arquitectura-macroprocesos.html) ===== */
+    --bg:#f6f7fb;
+    --surface:#ffffff;
+    --surface-2:#f0f2f8;
+    --ink:#041F3E;
+    --ink-2:#3a4256;
+    --ink-3:#6b7488;
+    --line:#D5D8DF;
+    --line-2:#d4dae6;
+    --brand:#013998;
+    --brand-soft:#eaf0f7;
+    --accent:#027bff;
+    --accent-soft:rgba(2,123,255,.08);
+    --gold:#caa64a;
+    --radius:18px;
+    --radius-sm:11px;
+    --shadow-sm:0 1px 2px rgba(16,19,28,.04),0 2px 8px rgba(16,19,28,.05);
+    --shadow:0 12px 40px -12px rgba(16,19,28,.22),0 2px 8px rgba(16,19,28,.06);
+    --shadow-lg:0 30px 80px -20px rgba(16,19,28,.35);
+    --on-accent:#fff;
+    --m1:#013998; --m2:#49983A; --m3:#074734; --m4:#FF8D00;
+    --m5:#5C214D; --m6:#FF4C00; --m7:#5b6577;
+    --metric-a:var(--brand); --metric-b:var(--m3);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  [data-theme="dark"]{
+    --bg:#0d0f14;
+    --surface:#141821;
+    --surface-2:#1b2030;
+    --ink:#e8ecf4;
+    --ink-2:#9aa4ba;
+    --ink-3:#646e85;
+    --line:#262d3d;
+    --line-2:#333c52;
+    --brand:#5a7ebc;
+    --brand-soft:color-mix(in srgb,var(--brand) 18%,transparent);
+    --accent:#5aa9ff;
+    --accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
+    --gold:#e0c378;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.25);
+    --shadow:0 12px 40px -12px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3);
+    --shadow-lg:0 30px 80px -20px rgba(0,0,0,.6);
+    --m1:#3361ac; --m2:#6dad61; --m3:#396c5d; --m4:#ff8d00;
+    --m5:#7d4d71; --m6:#ff4c00; --m7:#7c8492;
+    --metric-a:#7eb0ff; --metric-b:#6dd3a8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  body{
+    font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    transition:background-color .2s,color .2s;
+  }
+  ::selection{background:var(--accent-soft);color:var(--accent)}
+  a{color:inherit}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+  /* ============ HERO ============ */
+  header.hero{position:relative;overflow:hidden;padding:74px 0 46px;
+    background:
+      radial-gradient(900px 420px at 88% -8%,color-mix(in srgb,var(--accent) 7%,transparent),transparent 60%),
+      radial-gradient(800px 460px at -6% 8%,color-mix(in srgb,var(--brand) 6%,transparent),transparent 60%),
+      linear-gradient(180deg,var(--surface),var(--bg));
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:1.4px;
+    text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+    padding:6px 13px;border-radius:30px;margin-bottom:22px}
+  .eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+  h1.title{font-size:clamp(34px,5.4vw,58px);line-height:1.04;letter-spacing:-1.6px;font-weight:800;max-width:18ch}
+  h1.title em{font-style:normal;color:var(--brand);position:relative;white-space:nowrap}
+  h1.title em::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:11px;background:var(--gold);opacity:.32;z-index:-1;border-radius:2px}
+  .lede{font-size:clamp(16px,2vw,19px);color:var(--ink-2);max-width:64ch;margin-top:22px;line-height:1.6}
+
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px;max-width:640px}
+  .metric{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:20px 18px;box-shadow:var(--shadow-sm);transition:.25s var(--ease)}
+  .metric:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .metric .n{font-size:34px;font-weight:800;letter-spacing:-1.5px;line-height:1;
+    background:linear-gradient(135deg,var(--metric-a),var(--metric-b));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+  .metric .l{font-size:12px;color:var(--ink-3);font-weight:600;margin-top:8px;letter-spacing:.2px}
+  @media(max-width:560px){.metrics{grid-template-columns:1fr 1fr}}
+
+  /* context panel — Propósito / Alcance del manual (no es un término, es el marco) */
+  .context-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px;max-width:900px}
+  @media(max-width:640px){.context-grid{grid-template-columns:1fr}}
+  .context-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:18px 20px;box-shadow:var(--shadow-sm)}
+  .context-card .cl{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:1px;
+    text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .context-card .cl .pn-mini{font-size:10px;font-weight:800;color:var(--ink-3);background:var(--surface-2);
+    border-radius:5px;padding:1px 6px;letter-spacing:0;text-transform:none}
+  .context-card p{font-size:14px;color:var(--ink-2);line-height:1.6}
+
+  /* ============ CONTROLS (search + category pills) ============ */
+  .controls{padding:34px 0 6px}
+  .search-wrap{position:relative;max-width:440px}
+  .search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-3);width:16px;height:16px}
+  .search-wrap input{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--surface);
+    border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px 12px 40px;transition:.2s var(--ease)}
+  .search-wrap input::placeholder{color:var(--ink-3)}
+  .search-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+  /* ============ progreso de lectura ============ */
+  .progress-wrap{margin-top:20px;max-width:440px}
+  .progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin-bottom:6px;font-weight:600}
+  .progress-pct{font-variant-numeric:tabular-nums;color:var(--accent)}
+  .progress-track{height:6px;border-radius:100px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--metric-a),var(--metric-b));border-radius:100px;transition:width .5s var(--ease)}
+
+  .catpills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .catpill{--c:var(--brand);display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:13px;font-weight:600;
+    color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line-2);border-radius:100px;
+    padding:7px 14px;cursor:pointer;transition:.18s var(--ease)}
+  .catpill .dot{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none}
+  .catpill:hover{background:var(--surface);border-color:var(--line)}
+  .catpill[aria-pressed="true"]{background:var(--c);color:#fff;border-color:transparent}
+  .catpill[aria-pressed="true"] .dot{background:#fff}
+
+  /* ============ section headers (idéntico al resto del sitio) ============ */
+  section{padding:56px 0;scroll-margin-top:74px}
+  .sec-head{margin-bottom:28px;max-width:66ch}
+  .sec-num{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:1px}
+  .sec-head h2{font-size:clamp(23px,3vw,32px);letter-spacing:-1px;font-weight:800;margin:8px 0 10px;line-height:1.1}
+  .sec-head p{color:var(--ink-2);font-size:15.5px;line-height:1.6}
+  .no-results{display:none;color:var(--ink-3);font-size:14px;padding:8px 0 40px}
+
+  /* ============ proc accordion (reutilizado para cada término) ============ */
+  .proc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;align-items:start}
+  .proc{--c:var(--brand);border:1px solid var(--line);border-radius:13px;overflow:hidden;transition:.2s var(--ease);background:var(--surface)}
+  .proc:hover{border-color:var(--line-2);box-shadow:var(--shadow-sm)}
+  .proc-h{width:100%;text-align:left;font:inherit;cursor:pointer;background:var(--surface);color:var(--ink);
+    padding:14px 15px;display:flex;align-items:center;gap:12px;border:none}
+  .proc-h .pn{flex:none;font-size:11px;font-weight:800;color:var(--c);background:color-mix(in srgb,var(--c) 13%,var(--surface));
+    padding:3px 7px;border-radius:6px;font-variant-numeric:tabular-nums;letter-spacing:0}
+  .proc-h .ptitle{font-size:14.5px;font-weight:700;letter-spacing:-.2px;line-height:1.3;flex:1}
+  .proc-h .caret{color:var(--ink-3);transition:.25s var(--ease);flex:none}
+  .proc.open .caret{transform:rotate(180deg)}
+  .proc.open{border-color:var(--c)}
+  .proc-c{max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+  .proc-c-in{padding:0 16px 16px}
+  .proc-desc{font-size:13.5px;color:var(--ink-2);line-height:1.62}
+  .proc-desc + .proc-desc{margin-top:8px}
+  .proc-meta{margin-top:8px;font-size:12px;color:var(--ink-3)}
+  .proc-meta b{color:var(--ink-2);font-weight:600}
+  .procs-list{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .procs-list li{font-size:13px;color:var(--ink-2);padding-left:15px;position:relative;line-height:1.5}
+  .procs-list li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--c);opacity:.6}
+
+  /* ============ visitado + términos relacionados ============ */
+  .proc.visited .proc-h .ptitle::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:var(--accent);margin-left:9px;vertical-align:middle}
+  .related{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:13px;padding-top:13px;border-top:1px dashed var(--line-2)}
+  .related-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-3);margin-right:1px}
+  .rel-link{font-size:12.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:100px;
+    padding:4px 11px;text-decoration:none;transition:.18s var(--ease);border:1px solid transparent;white-space:nowrap}
+  .rel-link:hover{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .proc.flash{animation:flashHighlight 1.5s var(--ease)}
+  @keyframes flashHighlight{0%{box-shadow:0 0 0 4px var(--accent-soft);border-color:var(--accent)}100%{box-shadow:0 0 0 0 transparent}}
+
+  /* ============ hierarchy strip + macroprocesos strip (reutiliza patrón .steps) ============ */
+  .arq-map{position:relative;display:block;background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:10px;overflow:hidden;margin:0 auto 28px;max-width:520px}
+  .arq-map img{display:block;width:100%;height:auto;border-radius:calc(var(--radius) - 6px);transition:transform .5s var(--ease)}
+  .arq-map:hover img,.arq-map:focus-visible img{transform:scale(1.01)}
+  .arq-map-hint{position:absolute;right:20px;bottom:20px;display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border:1px solid var(--line);
+    padding:7px 13px;border-radius:30px;font-size:12px;font-weight:700;color:var(--ink-2);
+    opacity:0;transform:translateY(4px);transition:.2s var(--ease)}
+  .arq-map:hover .arq-map-hint,.arq-map:focus-visible .arq-map-hint{opacity:1;transform:none}
+  .steps{display:grid;gap:0;counter-reset:step;position:relative}
+  #jerarquia .steps{grid-template-columns:repeat(3,1fr)}
+  #arquitectura .steps{grid-template-columns:repeat(7,1fr)}
+  .step{position:relative;padding:22px 14px 4px;border-top:2px solid var(--line-2);transition:.25s var(--ease)}
+  .step::before{counter-increment:step;content:"0" counter(step);position:absolute;top:-1px;left:14px;
+    transform:translateY(-50%);background:var(--bg);padding:0 8px;font-size:13px;font-weight:800;color:var(--ink-3);transition:.25s}
+  .step .dot{position:absolute;top:-7px;right:14px;width:11px;height:11px;border-radius:50%;background:var(--line-2);
+    border:2px solid var(--bg);transition:.25s}
+  .step h4{font-size:14.5px;font-weight:800;letter-spacing:-.3px;margin-bottom:7px;color:var(--brand)}
+  .step p{font-size:12.5px;color:var(--ink-3);line-height:1.55;padding-bottom:20px}
+  .step:hover{border-top-color:var(--accent)}
+  .step:hover::before{color:var(--accent)}
+  .step:hover .dot{background:var(--accent);transform:scale(1.25)}
+  @media(max-width:900px){
+    #jerarquia .steps,#arquitectura .steps{grid-template-columns:repeat(2,1fr)}
+    .step{border-top:none;border-left:2px solid var(--line-2);padding:8px 16px 22px}
+    .step::before{top:0;left:-1px;transform:translateX(-50%);background:var(--bg)}
+    .step .dot{top:6px;left:-6px;right:auto}
+  }
+  @media(max-width:520px){#jerarquia .steps,#arquitectura .steps{grid-template-columns:1fr}}
+
+  /* ============ role cards (reutiliza patrón .pillar) ============ */
+  .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:780px){.pillars{grid-template-columns:1fr}}
+  .pillar{--c:var(--brand);position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px 24px 22px;box-shadow:var(--shadow-sm);overflow:hidden;transition:.28s var(--ease)}
+  .pillar::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--c)}
+  .pillar:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--line-2)}
+  .pillar .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;margin-bottom:14px;
+    background:color-mix(in srgb,var(--c) 12%,var(--surface));color:var(--c)}
+  .pillar .ic svg{width:20px;height:20px}
+  .pillar h3{font-size:17px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px}
+  .pillar ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+  .pillar ul li{font-size:13.5px;color:var(--ink-2);line-height:1.55;padding-left:16px;position:relative}
+  .pillar ul li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--c);opacity:.6}
+
+  /* ============ reference table (anexo) ============ */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius-sm);margin-top:6px}
+  table.matrix{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+  table.matrix th,table.matrix td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+  table.matrix th{font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);background:var(--surface-2)}
+  table.matrix td{color:var(--ink-2);font-variant-numeric:tabular-nums}
+  table.matrix tr:last-child td{border-bottom:none}
+
+  /* ============ footer ============ */
+  footer{border-top:1px solid var(--line);background:var(--surface);padding:40px 0 48px;margin-top:10px}
+  .ft{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+  .ft p{font-size:13px;color:var(--ink-3);line-height:1.6}
+  .ft a{color:var(--brand);font-weight:600;text-decoration:none;border-bottom:1px solid var(--line-2)}
+  .ft a:hover{color:var(--accent);border-color:var(--accent)}
+  .ft .links{display:flex;gap:18px;flex-wrap:wrap;font-size:13px}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:.6s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<!-- ============ NAV ============ -->
+<!-- Topbar unificada inyectada por /topbar.js -->
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="pulse"></span>Referencia · Gestión por procesos</span>
+    <h1 class="title">Glosario de <em>Términos</em></h1>
+    <p class="lede">Vocabulario oficial del Manual de Gestión y Documentación de Procesos del CESA — organizado por tema para consulta rápida, con el número de sección del manual en cada término para quienes ya lo conocen.</p>
+
+    <div class="context-grid">
+      <div class="context-card">
+        <div class="cl">Propósito de este manual <span class="pn-mini">1</span></div>
+        <p>Establecer el modelo institucional para diseñar, documentar, operar, medir y mejorar los procesos del CESA, asegurando alineación con la estrategia institucional, la experiencia, la innovación y la disciplina operativa.</p>
+      </div>
+      <div class="context-card">
+        <div class="cl">Alcance <span class="pn-mini">2</span></div>
+        <p>Aplica a todos los macroprocesos, procesos, procedimientos y documentos institucionales del CESA.</p>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric cs-tip" data-tip="Cada tarjeta es un término oficial del manual, con su definición textual completa."><div class="n" id="statTerms">—</div><div class="l">Términos</div></div>
+      <div class="metric cs-tip" data-tip="Los términos están agrupados por tema para que sea más fácil consultarlos."><div class="n" id="statCats">—</div><div class="l">Categorías</div></div>
+      <div class="metric cs-tip" data-tip="Cada término indica de qué sección exacta del manual proviene, para quienes ya lo conocen."><div class="n">16</div><div class="l">Secciones del manual</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ CONTROLS ============ -->
+<div class="wrap controls">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="search" placeholder="Buscar un término o definición…" aria-label="Buscar en el glosario">
+  </div>
+  <div class="catpills" id="catpills" role="group" aria-label="Filtrar por categoría">
+    <button class="catpill" data-filter="all" aria-pressed="true" style="--c:var(--ink-3)"><span class="dot"></span>Todas</button>
+    <button class="catpill" data-filter="principios" style="--c:var(--m1)"><span class="dot"></span>Principios del modelo</button>
+    <button class="catpill" data-filter="transversales" style="--c:var(--m4)"><span class="dot"></span>Elementos transversales</button>
+    <button class="catpill" data-filter="arquitectura" style="--c:var(--accent)"><span class="dot"></span>Arquitectura de macroprocesos</button>
+    <button class="catpill" data-filter="jerarquia" style="--c:var(--m7)"><span class="dot"></span>Jerarquía y niveles</button>
+    <button class="catpill" data-filter="metodologia" style="--c:var(--m2)"><span class="dot"></span>Metodología y herramientas</button>
+    <button class="catpill" data-filter="documental" style="--c:var(--m5)"><span class="dot"></span>Gestión documental</button>
+    <button class="catpill" data-filter="roles" style="--c:var(--m3)"><span class="dot"></span>Roles y responsabilidades</button>
+    <button class="catpill" data-filter="indicadores" style="--c:var(--m6)"><span class="dot"></span>Indicadores y riesgos</button>
+  </div>
+  <p class="no-results" id="noResults">No hay términos que coincidan con la búsqueda.</p>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="progressLabel">0 de 23 definiciones revisadas</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<!-- ============ PRINCIPIOS (sección 3) ============ -->
+<section id="principios" data-category="principios">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Sección 3 — Principios del modelo</span>
+      <h2>Diez principios que orientan la gestión</h2>
+      <p>La Gestión por Procesos del CESA se fundamenta en un conjunto de principios que orientan el diseño, la operación, el seguimiento y la mejora continua de los procesos institucionales. Estos principios buscan garantizar que todas las actividades de la organización contribuyan al cumplimiento de la estrategia, la generación de valor y la excelencia institucional.</p>
+    </div>
+    <div class="proc-grid reveal" data-entries>
+      <div class="proc" id="t-3-1" style="--c:var(--m1)" data-entry data-search="orientación al usuario 3.1 los procesos se diseñan y gestionan considerando las necesidades expectativas y experiencias de los diferentes grupos de interés del cesa promoviendo relaciones cercanas oportunas y de alto valor durante todo su ciclo de vida">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.1</span><span class="ptitle">Orientación al usuario</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Los procesos se diseñan y gestionan considerando las necesidades, expectativas y experiencias de los diferentes grupos de interés del CESA, promoviendo relaciones cercanas, oportunas y de alto valor durante todo su ciclo de vida.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-4-experiencia" class="rel-link" data-jump="t-4-experiencia">Experiencia</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-3-2" style="--c:var(--m1)" data-entry data-search="generación de valor 3.2 cada proceso debe aportar valor a la estrategia institucional y a sus partes interesadas contribuyendo al cumplimiento de la misión la sostenibilidad y el fortalecimiento de la propuesta de valor del cesa">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.2</span><span class="ptitle">Generación de valor</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Cada proceso debe aportar valor a la estrategia institucional y a sus partes interesadas, contribuyendo al cumplimiento de la misión, la sostenibilidad y el fortalecimiento de la propuesta de valor del CESA.</p></div></div>
+      </div>
+      <div class="proc" id="t-3-3" style="--c:var(--m1)" data-entry data-search="alineación estratégica 3.3 todos los procesos deben estar articulados con la estrategia institucional el modelo de operación y la arquitectura de macroprocesos garantizando coherencia entre la planeación la ejecución y el logro de los objetivos estratégicos">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.3</span><span class="ptitle">Alineación estratégica</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Todos los procesos deben estar articulados con la estrategia institucional, el modelo de operación y la arquitectura de macroprocesos, garantizando coherencia entre la planeación, la ejecución y el logro de los objetivos estratégicos.</p></div></div>
+      </div>
+      <div class="proc" id="t-3-4" style="--c:var(--m1)" data-entry data-search="gestión basada en procesos 3.4 la organización administra sus actividades mediante un enfoque sistémico que reconoce las interacciones entre los procesos promoviendo la articulación la colaboración transversal y la optimización del desempeño institucional">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.4</span><span class="ptitle">Gestión basada en procesos</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">La organización administra sus actividades mediante un enfoque sistémico que reconoce las interacciones entre los procesos, promoviendo la articulación, la colaboración transversal y la optimización del desempeño institucional.</p></div></div>
+      </div>
+      <div class="proc" id="t-3-5" style="--c:var(--m1)" data-entry data-search="gestión basada en datos 3.5 las decisiones relacionadas con el diseño operación y mejora de los procesos deberán sustentarse en información confiable indicadores de desempeño análisis de resultados y evidencia objetiva que facilite la toma de decisiones">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.5</span><span class="ptitle">Gestión basada en datos</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Las decisiones relacionadas con el diseño, operación y mejora de los procesos deberán sustentarse en información confiable, indicadores de desempeño, análisis de resultados y evidencia objetiva que facilite la toma de decisiones.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-15" class="rel-link" data-jump="t-15">Indicadores y riesgos</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-3-6" style="--c:var(--m1)" data-entry data-search="gestión de riesgos y controles 3.6 los procesos deberán identificar evaluar tratar y monitorear los riesgos que puedan afectar el logro de sus objetivos implementando controles que fortalezcan la eficacia la continuidad de la operación y el cumplimiento institucional">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.6</span><span class="ptitle">Gestión de riesgos y controles</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Los procesos deberán identificar, evaluar, tratar y monitorear los riesgos que puedan afectar el logro de sus objetivos, implementando controles que fortalezcan la eficacia, la continuidad de la operación y el cumplimiento institucional.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-15" class="rel-link" data-jump="t-15">Indicadores y riesgos</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-3-7" style="--c:var(--m1)" data-entry data-search="mejora continua 3.7 la gestión por procesos promueve la evaluación permanente del desempeño la identificación de oportunidades de mejora la innovación y la implementación de acciones que incrementen la eficiencia la calidad y la generación de valor">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.7</span><span class="ptitle">Mejora continua</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">La gestión por procesos promueve la evaluación permanente del desempeño, la identificación de oportunidades de mejora, la innovación y la implementación de acciones que incrementen la eficiencia, la calidad y la generación de valor.</p></div></div>
+      </div>
+      <div class="proc" id="t-3-8" style="--c:var(--m1)" data-entry data-search="disciplina operativa 3.8 los procesos deben ejecutarse de manera estandarizada controlada y consistente garantizando el cumplimiento de los procedimientos definidos la trazabilidad de la información y la adecuada gestión de los recursos institucionales">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.8</span><span class="ptitle">Disciplina operativa</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Los procesos deben ejecutarse de manera estandarizada, controlada y consistente, garantizando el cumplimiento de los procedimientos definidos, la trazabilidad de la información y la adecuada gestión de los recursos institucionales.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-4-disciplina" class="rel-link" data-jump="t-4-disciplina">Disciplina Operativa (transversal)</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-3-9" style="--c:var(--m1)" data-entry data-search="innovación 3.9 el cesa fomenta la revisión permanente de sus procesos para incorporar nuevas metodologías tecnologías y prácticas que permitan responder de manera ágil a las necesidades del entorno y fortalecer la experiencia de sus grupos de interés">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.9</span><span class="ptitle">Innovación</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">El CESA fomenta la revisión permanente de sus procesos para incorporar nuevas metodologías, tecnologías y prácticas que permitan responder de manera ágil a las necesidades del entorno y fortalecer la experiencia de sus grupos de interés.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-4-innovacion" class="rel-link" data-jump="t-4-innovacion">Innovación (transversal)</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-3-10" style="--c:var(--m1)" data-entry data-search="gestión documental y trazabilidad 3.10 toda la documentación que soporte la operación de los procesos deberá mantenerse controlada actualizada y disponible mediante los mecanismos institucionales definidos asegurando la trazabilidad de la información el control de versiones y la consulta de documentos vigentes">
+        <button class="proc-h" aria-expanded="false"><span class="pn">3.10</span><span class="ptitle">Gestión documental y trazabilidad</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Toda la documentación que soporte la operación de los procesos deberá mantenerse controlada, actualizada y disponible mediante los mecanismos institucionales definidos, asegurando la trazabilidad de la información, el control de versiones y la consulta de documentos vigentes.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-14-1" class="rel-link" data-jump="t-14-1">DARUMA — Propósito</a></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ELEMENTOS TRANSVERSALES (sección 4) ============ -->
+<section id="transversales" data-category="transversales" style="background:var(--surface-2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Sección 4 — Elementos transversales</span>
+      <h2>Tres pilares que atraviesan toda la operación</h2>
+    </div>
+    <div class="proc-grid reveal" data-entries>
+      <div class="proc" id="t-4-experiencia" style="--c:var(--m4)" data-entry data-search="experiencia es la vivencia integral coherente y significativa que tienen los diferentes públicos del cesa en cada punto de contacto con la institución a través de interacciones coherentes y significativas a lo largo de la vida que buscan maximizar las horas de relación práctica y transformadora con el cesa en una visión 360 personalizada">
+        <button class="proc-h" aria-expanded="false"><span class="pn">4</span><span class="ptitle">Experiencia</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Es la vivencia integral, coherente y significativa que tienen los diferentes públicos del CESA en cada punto de contacto con la institución a través de interacciones coherentes y significativas a lo largo de la vida, que buscan maximizar las horas de relación práctica y transformadora con el CESA en una visión 360 personalizada.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-3-1" class="rel-link" data-jump="t-3-1">Orientación al usuario</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-4-innovacion" style="--c:var(--m4)" data-entry data-search="innovación transversal es la capacidad institucional del cesa para ejecutar sus procesos de manera continua eficiente práctica y flexible garantizando calidad sostenibilidad y coherencia mediante la estandarización la claridad de roles la trazabilidad de la información y el cumplimiento normativo">
+        <button class="proc-h" aria-expanded="false"><span class="pn">4</span><span class="ptitle">Innovación (transversal)</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Es la capacidad institucional del CESA para ejecutar sus procesos de manera continua, eficiente, práctica y flexible, garantizando calidad, sostenibilidad y coherencia, mediante la estandarización, la claridad de roles, la trazabilidad de la información y el cumplimiento normativo, asegurando un funcionamiento ordenado que potencia la confianza, facilita decisiones informadas y refuerza la continuidad de la experiencia de contacto con la institución.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-3-9" class="rel-link" data-jump="t-3-9">Innovación</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-4-disciplina" style="--c:var(--m4)" data-entry data-search="disciplina operativa transversal es la actitud y capacidad institucional para repensar y transformar de forma creativa estratégica y práctica los procesos servicios experiencias y modelos de relación con el fin de anticiparse a los cambios del entorno">
+        <button class="proc-h" aria-expanded="false"><span class="pn">4</span><span class="ptitle">Disciplina Operativa (transversal)</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Es la actitud y capacidad institucional para repensar y transformar, de forma creativa, estratégica y práctica, los procesos, servicios, experiencias y modelos de relación con el fin de anticiparse a los cambios del entorno y responder a necesidades emergentes con soluciones personalizadas, flexibles, homologables y sostenibles, que fortalezcan la propuesta de valor y amplíen las oportunidades de contacto significativo con el CESA a lo largo de la vida.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-3-8" class="rel-link" data-jump="t-3-8">Disciplina operativa</a></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARQUITECTURA DE MACROPROCESOS (sección 5) ============ -->
+<section id="arquitectura" data-category="arquitectura">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Sección 5 — Arquitectura de macroprocesos</span>
+      <h2>Los 7 macroprocesos, como cadena de valor</h2>
+      <p>En el mismo orden en que aparecen en el manual — de la estrategia al soporte institucional.</p>
+    </div>
+    <a class="arq-map reveal" href="/arquitectura-de-macroprocesos.svg" target="_blank" rel="noopener"
+      aria-label="Ver el mapa de Arquitectura de Macroprocesos en tamaño completo">
+      <img src="/arquitectura-de-macroprocesos.svg" loading="lazy"
+        alt="Mapa de Arquitectura de Macroprocesos del CESA: los 7 macroprocesos organizados en espiral como cadena de valor, con soporte institucional en el centro.">
+      <span class="arq-map-hint">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3 14 10"/><path d="m3 21 7-7"/></svg>
+        Ver mapa completo
+      </span>
+    </a>
+    <div class="steps reveal" data-entries>
+      <div class="step" data-entry data-search="gobierno institucional y alineación estratégica"><h4>Gobierno institucional y alineación estratégica</h4><p></p></div>
+      <div class="step" data-entry data-search="inteligencia estratégica y experiencia del usuario"><h4>Inteligencia estratégica y experiencia del usuario</h4><p></p></div>
+      <div class="step" data-entry data-search="planeación diseño y evolución de la oferta de valor"><h4>Planeación, diseño y evolución de la oferta de valor</h4><p></p></div>
+      <div class="step" data-entry data-search="posicionamiento y generación de demanda"><h4>Posicionamiento y generación de demanda</h4><p></p></div>
+      <div class="step" data-entry data-search="conversión y fidelización estratégica"><h4>Conversión y fidelización estratégica</h4><p></p></div>
+      <div class="step" data-entry data-search="entrega de experiencias y soluciones integral"><h4>Entrega de experiencias y soluciones integral</h4><p></p></div>
+      <div class="step" data-entry data-search="soporte institucional"><h4>Soporte institucional</h4><p></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JERARQUÍA Y NIVELES (secciones 6-10) ============ -->
+<section id="jerarquia" data-category="jerarquia" style="background:var(--surface-2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Secciones 6–10 — Jerarquía y niveles</span>
+      <h2>Macroproceso, Proceso y Procedimiento</h2>
+    </div>
+
+    <div class="steps reveal" style="margin-bottom:36px">
+      <div class="step"><h4>Macroproceso</h4><p>Agrupación estratégica de procesos con un propósito común.</p></div>
+      <div class="step"><h4>Proceso</h4><p>Transforma entradas en resultados mediante recursos y controles.</p></div>
+      <div class="step"><h4>Procedimiento</h4><p>Secuencia lógica de actividades, modelada en BPMN.</p></div>
+    </div>
+
+    <div class="proc-grid reveal" data-entries>
+      <div class="proc" id="t-7" style="--c:var(--m7)" data-entry data-search="macroproceso 7 un macroproceso es el nivel más alto de la arquitectura de procesos del cesa corresponde a una agrupación estratégica de procesos relacionados que comparten un propósito institucional común mapa de procesos">
+        <button class="proc-h" aria-expanded="false"><span class="pn">7</span><span class="ptitle">Macroproceso</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in">
+          <p class="proc-desc">Un macroproceso es el nivel más alto de la arquitectura de procesos del CESA. Corresponde a una agrupación estratégica de procesos relacionados que comparten un propósito institucional común y que, de manera integrada, contribuyen al cumplimiento de la estrategia, la misión y los objetivos organizacionales.</p>
+          <p class="proc-desc">Los macroprocesos representan las grandes capacidades organizacionales requeridas para ejecutar el modelo institucional, articulando personas, recursos, tecnología e información para generar valor a las partes interesadas.</p>
+          <p class="proc-desc">Cada macroproceso integra uno o varios procesos que interactúan entre sí y se encuentran alineados con los elementos transversales de Experiencia, Innovación y Disciplina Operativa, garantizando una gestión coherente y orientada a resultados.</p>
+          <p class="proc-meta"><b>Documento que lo representa:</b> Mapa de Procesos del CESA.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-8" class="rel-link" data-jump="t-8">Proceso</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-8" style="--c:var(--m7)" data-entry data-search="proceso 8 un proceso es un conjunto estructurado de actividades interrelacionadas que transforma entradas en resultados mediante la utilización coordinada de recursos capacidades y controles caracterización del proceso">
+        <button class="proc-h" aria-expanded="false"><span class="pn">8</span><span class="ptitle">Proceso</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in">
+          <p class="proc-desc">Un proceso es un conjunto estructurado de actividades interrelacionadas que transforma entradas en resultados mediante la utilización coordinada de recursos, capacidades y controles, con el propósito de generar valor para los clientes y demás partes interesadas.</p>
+          <p class="proc-desc">Cada proceso tiene un objetivo claramente definido, un responsable, límites de actuación, indicadores de desempeño, riesgos, controles y mecanismos de seguimiento que permiten asegurar su eficacia, eficiencia y mejora continua.</p>
+          <p class="proc-desc">Los procesos constituyen el nivel de gestión mediante el cual se operacionalizan los macroprocesos y permiten materializar la estrategia institucional en actividades medibles, controladas y orientadas a resultados.</p>
+          <p class="proc-meta"><b>Documento que lo representa:</b> Caracterización del Proceso.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-7" class="rel-link" data-jump="t-7">Macroproceso</a><a href="#t-9" class="rel-link" data-jump="t-9">Procedimiento</a><a href="#t-10" class="rel-link" data-jump="t-10">Caracterización de Procesos</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-9" style="--c:var(--m7)" data-entry data-search="procedimiento 9 un procedimiento es la descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso o parte de este bpmn bizagi modeler diagrama">
+        <button class="proc-h" aria-expanded="false"><span class="pn">9</span><span class="ptitle">Procedimiento</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in">
+          <p class="proc-desc">Un procedimiento es la descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso o parte de este, definiendo el orden de ejecución, los responsables, las decisiones, los controles y las interacciones requeridas para garantizar resultados consistentes.</p>
+          <p class="proc-desc">Los procedimientos constituyen el nivel operativo de la arquitectura de procesos y permiten estandarizar la ejecución de las actividades, asegurando uniformidad, trazabilidad, cumplimiento de los lineamientos institucionales y facilitando la mejora continua.</p>
+          <p class="proc-desc">En el CESA, los procedimientos se documentan mediante diagramas bajo el estándar Business Process Model and Notation (BPMN) utilizando Bizagi Modeler, lo que permite representar gráficamente el flujo del proceso, los participantes, los eventos, las decisiones y las reglas de negocio.</p>
+          <p class="proc-desc">Cuando una actividad requiere mayor nivel de detalle, la descripción de la tarea, los criterios de ejecución, los controles, las reglas de negocio, los sistemas de información utilizados y los documentos asociados se registran en las propiedades de la actividad dentro del modelo BPMN, evitando la generación de documentos independientes innecesarios.</p>
+          <p class="proc-meta"><b>Documento que lo representa:</b> Diagrama BPMN elaborado en Bizagi Modeler.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-8" class="rel-link" data-jump="t-8">Proceso</a><a href="#t-11" class="rel-link" data-jump="t-11">Metodología BPMN del CESA</a><a href="#t-12" class="rel-link" data-jump="t-12">Estándar de modelamiento</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-10" style="--c:var(--m7)" data-entry data-search="caracterización de procesos 10 toda caracterización deberá contener objetivo alcance responsable proveedores entradas phva salidas clientes indicadores riesgos recursos requisitos legales y procedimientos asociados">
+        <button class="proc-h" aria-expanded="false"><span class="pn">10</span><span class="ptitle">Caracterización de Procesos</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Toda caracterización deberá contener objetivo, alcance, responsable, proveedores, entradas, PHVA, salidas, clientes, indicadores, riesgos, recursos, requisitos legales y procedimientos asociados.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-8" class="rel-link" data-jump="t-8">Proceso</a></div>
+        </div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px">
+      <div class="sec-head reveal" style="margin-bottom:16px">
+        <span class="sec-num">Anexo · Sección 16</span>
+        <h2 style="font-size:19px">Matriz de niveles documentales</h2>
+      </div>
+      <div class="table-wrap reveal">
+        <table class="matrix">
+          <thead><tr><th>Nivel</th><th>Elemento</th><th>Documento</th><th>Herramienta</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Macroproceso</td><td>Mapa de Procesos</td><td>Arquitectura institucional</td></tr>
+            <tr><td>2</td><td>Proceso</td><td>Caracterización</td><td>Formato oficial</td></tr>
+            <tr><td>3</td><td>Procedimiento</td><td>Diagrama BPMN</td><td>Bizagi</td></tr>
+            <tr><td>4</td><td>Actividad</td><td>Actividad BPMN</td><td>Bizagi</td></tr>
+            <tr><td>5</td><td>Tarea</td><td>Propiedades de actividad</td><td>Bizagi</td></tr>
+            <tr><td>6</td><td>Evidencia</td><td>Políticas, guías, manuales, instructivos y formatos</td><td>DARUMA</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METODOLOGÍA (secciones 11-12) ============ -->
+<section id="metodologia" data-category="metodologia">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Secciones 11–12 — Metodología y herramientas</span>
+      <h2>Cómo se modelan los procedimientos</h2>
+    </div>
+    <div class="proc-grid reveal" data-entries>
+      <div class="proc" id="t-11" style="--c:var(--m2)" data-entry data-search="metodología bpmn del cesa 11 los procedimientos serán modelados en bizagi utilizando bpmn se utilizarán eventos actividades compuertas artefactos objetos de conexión pools y lanes">
+        <button class="proc-h" aria-expanded="false"><span class="pn">11</span><span class="ptitle">Metodología BPMN del CESA</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Los procedimientos serán modelados en Bizagi utilizando BPMN. Se utilizarán eventos, actividades, compuertas, artefactos, objetos de conexión, pools y lanes.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-9" class="rel-link" data-jump="t-9">Procedimiento</a><a href="#t-12" class="rel-link" data-jump="t-12">Estándar de modelamiento</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-12" style="--c:var(--m2)" data-entry data-search="estándar de modelamiento 12 flujo de izquierda a derecha mínimo tres actores mínimo seis actividades decisiones expresadas como preguntas más de 35 actividades implica dividir en subprocesos">
+        <button class="proc-h" aria-expanded="false"><span class="pn">12</span><span class="ptitle">Estándar de modelamiento</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Flujo de izquierda a derecha; mínimo tres actores; mínimo seis actividades; decisiones expresadas como preguntas; más de 35 actividades implica dividir en subprocesos.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-11" class="rel-link" data-jump="t-11">Metodología BPMN del CESA</a></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GESTIÓN DOCUMENTAL (secciones 13-14.3) ============ -->
+<section id="documental" data-category="documental" style="background:var(--surface-2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Secciones 13–14.3 — Gestión documental</span>
+      <h2>DARUMA como repositorio oficial</h2>
+      <p>En el CESA, la arquitectura de procesos se estructura en tres niveles de gestión (Macroproceso, Proceso y Procedimiento). Las actividades y tareas no constituyen niveles documentales independientes; estas se representan y administran directamente en los modelos BPMN desarrollados en Bizagi. La documentación complementaria requerida para la operación de los procesos, como políticas, manuales, guías, instructivos, formatos y registros, se administra mediante el Sistema de Gestión Documental DARUMA, que constituye el repositorio oficial de la documentación institucional.</p>
+    </div>
+    <div class="proc-grid reveal" data-entries>
+      <div class="proc" id="t-14-1" style="--c:var(--m5)" data-entry data-search="daruma propósito 14.1 daruma es la herramienta definida por el cesa para la administración control y publicación de la documentación que soporta el sistema de gestión por procesos">
+        <button class="proc-h" aria-expanded="false"><span class="pn">14.1</span><span class="ptitle">DARUMA — Propósito</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in">
+          <p class="proc-desc">DARUMA es la herramienta definida por el CESA para la administración, control y publicación de la documentación que soporta el Sistema de Gestión por Procesos. Constituye la única fuente oficial de consulta para la documentación vigente, garantizando que toda la información utilizada por los colaboradores corresponda a versiones aprobadas, controladas y actualizadas.</p>
+          <p class="proc-desc">La utilización de DARUMA asegura la trazabilidad documental, el control de versiones, la gestión de aprobaciones, la disponibilidad de la información y el cumplimiento de los lineamientos institucionales y normativos aplicables.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-3-10" class="rel-link" data-jump="t-3-10">Gestión documental y trazabilidad</a><a href="#t-14-2" class="rel-link" data-jump="t-14-2">DARUMA — Alcance y documentos controlados</a><a href="#t-14-3" class="rel-link" data-jump="t-14-3">Lineamientos para la gestión documental</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-14-2" style="--c:var(--m5)" data-entry data-search="daruma alcance y documentos controlados 14.2 toda la documentación que soporte la operación de los procesos institucionales deberá gestionarse mediante daruma políticas manuales guías instructivos formatos">
+        <button class="proc-h" aria-expanded="false"><span class="pn">14.2</span><span class="ptitle">DARUMA — Alcance y documentos controlados</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in">
+          <p class="proc-desc">Toda la documentación que soporte la operación de los procesos institucionales deberá gestionarse mediante DARUMA.</p>
+          <p class="proc-desc">Entre otros, se consideran documentos controlados:</p>
+          <ul class="procs-list">
+            <li>Políticas.</li><li>Manuales.</li><li>Guías.</li><li>Instructivos.</li><li>Formatos.</li>
+            <li>Demás documentos que soporten la ejecución de los procesos.</li>
+          </ul>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-14-1" class="rel-link" data-jump="t-14-1">DARUMA — Propósito</a><a href="#t-14-3" class="rel-link" data-jump="t-14-3">Lineamientos para la gestión documental</a></div>
+        </div></div>
+      </div>
+      <div class="proc" id="t-14-3" style="--c:var(--m5)" data-entry data-search="lineamientos para la gestión documental 14.3 código único control de versión responsable de elaboración revisión y aprobación vigente en daruma no se permitirá el uso de documentos en carpetas personales correos electrónicos unidades compartidas">
+        <button class="proc-h" aria-expanded="false"><span class="pn">14.3</span><span class="ptitle">Lineamientos para la gestión documental</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in">
+          <p class="proc-desc">Todo documento institucional deberá cumplir como mínimo con los siguientes criterios:</p>
+          <ul class="procs-list">
+            <li>Contar con un código único de identificación.</li>
+            <li>Mantener control de versión e historial de cambios.</li>
+            <li>Tener un responsable de elaboración, revisión y aprobación.</li>
+            <li>Encontrarse vigente y disponible para consulta en DARUMA.</li>
+            <li>Cumplir el procedimiento institucional de control documental.</li>
+            <li>Mantener coherencia con la arquitectura de procesos vigente.</li>
+          </ul>
+          <p class="proc-desc" style="margin-top:12px">No se permitirá el uso de documentos almacenados en carpetas personales, correos electrónicos, unidades compartidas u otros repositorios como fuente oficial de información, cuando exista una versión controlada en DARUMA.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-14-1" class="rel-link" data-jump="t-14-1">DARUMA — Propósito</a><a href="#t-14-2" class="rel-link" data-jump="t-14-2">DARUMA — Alcance y documentos controlados</a></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROLES (sección 14.4) ============ -->
+<section id="roles" data-category="roles">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Sección 14.4 — Roles y responsabilidades</span>
+      <h2>Quién hace qué en la gestión documental</h2>
+    </div>
+    <div class="pillars reveal" data-entries>
+      <div class="pillar" style="--c:var(--m3)" data-entry data-search="dirección de transformación definir los lineamientos metodológicos para la documentación de procesos garantizar la articulación entre la arquitectura de procesos bizagi y daruma">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <h3>Dirección de Transformación</h3>
+        <ul>
+          <li>Definir los lineamientos metodológicos para la documentación de procesos.</li>
+          <li>Garantizar la articulación entre la arquitectura de procesos, Bizagi y DARUMA.</li>
+        </ul>
+      </div>
+      <div class="pillar" style="--c:var(--m3)" data-entry data-search="dueños de proceso identificar la documentación requerida para soportar la ejecución del proceso solicitar la creación modificación o eliminación de documentos garantizar que la documentación permanezca actualizada">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></div>
+        <h3>Dueños de Proceso</h3>
+        <ul>
+          <li>Identificar la documentación requerida para soportar la ejecución del proceso.</li>
+          <li>Solicitar la creación, modificación o eliminación de documentos cuando sea necesario.</li>
+          <li>Garantizar que la documentación asociada al proceso permanezca actualizada.</li>
+        </ul>
+      </div>
+      <div class="pillar" style="--c:var(--m3)" data-entry data-search="gestión documental líder de procesos administrar el repositorio documental en daruma controlar el versionamiento y publicación de documentos garantizar la disponibilidad de las versiones vigentes">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <h3>Gestión Documental (Líder de procesos)</h3>
+        <ul>
+          <li>Administrar el repositorio documental en DARUMA.</li>
+          <li>Controlar el versionamiento y publicación de documentos.</li>
+          <li>Garantizar la disponibilidad de las versiones vigentes.</li>
+        </ul>
+      </div>
+      <div class="pillar" style="--c:var(--m3)" data-entry data-search="colaboradores consultar únicamente la documentación vigente publicada en daruma aplicar los lineamientos establecidos en los documentos oficiales informar la necesidad de actualización">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>Colaboradores</h3>
+        <ul>
+          <li>Consultar únicamente la documentación vigente publicada en DARUMA.</li>
+          <li>Aplicar los lineamientos establecidos en los documentos oficiales.</li>
+          <li>Informar la necesidad de actualización cuando identifiquen oportunidades de mejora.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INDICADORES Y RIESGOS (sección 15) ============ -->
+<section id="indicadores" data-category="indicadores" style="background:var(--surface-2)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">Sección 15 — Indicadores y riesgos</span>
+      <h2>Qué debe medir cada proceso</h2>
+    </div>
+    <div class="proc-grid reveal" data-entries>
+      <div class="proc open" id="t-15" style="--c:var(--m6)" data-entry data-search="indicadores y riesgos 15 cada proceso deberá contar con kpi kri riesgos controles y mecanismos de seguimiento">
+        <button class="proc-h" aria-expanded="true"><span class="pn">15</span><span class="ptitle">Indicadores y riesgos</span><span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="proc-c"><div class="proc-c-in"><p class="proc-desc">Cada proceso deberá contar con KPI, KRI, riesgos, controles y mecanismos de seguimiento.</p>
+          <div class="related"><span class="related-label">Relacionado</span><a href="#t-3-5" class="rel-link" data-jump="t-3-5">Gestión basada en datos</a><a href="#t-3-6" class="rel-link" data-jump="t-3-6">Gestión de riesgos y controles</a></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap ft">
+    <p><strong>Daruma · Glosario de términos</strong><br>Vocabulario oficial del Manual de Gestión y Documentación de Procesos del CESA v1.0 — 16 secciones cubiertas.<br>Fuente: Dirección de Transformación.</p>
+    <div class="links">
+      <a href="/arquitectura-macroprocesos.html">Arquitectura de Macroprocesos ↗</a>
+      <a href="/entrenamiento-daruma.html">Entrenamiento Daruma ↗</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ---- progreso de lectura (localStorage) ---- */
+const PROGRESS_KEY = 'cesaGlosarioProgreso';
+const trackable = $$('.proc[id^="t-"]');
+let visited = new Set(JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]'));
+
+function updateProgressUI() {
+  const total = trackable.length;
+  const done = trackable.filter(el => visited.has(el.id)).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressLabel').textContent = done + ' de ' + total + ' definiciones revisadas';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function markVisited(id) {
+  if (!id || visited.has(id)) return;
+  visited.add(id);
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify([...visited]));
+  document.getElementById(id)?.classList.add('visited');
+  updateProgressUI();
+}
+
+trackable.forEach(el => { if (visited.has(el.id)) el.classList.add('visited'); });
+updateProgressUI();
+
+/* ---- acordeón de términos (idéntico al patrón .proc del resto del sitio) ---- */
+$$('.proc-h').forEach(h => h.addEventListener('click', () => {
+  const proc = h.closest('.proc'), c = proc.querySelector('.proc-c'), open = proc.classList.toggle('open');
+  h.setAttribute('aria-expanded', open);
+  c.style.maxHeight = open ? c.scrollHeight + 'px' : 0;
+  if (open && proc.id) markVisited(proc.id);
+}));
+// abre por defecto el único término de "Indicadores y riesgos"
+$$('.proc.open .proc-c').forEach(c => { c.style.maxHeight = c.scrollHeight + 'px'; });
+if (document.querySelector('.proc.open')?.id) markVisited(document.querySelector('.proc.open').id);
+
+/* ---- reveal on scroll (idéntico al resto del sitio) ---- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), { threshold: .12 });
+$$('.reveal').forEach(el => io.observe(el));
+
+/* ---- búsqueda + filtro por categoría + salto a término relacionado ---- */
+(function () {
+  const search = document.getElementById('search');
+  const pills = $$('.catpill');
+  const sections = $$('section[data-category]');
+  const entries = $$('[data-entry]');
+  const noResults = document.getElementById('noResults');
+  let activeFilter = 'all';
+
+  document.getElementById('statTerms').textContent = entries.length;
+  document.getElementById('statCats').textContent = sections.length;
+
+  function applyFilters() {
+    const query = search.value.trim().toLowerCase();
+    let anyVisible = false;
+
+    sections.forEach(sec => {
+      const cat = sec.getAttribute('data-category');
+      const catMatches = activeFilter === 'all' || activeFilter === cat;
+      const secHeadText = (sec.querySelector('.sec-head')?.textContent || '').toLowerCase();
+      const secNameMatches = query !== '' && secHeadText.indexOf(query) !== -1;
+      let sectionHasVisible = false;
+
+      sec.querySelectorAll('[data-entry]').forEach(entry => {
+        const text = (entry.getAttribute('data-search') || entry.textContent).toLowerCase();
+        const textMatches = query === '' || text.indexOf(query) !== -1 || secNameMatches;
+        const visible = catMatches && textMatches;
+        entry.style.display = visible ? '' : 'none';
+        if (visible) sectionHasVisible = true;
+      });
+
+      sec.style.display = sectionHasVisible ? '' : 'none';
+      if (sectionHasVisible) anyVisible = true;
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  }
+
+  pills.forEach(pill => pill.addEventListener('click', () => {
+    pills.forEach(p => p.setAttribute('aria-pressed', 'false'));
+    pill.setAttribute('aria-pressed', 'true');
+    activeFilter = pill.getAttribute('data-filter');
+    applyFilters();
+  }));
+
+  search.addEventListener('input', applyFilters);
+
+  function jumpTo(id) {
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    // limpia búsqueda y filtro para asegurar que el término destino sea visible
+    search.value = '';
+    activeFilter = 'all';
+    pills.forEach(p => p.setAttribute('aria-pressed', p.getAttribute('data-filter') === 'all' ? 'true' : 'false'));
+    applyFilters();
+
+    const h = target.querySelector('.proc-h'), c = target.querySelector('.proc-c');
+    if (h && !target.classList.contains('open')) {
+      target.classList.add('open');
+      h.setAttribute('aria-expanded', 'true');
+      c.style.maxHeight = c.scrollHeight + 'px';
+    }
+    if (target.id) markVisited(target.id);
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.remove('flash');
+    void target.offsetWidth;
+    target.classList.add('flash');
+  }
+
+  $$('.rel-link').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    jumpTo(a.getAttribute('data-jump'));
+  }));
+
+  // Si se llega con un #id en la URL (ej. enlace externo a un término puntual), ábrelo directamente.
+  if (location.hash) {
+    const id = location.hash.slice(1);
+    if (document.getElementById(id)) jumpTo(id);
+  }
+})();
+
+document.addEventListener('DOMContentLoaded', function(){
+  if (typeof cesaShowIntro === 'function') {
+    cesaShowIntro('glosario', {
+      eyebrow: 'Cómo usar esta página',
+      title: 'Glosario de términos',
+      items: [
+        'Vas a encontrar el vocabulario oficial del Manual de Gestión de Procesos del CESA, con la definición completa de cada término.',
+        'Busca por palabra o filtra por categoría para encontrar un término específico — cada uno indica de qué sección del manual proviene.',
+        'Haz clic en los enlaces "Relacionado" para saltar a términos conectados dentro del mismo glosario.'
+      ]
+    });
+  }
+});
+</script>
+</body>
+</html>

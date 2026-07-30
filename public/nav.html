@@ -1,0 +1,19 @@
+<style>
+#cesa-topnav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:6px;padding:6px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,.08);border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.08);font-family:'Outfit',system-ui,sans-serif}
+#cesa-topnav a{padding:8px 16px;border-radius:999px;font-size:13px;font-weight:500;color:#3a4256;text-decoration:none;transition:all .2s}
+#cesa-topnav a:hover{background:#eef1f7;color:#013998}
+#cesa-topnav a.active{background:#013998;color:#fff}
+@media (max-width:640px){#cesa-topnav a{padding:6px 10px;font-size:12px}}
+</style>
+<nav id="cesa-topnav">
+  <a href="/arquitectura-macroprocesos.html" data-nav="arquitectura">Arquitectura</a>
+  <a href="/entrenamiento-daruma.html" data-nav="entrenamiento">Entrenamiento</a>
+</nav>
+<script>
+(function(){
+  var p=location.pathname;
+  var key=p.indexOf('entrenamiento')>-1?'entrenamiento':'arquitectura';
+  var el=document.querySelector('#cesa-topnav a[data-nav="'+key+'"]');
+  if(el)el.classList.add('active');
+})();
+</script>

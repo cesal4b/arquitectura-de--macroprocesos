@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CESA · Arquitectura de Macroprocesos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/topbar.css">
+<script defer src="/topbar.js"></script>
+<style>
+  :root{
+    /* ===== Tema claro (tokens CESA, por defecto en esta página) ===== */
+    --bg:#f6f7fb;
+    --surface:#ffffff;
+    --surface-2:#f0f2f8;
+    --ink:#041F3E;
+    --ink-2:#3a4256;
+    --ink-3:#6b7488;
+    --line:#D5D8DF;
+    --line-2:#d4dae6;
+    --brand:#013998;         /* CESA azul primario */
+    --brand-soft:#eaf0f7;
+    --accent:#027bff;        /* CESA azul CTA */
+    --accent-soft:rgba(2,123,255,.08);
+    --gold:#caa64a;
+    --radius:18px;
+    --radius-sm:11px;
+    --shadow-sm:0 1px 2px rgba(16,19,28,.04),0 2px 8px rgba(16,19,28,.05);
+    --shadow:0 12px 40px -12px rgba(16,19,28,.22),0 2px 8px rgba(16,19,28,.06);
+    --shadow-lg:0 30px 80px -20px rgba(16,19,28,.35);
+    --on-accent:#fff;
+    /* color por macroproceso — paleta secundaria oficial CESA, acompañando al azul primario */
+    --m1:#013998; --m2:#49983A; --m3:#074734; --m4:#FF8D00;
+    --m5:#5C214D; --m6:#FF4C00; --m7:#5b6577;
+    --metric-a:var(--brand); --metric-b:var(--m3);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  [data-theme="dark"]{
+    --bg:#0d0f14;
+    --surface:#141821;
+    --surface-2:#1b2030;
+    --ink:#e8ecf4;
+    --ink-2:#9aa4ba;
+    --ink-3:#646e85;
+    --line:#262d3d;
+    --line-2:#333c52;
+    --brand:#5a7ebc;
+    --brand-soft:color-mix(in srgb,var(--brand) 18%,transparent);
+    --accent:#5aa9ff;
+    --accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
+    --gold:#e0c378;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.25);
+    --shadow:0 12px 40px -12px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3);
+    --shadow-lg:0 30px 80px -20px rgba(0,0,0,.6);
+    --m1:#3361ac; --m2:#6dad61; --m3:#396c5d; --m4:#ff8d00;
+    --m5:#7d4d71; --m6:#ff4c00; --m7:#7c8492;
+    --metric-a:#7eb0ff; --metric-b:#6dd3a8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  body{
+    font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    transition:background-color .2s,color .2s;
+  }
+  ::selection{background:var(--accent-soft);color:var(--accent)}
+  a{color:inherit}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+  /* ============ NAV ============ */
+  nav.topbar{
+    position:sticky;top:0;z-index:60;
+    background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:saturate(180%) blur(16px);
+    border-bottom:1px solid var(--line);
+    transition:padding .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+  }
+  nav.topbar.scrolled{box-shadow:0 6px 22px color-mix(in srgb,var(--ink) 6%,transparent);
+    background:color-mix(in srgb,var(--surface) 94%,transparent)}
+  .nav-in{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:14px}
+  nav.topbar.scrolled .nav-in{padding:8px 24px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.4px;font-size:15.5px;white-space:nowrap;text-decoration:none;color:inherit}
+  .logo .mark{
+    width:32px;height:32px;border-radius:10px;flex:none;
+    background:radial-gradient(circle at 32% 28%,color-mix(in srgb,var(--brand) 70%,#fff),var(--brand));
+    display:grid;place-items:center;color:#fff;font-size:13.5px;font-weight:800;
+    box-shadow:0 4px 12px color-mix(in srgb,var(--brand) 30%,transparent);position:relative;
+  }
+  .logo .mark::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;
+    background:var(--accent);right:-2px;top:-2px;border:2px solid var(--surface)}
+  .logo small{display:block;font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:.6px;text-transform:uppercase;margin-top:-2px}
+
+  /* section anchors — subtle, in-page */
+  .nav-links{display:flex;gap:2px;margin-left:6px}
+  .nav-links a{
+    font-size:13px;font-weight:600;color:var(--ink-3);text-decoration:none;
+    padding:7px 11px;border-radius:8px;transition:.18s var(--ease);position:relative;white-space:nowrap;
+  }
+  .nav-links a:hover{background:var(--surface-2);color:var(--ink)}
+  .nav-links a.current{color:var(--brand)}
+  .nav-links a.current::after{content:"";position:absolute;left:11px;right:11px;bottom:2px;height:2px;background:var(--brand);border-radius:2px}
+
+  .nav-spacer{flex:1}
+
+  /* ===== switcher unificado de documentos (estás aquí) ===== */
+  .docnav{display:inline-flex;background:var(--surface-2);border:1px solid var(--line-2);
+    border-radius:11px;padding:3px;gap:2px}
+  .docnav a{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--ink-2);
+    font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;transition:.16s var(--ease);white-space:nowrap}
+  .docnav a svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+  .docnav a:hover{background:var(--surface);color:var(--ink)}
+  .docnav a.on{background:var(--brand);color:#fff;box-shadow:0 2px 10px color-mix(in srgb,var(--brand) 25%,transparent)}
+  .docnav a.on:hover{color:#fff}
+
+  /* icon actions */
+  .nav-actions{display:flex;align-items:center;gap:6px}
+  .icon-btn{width:36px;height:36px;border-radius:10px;background:transparent;
+    border:1px solid transparent;color:var(--ink-2);cursor:pointer;display:grid;place-items:center;
+    transition:.18s var(--ease);flex-shrink:0;text-decoration:none;position:relative}
+  .icon-btn:hover{background:var(--surface-2);border-color:var(--line);color:var(--brand)}
+  .icon-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .icon-btn[data-tip]::after{content:attr(data-tip);position:absolute;top:calc(100% + 6px);left:50%;
+    transform:translateX(-50%) translateY(-4px);background:var(--ink);color:var(--surface);
+    font-size:11px;font-weight:600;padding:5px 9px;border-radius:6px;white-space:nowrap;
+    opacity:0;pointer-events:none;transition:.18s var(--ease);letter-spacing:.2px}
+  .icon-btn:hover[data-tip]::after{opacity:.95;transform:translateX(-50%) translateY(0)}
+  .icon-btn.primary{background:var(--brand);color:#fff;border-color:transparent}
+  .icon-btn.primary:hover{background:color-mix(in srgb,var(--brand) 88%,#000);color:#fff}
+
+  /* expandable search */
+  .nav-search{position:relative;display:flex;align-items:center}
+  .nav-search input{
+    width:0;padding:0;border:1px solid transparent;border-radius:10px;
+    font:inherit;font-size:13.5px;background:var(--surface);color:var(--ink);
+    transition:width .22s var(--ease),padding .22s var(--ease),border-color .22s var(--ease);
+  }
+  .nav-search.open input,.nav-search input:focus{
+    width:230px;padding:8px 14px 8px 34px;border-color:var(--line-2);outline:none;
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 10%,transparent);border-color:var(--brand);
+  }
+  .nav-search .search-icon{position:absolute;left:11px;width:15px;height:15px;color:var(--ink-3);pointer-events:none;opacity:0;transition:.18s var(--ease)}
+  .nav-search.open .search-icon,.nav-search input:focus + .search-icon{opacity:1}
+
+  /* mobile burger */
+  .nav-burger{display:none}
+  /* Section anchors move to the drawer as soon as the bar gets crowded,
+     so the primary switcher (docnav) never overflows. */
+  @media(max-width:1180px){
+    .nav-links{display:none}
+    .nav-burger{display:grid}
+  }
+  @media(max-width:900px){
+    .logo small{display:none}
+    .docnav a span{display:none}
+    .docnav a{padding:8px 10px}
+    .nav-search{display:none}
+  }
+  @media(max-width:560px){
+    .nav-in{gap:8px;padding:10px 14px}
+    .icon-btn.hide-sm{display:none}
+    /* keep docnav visible but ultra-compact — it's the main navigation */
+    .docnav{padding:2px;gap:1px}
+    .docnav a{padding:7px 8px}
+    .docnav a svg{width:16px;height:16px}
+  }
+
+  /* mobile drawer */
+  .nav-drawer{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 40%,transparent);
+    z-index:70;opacity:0;pointer-events:none;transition:.2s var(--ease);backdrop-filter:blur(4px)}
+  .nav-drawer.open{opacity:1;pointer-events:auto}
+  .nav-drawer .panel{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);
+    background:var(--surface);border-left:1px solid var(--line);
+    padding:22px 20px;display:flex;flex-direction:column;gap:6px;
+    transform:translateX(100%);transition:transform .25s var(--ease);overflow-y:auto}
+  .nav-drawer.open .panel{transform:none}
+  .nav-drawer .panel h4{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--ink-3);margin:14px 4px 4px}
+  .nav-drawer .panel a{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;
+    font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;transition:.15s var(--ease)}
+  .nav-drawer .panel a:hover{background:var(--surface-2)}
+  .nav-drawer .panel a.on{background:color-mix(in srgb,var(--brand) 10%,transparent);color:var(--brand)}
+  .nav-drawer .panel a svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+  .nav-drawer .close{position:absolute;top:14px;right:14px}
+
+  /* ============ HERO ============ */
+  header.hero{position:relative;overflow:hidden;padding:74px 0 56px;
+    background:
+      radial-gradient(900px 420px at 88% -8%,color-mix(in srgb,var(--accent) 7%,transparent),transparent 60%),
+      radial-gradient(800px 460px at -6% 8%,color-mix(in srgb,var(--brand) 6%,transparent),transparent 60%),
+      linear-gradient(180deg,var(--surface),var(--bg));
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:1.4px;
+    text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+    padding:6px 13px;border-radius:30px;margin-bottom:22px}
+  .eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+  h1.title{font-size:clamp(34px,5.4vw,58px);line-height:1.04;letter-spacing:-1.6px;font-weight:800;max-width:16ch}
+  h1.title em{font-style:normal;color:var(--brand);position:relative;white-space:nowrap}
+  h1.title em::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:11px;background:var(--gold);opacity:.32;z-index:-1;border-radius:2px}
+  .lede{font-size:clamp(16px,2vw,19px);color:var(--ink-2);max-width:60ch;margin-top:22px;line-height:1.6}
+  .hero-tag{margin-top:26px;display:inline-flex;align-items:center;gap:10px;font-style:italic;
+    color:var(--ink-3);font-size:15px;border-left:3px solid var(--gold);padding-left:14px}
+
+  /* hero layout: copy + mapa lado a lado */
+  .hero-grid{display:grid;grid-template-columns:0.82fr 1.3fr;gap:44px;align-items:center}
+  .hero-map{position:relative;display:block;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;overflow:hidden}
+  .hero-map img{display:block;width:100%;height:auto;border-radius:calc(var(--radius) - 6px);
+    transition:transform .5s var(--ease)}
+  .hero-map:hover img,.hero-map:focus-visible img{transform:scale(1.02)}
+  .hero-map-hint{position:absolute;right:20px;bottom:20px;display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border:1px solid var(--line);
+    padding:7px 13px;border-radius:30px;font-size:12px;font-weight:700;color:var(--ink-2);
+    opacity:0;transform:translateY(4px);transition:.2s var(--ease)}
+  .hero-map:hover .hero-map-hint,.hero-map:focus-visible .hero-map-hint{opacity:1;transform:none}
+  .hero-map-hint svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:28px}}
+
+  /* metrics */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:46px}
+  .metric{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:20px 18px;box-shadow:var(--shadow-sm);transition:.25s var(--ease)}
+  .metric:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .metric .n{font-size:38px;font-weight:800;letter-spacing:-1.5px;line-height:1;
+    background:linear-gradient(135deg,var(--metric-a),var(--metric-b));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .metric .l{font-size:12.5px;color:var(--ink-3);font-weight:600;margin-top:8px;letter-spacing:.2px}
+  @media(max-width:640px){.metrics{grid-template-columns:repeat(2,1fr)}}
+
+  /* ============ section headers ============ */
+  section{padding:66px 0;scroll-margin-top:70px}
+  .sec-head{margin-bottom:34px;max-width:62ch}
+  .sec-num{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:1px}
+  .sec-head h2{font-size:clamp(25px,3.4vw,36px);letter-spacing:-1px;font-weight:800;margin:8px 0 12px;line-height:1.1}
+  .sec-head p{color:var(--ink-2);font-size:16px;line-height:1.6}
+  .click-hint{display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+    background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+    padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:700;white-space:normal}
+  .click-hint svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2}
+  [data-theme="dark"] .click-hint{background:rgba(90,169,255,.14);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+
+  /* ============ PILARES ============ */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .pillar{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:28px 26px;box-shadow:var(--shadow-sm);overflow:hidden;transition:.28s var(--ease)}
+  .pillar::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--c)}
+  .pillar:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--line-2)}
+  .pillar .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;margin-bottom:16px;
+    background:color-mix(in srgb,var(--c) 12%,var(--surface));color:var(--c)}
+  .pillar .ic svg{width:23px;height:23px}
+  .pillar h3{font-size:19px;font-weight:800;letter-spacing:-.4px;margin-bottom:9px}
+  .pillar p{font-size:14px;color:var(--ink-2);line-height:1.62}
+  @media(max-width:780px){.pillars{grid-template-columns:1fr}}
+
+  /* ============ METODOLOGÍA ============ */
+  .steps{display:grid;grid-template-columns:repeat(6,1fr);gap:0;counter-reset:step;position:relative}
+  .step{position:relative;padding:24px 16px 22px;border-top:2px solid var(--line-2);transition:.25s var(--ease)}
+  .step::before{counter-increment:step;content:"0" counter(step);position:absolute;top:-1px;left:16px;
+    transform:translateY(-50%);background:var(--bg);padding:0 8px;font-size:13px;font-weight:800;color:var(--ink-3);transition:.25s}
+  .step .dot{position:absolute;top:-7px;right:16px;width:11px;height:11px;border-radius:50%;background:var(--line-2);
+    border:2px solid var(--bg);transition:.25s}
+  .step h4{font-size:14.5px;font-weight:800;letter-spacing:-.3px;margin-bottom:7px;color:var(--brand)}
+  .step p{font-size:12.5px;color:var(--ink-3);line-height:1.55}
+  .step:hover{border-top-color:var(--accent)}
+  .step:hover::before{color:var(--accent)}
+  .step:hover .dot{background:var(--accent);transform:scale(1.25)}
+  @media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}.step{border-top:none;border-left:2px solid var(--line-2);padding:8px 18px 24px}.step::before{top:0;left:-1px;transform:translateX(-50%);background:var(--bg)}.step .dot{top:6px;left:-6px;right:auto}}
+  @media(max-width:520px){.steps{grid-template-columns:1fr}}
+
+  /* ============ MAPA DE VALOR ============ */
+  .arch-svg-map{margin:0 0 28px}
+  .arch-svg-wrap{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff;max-width:760px;margin:0 auto}
+  .arch-svg-wrap img{display:block;width:100%;height:auto}
+  .hotspot{position:absolute;transform:translate(-50%,-50%);width:11%;aspect-ratio:1/1;border-radius:50%;
+    border:2px solid transparent;background:transparent;cursor:pointer;padding:0;transition:.2s var(--ease)}
+  .hotspot:hover,.hotspot:focus-visible{border-color:#fff;background:rgba(255,255,255,.2);box-shadow:0 0 0 5px rgba(255,255,255,.14);outline:none}
+  .hotspot.support{width:19%;aspect-ratio:auto;height:11%;border-radius:999px}
+  .arch-svg-map figcaption{margin-top:12px;font-size:13px;color:var(--ink-3);text-align:center}
+  .map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:24px;font-size:12.5px;color:var(--ink-2)}
+  .map-legend span{display:inline-flex;align-items:center;gap:7px;font-weight:600}
+  .map-legend i{width:13px;height:13px;border-radius:4px;display:inline-block}
+
+  .vchain{display:flex;flex-direction:column;gap:16px}
+  .band-label{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-3);margin-bottom:-4px;display:flex;align-items:center;gap:9px}
+  .band-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .node{
+    --c:var(--brand);
+    text-align:left;width:100%;cursor:pointer;font:inherit;color:var(--ink);
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:18px 18px 16px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+    transition:.24s var(--ease);display:flex;flex-direction:column;gap:9px;
+  }
+  .node::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--c);transition:width .24s}
+  .node:hover,.node:focus-visible{transform:translateY(-4px);box-shadow:var(--shadow);border-color:transparent;outline:none}
+  .node:hover::before,.node:focus-visible::before{width:6px}
+  .node .nh{display:flex;align-items:flex-start;gap:11px}
+  .node .badge{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    font-weight:800;font-size:14px;color:#fff;background:var(--c)}
+  .node .nt{font-size:15px;font-weight:800;letter-spacing:-.35px;line-height:1.22}
+  .node .np{font-size:13px;color:var(--ink-2);line-height:1.5}
+  .node .nmeta{display:flex;gap:7px;flex-wrap:wrap;margin-top:2px}
+  .chip{font-size:11px;font-weight:700;color:var(--ink-3);background:var(--surface-2);
+    padding:3px 9px;border-radius:20px;border:1px solid var(--line);display:inline-flex;gap:5px;align-items:center}
+  .chip b{color:var(--ink-2)}
+  .node .go{position:absolute;top:16px;right:16px;color:var(--ink-3);opacity:0;transform:translateX(-4px);transition:.24s}
+  .node:hover .go,.node:focus-visible .go{opacity:1;transform:translateX(0)}
+
+  .core-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;position:relative}
+  .flowline{display:flex;align-items:center;justify-content:space-between;margin:2px 6px 6px;color:var(--ink-3);font-size:11.5px;font-weight:700;letter-spacing:.3px}
+  .flowline .arrow{flex:1;height:2px;background:linear-gradient(90deg,var(--line-2),var(--line-2));margin:0 10px;position:relative}
+  .flowline .arrow::after{content:"";position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+    border:5px solid transparent;border-left-color:var(--line-2)}
+  @media(max-width:980px){.core-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.core-grid{grid-template-columns:1fr}.flowline{display:none}}
+
+  .support-grid{display:grid;grid-template-columns:1fr;gap:12px}
+  .duo{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:780px){.duo{grid-template-columns:1fr}}
+
+  /* ============ DRAWER ============ */
+  .scrim{position:fixed;inset:0;background:rgba(16,19,28,.45);backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:.3s var(--ease);z-index:90}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,94vw);background:var(--surface);
+    box-shadow:var(--shadow-lg);z-index:100;transform:translateX(100%);transition:transform .42s var(--ease);
+    display:flex;flex-direction:column}
+  .drawer.on{transform:translateX(0)}
+  .dr-head{padding:26px 28px 22px;border-bottom:1px solid var(--line);position:relative;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--c) 9%,var(--surface)),var(--surface))}
+  .dr-head .bar{position:absolute;inset:0 auto 0 0;width:5px;background:var(--c)}
+  .dr-kicker{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .dr-kicker .badge{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;background:var(--c)}
+  .dr-kicker small{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3)}
+  .dr-head h3{font-size:23px;letter-spacing:-.7px;font-weight:800;line-height:1.13}
+  .dr-purpose{margin-top:11px;font-size:14px;color:var(--c);font-weight:700}
+  .dr-close{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);
+    background:var(--surface);cursor:pointer;display:grid;place-items:center;color:var(--ink-2);transition:.2s}
+  .dr-close:hover{background:var(--accent-soft);color:var(--accent);border-color:transparent;transform:rotate(90deg)}
+  .dr-body{padding:24px 28px 40px;overflow-y:auto;flex:1}
+  .dr-stats{display:flex;gap:10px;margin-bottom:22px}
+  .dr-stat{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+  .dr-stat .n{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--c)}
+  .dr-stat .l{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px}
+  .dr-obj-label{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+  .dr-obj{font-size:14.5px;color:var(--ink-2);line-height:1.66;margin-bottom:26px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+  .proc{border:1px solid var(--line);border-radius:13px;margin-bottom:11px;overflow:hidden;transition:.2s var(--ease)}
+  .proc:hover{border-color:var(--line-2);box-shadow:var(--shadow-sm)}
+  .proc-h{width:100%;text-align:left;font:inherit;cursor:pointer;background:var(--surface);color:var(--ink);
+    padding:15px 16px;display:flex;align-items:center;gap:12px}
+  .proc-h .pn{flex:none;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--c) 13%,var(--surface));color:var(--c);font-size:12px;font-weight:800}
+  .proc-h .ptitle{font-size:14.5px;font-weight:700;letter-spacing:-.2px;line-height:1.3;flex:1}
+  .proc-h .caret{color:var(--ink-3);transition:.25s var(--ease);flex:none}
+  .proc.open .caret{transform:rotate(180deg)}
+  .proc-c{max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+  .proc-c-in{padding:0 16px 16px 52px}
+  .proc-desc{font-size:13.5px;color:var(--ink-2);line-height:1.62;margin-bottom:13px}
+  .proc-meta{display:flex;flex-direction:column;gap:10px}
+  .meta-row{font-size:12.5px}
+  .meta-row .k{font-weight:800;color:var(--ink-3);text-transform:uppercase;letter-spacing:.6px;font-size:10.5px;display:block;margin-bottom:5px}
+  .leaders{display:flex;flex-wrap:wrap;gap:6px}
+  .lead{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:20px;padding:3px 10px 3px 4px;font-size:12px;font-weight:600;color:var(--ink-2)}
+  .lead .av{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:800;color:#fff;background:var(--c)}
+  .procs-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+  .procs-list li{font-size:12.5px;color:var(--ink-2);padding-left:16px;position:relative;line-height:1.45}
+  .procs-list li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--c);opacity:.55}
+  .empty-note{font-size:12px;color:var(--ink-3);font-style:italic}
+  .wip-tag{display:inline-block;flex:none;margin-left:8px;padding:2px 8px;border-radius:999px;font-size:9.5px;
+    font-weight:800;letter-spacing:.3px;text-transform:uppercase;background:#F8D210;color:#3a2e00;vertical-align:middle}
+  .procs-list li .wip-tag{margin-left:6px;font-size:9px;padding:1px 7px}
+
+  /* ============ search results ============ */
+  #searchPanel{display:none;padding-bottom:0}
+  #searchPanel.on{display:block}
+  .sr-count{font-size:13px;color:var(--ink-3);margin-bottom:16px}
+  .sr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:680px){.sr-grid{grid-template-columns:1fr}}
+  .sr-card{text-align:left;font:inherit;cursor:pointer;background:var(--surface);border:1px solid var(--line);color:var(--ink);
+    border-radius:12px;padding:15px 16px;box-shadow:var(--shadow-sm);transition:.2s var(--ease);position:relative;overflow:hidden}
+  .sr-card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c)}
+  .sr-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--line-2)}
+  .sr-card .mp{font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--c);margin-bottom:5px}
+  .sr-card .tt{font-size:14px;font-weight:700;letter-spacing:-.2px;line-height:1.3;margin-bottom:6px}
+  .sr-card .ld{font-size:12px;color:var(--ink-3)}
+  mark{background:var(--gold);color:var(--ink);border-radius:3px;padding:0 2px;opacity:.85}
+
+  /* ============ footer ============ */
+  footer{border-top:1px solid var(--line);background:var(--surface);padding:40px 0 48px;margin-top:30px}
+  .ft{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+  .ft p{font-size:13px;color:var(--ink-3);line-height:1.6}
+  .ft a{color:var(--brand);font-weight:600;text-decoration:none;border-bottom:1px solid var(--line-2)}
+  .ft a:hover{color:var(--accent);border-color:var(--accent)}
+  .ft .links{display:flex;gap:18px;flex-wrap:wrap;font-size:13px}
+
+  /* ============ CALLOUT DARUMA ============ */
+  .daruma-callout{
+    background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 78%,#000));
+    border-radius:var(--radius);padding:38px 40px;margin:44px 0 4px;
+    display:flex;align-items:center;gap:36px;flex-wrap:wrap;
+    box-shadow:0 20px 50px -20px color-mix(in srgb,var(--brand) 45%,transparent);
+    position:relative;overflow:hidden;
+  }
+  .daruma-callout::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(600px 300px at 100% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
+  .daruma-callout .dc-body{flex:1;min-width:260px;position:relative}
+  .daruma-callout .eyebrow{background:rgba(255,255,255,.14);color:#fff}
+  .daruma-callout .eyebrow .pulse{background:#fff}
+  .daruma-callout h2{color:#fff;font-size:clamp(21px,2.6vw,28px);font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
+  .daruma-callout p{color:rgba(255,255,255,.82);font-size:15px;line-height:1.65;max-width:56ch}
+  .daruma-callout .dc-actions{display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;position:relative}
+  .dc-btn{display:inline-flex;align-items:center;gap:9px;font-size:14.5px;font-weight:700;
+    padding:13px 22px;border-radius:var(--radius-sm);text-decoration:none;transition:.2s var(--ease);white-space:nowrap}
+  .dc-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .dc-btn.primary{background:#fff;color:var(--brand);box-shadow:0 8px 20px -8px rgba(0,0,0,.35)}
+  .dc-btn.primary:hover{background:var(--gold);color:var(--ink)}
+  .dc-btn.ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.3)}
+  .dc-btn.ghost:hover{background:rgba(255,255,255,.18)}
+  .dc-btn.gold{background:#F8D210;color:var(--ink);border:1px solid #F8D210;box-shadow:0 8px 20px -8px rgba(0,0,0,.35)}
+  .dc-btn.gold:hover{background:#e0bd00}
+  @media(max-width:640px){.daruma-callout{padding:28px 24px}.daruma-callout .dc-actions{width:100%}.dc-btn{flex:1;justify-content:center}}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:.6s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<!-- ============ NAV ============ -->
+<!-- Topbar unificada inyectada por /topbar.js -->
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <h1 class="title">Arquitectura de <em>Macroprocesos</em></h1>
+        <p class="lede">El mapa que traduce la estrategia del CESA en procesos concretos, medibles y ejecutables. Siete macroprocesos organizados como una cadena de valor centrada en el usuario — desde escuchar la audiencia hasta entregar experiencias memorables.</p>
+      </div>
+      <a class="hero-map reveal" href="/arquitectura-macroprocesos-mapa.jpg" target="_blank" rel="noopener"
+        aria-label="Ver en tamaño completo el mapa de Arquitectura de Macroprocesos">
+        <img src="/arquitectura-macroprocesos-mapa.jpg" width="1920" height="1080" loading="eager"
+          alt="Mapa de Arquitectura de Macroprocesos del CESA: siete macroprocesos organizados en espiral como cadena de valor — posicionamiento y generación de demanda, conversión y fidelización, entrega de experiencias, inteligencia estratégica, planeación de la oferta de valor y gobierno institucional — con soporte institucional, disciplina operativa, experiencia e innovación en el centro.">
+        <span class="hero-map-hint">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3 14 10"/><path d="m3 21 7-7"/></svg>
+          Ver mapa completo
+        </span>
+      </a>
+    </div>
+
+    <div class="metrics">
+      <div class="metric cs-tip" data-tip="Es el nivel más alto de la arquitectura de procesos del CESA: una agrupación estratégica de procesos relacionados que comparten un propósito institucional común y contribuyen al cumplimiento de la estrategia, la misión y los objetivos organizacionales."><div class="n">7</div><div class="l">Macroprocesos</div></div>
+      <div class="metric cs-tip" data-tip="Un conjunto estructurado de actividades interrelacionadas que transforma entradas en resultados mediante recursos, capacidades y controles coordinados, con el propósito de generar valor para los clientes y demás partes interesadas."><div class="n">27</div><div class="l">Procesos</div></div>
+      <div class="metric cs-tip" data-tip="La descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso, definiendo responsables, decisiones y controles. En el CESA se documentan en diagramas BPMN mediante Bizagi Modeler."><div class="n">147</div><div class="l">Procedimientos</div></div>
+      <div class="metric cs-tip" data-tip="Persona o cargo responsable de un proceso. Como Dueño de Proceso, identifica la documentación que soporta su ejecución, solicita su actualización y garantiza que permanezca vigente."><div class="n">13</div><div class="l">Líderes</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ CALLOUT DARUMA ============ -->
+<div class="wrap">
+  <div class="daruma-callout reveal">
+    <div class="dc-body">
+      <span class="eyebrow">Sistema de Gestión Documental</span>
+      <h2>¿Qué es DARUMA?</h2>
+      <p>Es la herramienta definida por el CESA para la administración, control y publicación de la documentación que soporta el Sistema de Gestión por Procesos — la única fuente oficial de consulta para la documentación vigente. Ahí es donde puedes aprender a operarla, paso a paso.</p>
+    </div>
+    <div class="dc-actions">
+      <a class="dc-btn primary" href="/entrenamiento-daruma.html">
+        <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg>
+        Conoce el contenido tutorial
+      </a>
+      <a class="dc-btn ghost" href="/glosario.html#t-14-1">
+        <svg viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+        Leer definición completa
+      </a>
+      <a class="dc-btn ghost" href="https://cloud.darumasoftware.com/app_training.php/cesa/" target="_blank" rel="noopener" data-daruma-link="entrenamiento">
+        <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg>
+        Entorno Daruma Training
+      </a>
+      <a class="dc-btn gold" href="https://cloud.darumasoftware.com/app.php/cesa/" target="_blank" rel="noopener" data-daruma-link="daruma">
+        <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+        Daruma
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PILARES ============ -->
+<section id="pilares">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">01 — Elementos transversales</span>
+      <h2>Tres pilares que atraviesan toda la operación</h2>
+      <p>Cada macroproceso se diseña, mide y mejora bajo la misma triada. Son el lente común con el que se lee la institución.</p>
+    </div>
+    <div class="pilares-layout reveal">
+      <div class="pilar-graphic-wrapper">
+        <div class="pilar-graphic" id="pilarGraphic">
+          <!-- SVG interactivo inyectado por JS -->
+        </div>
+        <div class="pilar-graphic-caption">Pasa el cursor sobre cada pilar para explorar su significado</div>
+      </div>
+      <div class="pillars">
+        <div class="pillar reveal" data-pillar="experiencia" style="--c:var(--m3)">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-8-4.5-8-11a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 6.5-8 11-8 11z"/></svg></div>
+          <div class="pillar-body">
+            <h3>Experiencia</h3>
+            <p>La vivencia integral, coherente y significativa en cada punto de contacto a lo largo de la vida, con una visión 360 personalizada que maximiza la relación práctica y transformadora con el CESA.</p>
+          </div>
+        </div>
+        <div class="pillar reveal" data-pillar="disciplina" style="--c:var(--m1)">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h12"/></svg></div>
+          <div class="pillar-body">
+            <h3>Disciplina operativa</h3>
+            <p>La capacidad de ejecutar procesos de forma continua, eficiente y flexible — con estandarización, claridad de roles, trazabilidad y cumplimiento normativo que sostienen la confianza y la continuidad.</p>
+          </div>
+        </div>
+        <div class="pillar reveal" data-pillar="innovacion" style="--c:var(--m4)">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg></div>
+          <div class="pillar-body">
+            <h3>Innovación</h3>
+            <p>La actitud para repensar y transformar procesos, servicios y modelos de relación — anticipando los cambios del entorno con soluciones personalizadas, flexibles y sostenibles.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    #pilares .pilares-layout{display:grid;grid-template-columns:minmax(320px,460px) 1fr;gap:36px;align-items:center;margin-top:28px}
+    #pilares .pillars{display:flex;flex-direction:column;gap:16px;grid-template-columns:none}
+    #pilares .pillar{display:flex;gap:16px;align-items:flex-start;padding:20px 22px;border-left:4px solid var(--c,var(--m1));transition:opacity .25s ease, filter .25s ease, transform .25s ease, box-shadow .25s ease, border-color .25s ease}
+    #pilares .pillar .ic{flex:0 0 auto;margin:0}
+    #pilares .pillar-body{flex:1 1 auto;min-width:0}
+    #pilares .pillar h3{margin:0 0 6px}
+    #pilares .pillar p{margin:0}
+    .pilar-graphic-wrapper{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 16px;box-shadow:var(--shadow-sm);transition:.28s var(--ease);position:sticky;top:24px}
+    .pilar-graphic-wrapper:hover{border-color:var(--line-2);box-shadow:var(--shadow)}
+    .pilar-graphic{max-width:420px;margin:0 auto}
+    .pilar-graphic svg{width:100%;height:auto;display:block}
+    .pilar-graphic [data-pillar-path]{cursor:pointer;transition:opacity .25s ease, transform .35s ease, filter .25s ease;transform-box:fill-box;transform-origin:center}
+    .pilar-graphic-caption{text-align:center;font-size:13px;color:var(--ink-3);margin-top:14px;letter-spacing:.2px}
+    .pillars.has-active .pillar:not(.is-active){opacity:.45;filter:saturate(.6)}
+    .pilar-graphic.has-active [data-pillar-path]:not(.is-active){opacity:.28}
+    .pilar-graphic [data-pillar-path].is-active{filter:drop-shadow(0 8px 22px rgba(1,57,152,.35));transform:translateY(-4px) scale(1.02)}
+    #pilares .pillar.is-active{transform:translateX(4px);box-shadow:var(--shadow)}
+    @media(max-width:900px){
+      #pilares .pilares-layout{grid-template-columns:1fr;gap:24px}
+      .pilar-graphic-wrapper{position:static;max-width:520px;margin:0 auto}
+    }
+  </style>
+
+  <script>
+  (function(){
+    var container = document.getElementById('pilarGraphic');
+    var pillarsWrap = document.querySelector('#pilares .pillars');
+    if(!container || !pillarsWrap) return;
+    // Mapeo por color de relleno del SVG -> pilar
+    var COLOR_TO_PILLAR = {
+      '#87BBE7': 'experiencia',
+      '#0E9ED4': 'disciplina',
+      '#0C2941': 'innovacion'
+    };
+    function norm(c){ return (c||'').trim().toUpperCase(); }
+    fetch('/pilares_de_procesos.svg').then(function(r){return r.text();}).then(function(txt){
+      container.innerHTML = txt;
+      var svg = container.querySelector('svg');
+      if(!svg) return;
+      svg.setAttribute('role','img');
+      svg.setAttribute('aria-label','Diagrama interactivo de los tres pilares');
+      var paths = svg.querySelectorAll('path[fill]');
+      var byPillar = {};
+      paths.forEach(function(p){
+        var key = norm(p.getAttribute('fill'));
+        var mapKey = Object.keys(COLOR_TO_PILLAR).find(function(k){return k.toUpperCase()===key;});
+        if(!mapKey) return;
+        var pillar = COLOR_TO_PILLAR[mapKey];
+        p.setAttribute('data-pillar-path', pillar);
+        (byPillar[pillar] = byPillar[pillar] || []).push(p);
+      });
+      var pillarEls = pillarsWrap.querySelectorAll('.pillar[data-pillar]');
+      function activate(name){
+        if(!name){ clear(); return; }
+        container.classList.add('has-active');
+        pillarsWrap.classList.add('has-active');
+        container.querySelectorAll('[data-pillar-path]').forEach(function(p){
+          p.classList.toggle('is-active', p.getAttribute('data-pillar-path')===name);
+        });
+        pillarEls.forEach(function(el){
+          el.classList.toggle('is-active', el.getAttribute('data-pillar')===name);
+        });
+      }
+      function clear(){
+        container.classList.remove('has-active');
+        pillarsWrap.classList.remove('has-active');
+        container.querySelectorAll('.is-active').forEach(function(el){el.classList.remove('is-active');});
+        pillarEls.forEach(function(el){el.classList.remove('is-active');});
+      }
+      // Hover / focus en las tarjetas
+      pillarEls.forEach(function(el){
+        var name = el.getAttribute('data-pillar');
+        el.addEventListener('mouseenter', function(){activate(name);});
+        el.addEventListener('mouseleave', clear);
+        el.addEventListener('focusin', function(){activate(name);});
+        el.addEventListener('focusout', clear);
+        el.tabIndex = 0;
+      });
+      // Hover / click en las secciones del SVG
+      Object.keys(byPillar).forEach(function(name){
+        byPillar[name].forEach(function(p){
+          p.addEventListener('mouseenter', function(){activate(name);});
+          p.addEventListener('mouseleave', clear);
+          p.addEventListener('click', function(){
+            var target = document.querySelector('.pillar[data-pillar="'+name+'"]');
+            if(target) target.scrollIntoView({behavior:'smooth', block:'center'});
+          });
+        });
+      });
+    }).catch(function(){});
+  })();
+  </script>
+
+</section>
+
+<!-- ============ METODOLOGÍA ============ -->
+<section id="metodologia" style="background:linear-gradient(180deg,var(--surface),var(--bg));border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">02 — Cómo se construyó</span>
+      <h2>Metodología en seis pasos</h2>
+      <p>De la estrategia a los procesos: la ruta que asegura coherencia entre lo que el CESA quiere ser y lo que ejecuta cada día.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><span class="dot"></span><h4>Entender la estrategia</h4><p>Alinear la arquitectura con la estrategia y el modelo institucional.</p></div>
+      <div class="step"><span class="dot"></span><h4>Comprender la transformación</h4><p>Hacer de la arquitectura un medio efectivo para ejecutar las iniciativas.</p></div>
+      <div class="step"><span class="dot"></span><h4>Análisis integral</h4><p>Validar la estructura como palanca real para ejecutar la estrategia.</p></div>
+      <div class="step"><span class="dot"></span><h4>Definir macroprocesos</h4><p>Sintetizar temáticas y representarlas ordenada y estratégicamente.</p></div>
+      <div class="step"><span class="dot"></span><h4>Asegurar alineación</h4><p>Traducir lo conceptual en procesos concretos, medibles y ejecutables.</p></div>
+      <div class="step"><span class="dot"></span><h4>Definir procesos</h4><p>Bajar cada macroproceso a procesos y procedimientos con líderes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAPA DE VALOR ============ -->
+<section id="mapa">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">03 — Mapa de valor</span>
+      <h2>La cadena de valor del CESA</h2>
+      <p>El gobierno fija el rumbo; el núcleo fluye del entendimiento de la audiencia hasta la entrega de experiencias; el soporte sostiene todo.</p>
+      <span class="click-hint"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Haz clic en cualquier macroproceso para ver su objetivo, procesos, líderes y procedimientos.</span>
+    </div>
+
+    <figure class="arch-svg-map reveal">
+      <div class="arch-svg-wrap">
+        <img src="/arquitectura-de-macroprocesos.svg" loading="lazy"
+          alt="Mapa de Arquitectura de Macroprocesos del CESA: los 7 macroprocesos organizados en espiral como cadena de valor, con soporte institucional en el centro.">
+        <button class="hotspot" type="button" data-id="1" style="left:69.84%;top:44.81%" aria-label="Ver detalle: Gobierno institucional y alineación estratégica"></button>
+        <button class="hotspot" type="button" data-id="2" style="left:54.11%;top:76.94%" aria-label="Ver detalle: Inteligencia estratégica y experiencia del usuario"></button>
+        <button class="hotspot" type="button" data-id="3" style="left:38.44%;top:46.11%" aria-label="Ver detalle: Planeación, diseño y evolución de la oferta de valor"></button>
+        <button class="hotspot" type="button" data-id="4" style="left:58.65%;top:15.19%" aria-label="Ver detalle: Posicionamiento y generación de demanda"></button>
+        <button class="hotspot" type="button" data-id="5" style="left:80.63%;top:29.35%" aria-label="Ver detalle: Conversión y fidelización estratégica"></button>
+        <button class="hotspot" type="button" data-id="6" style="left:77.76%;top:75.65%" aria-label="Ver detalle: Entrega de experiencias y soluciones integrales"></button>
+        <button class="hotspot support" type="button" data-id="7" style="left:51.5%;top:36.5%" aria-label="Ver detalle: Soporte institucional"></button>
+      </div>
+      <figcaption>Así se ve en el mapa institucional — haz clic en cualquier círculo (o en “Soporte institucional”) para ver su detalle, igual que en la cadena de valor de abajo.</figcaption>
+    </figure>
+
+    <div class="map-legend reveal">
+      <span><i style="background:var(--m1)"></i> Gobierno (rumbo)</span>
+      <span><i style="background:linear-gradient(90deg,var(--m2),var(--m6))"></i> Núcleo de valor (flujo al usuario)</span>
+      <span><i style="background:var(--m7)"></i> Soporte (base transversal)</span>
+    </div>
+
+    <div class="vchain reveal" id="vchain"></div>
+  </div>
+</section>
+
+<!-- ============ MACROPROCESOS (anchor / search) ============ -->
+<section id="macroprocesos" style="padding-top:34px">
+  <div class="wrap">
+    <div id="searchPanel">
+      <div class="sec-head" style="margin-bottom:18px">
+        <span class="sec-num">Resultados de búsqueda</span>
+        <h2 id="srTitle">Buscando…</h2>
+      </div>
+      <div class="sr-count" id="srCount"></div>
+      <div class="sr-grid" id="srGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap ft">
+    <p>Arquitectura de procesos - Oficina de Transformación</p>
+  </div>
+</footer>
+
+<!-- ============ DRAWER ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drTitle"></aside>
+
+<script>
+/* ============================================================
+   TEMA — claro / oscuro (persistido en el navegador)
+   ============================================================ */
+const THEME_KEY='daruma_theme';
+const ICON_SUN='<circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>';
+const ICON_MOON='<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>';
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t==='light'?'light':'dark');
+  try{localStorage.setItem(THEME_KEY,t);}catch(e){}
+  const btn=document.getElementById('themeToggle');
+  const icon=document.getElementById('themeIcon');
+  if(!btn||!icon)return;
+  if(t==='light'){
+    icon.innerHTML=ICON_MOON;
+    btn.title='Cambiar a modo oscuro'; btn.setAttribute('aria-label','Cambiar a modo oscuro');
+  }else{
+    icon.innerHTML=ICON_SUN;
+    btn.title='Cambiar a modo claro'; btn.setAttribute('aria-label','Cambiar a modo claro');
+  }
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+  applyTheme(cur);
+}
+function initTheme(){
+  let t='dark';
+  try{ t=localStorage.getItem(THEME_KEY)||'dark'; }catch(e){}
+  applyTheme(t);
+  const btn=document.getElementById('themeToggle');
+  if(btn)btn.addEventListener('click',toggleTheme);
+}
+initTheme();
+
+/* ====================== DATA ====================== */
+const COLORS = ['--m1','--m2','--m3','--m4','--m5','--m6','--m7'];
+const MACRO = [
+ {
+  "id": 1,
+  "color": "--m1",
+  "layer": "gob",
+  "name": "Gobierno institucional y alineación estratégica",
+  "purpose": "Definimos el rumbo institucional.",
+  "objective": "Garantizar un gobierno corporativo ético, transparente y participativo, que articule la estrategia con procesos sostenibles, asegure la gestión de los recursos y rinda cuentas de manera efectiva a los grupos de interés.",
+  "processes": [
+   {
+    "name": "Gobierno corporativo, sostenibilidad y cumplimiento institucional",
+    "desc": "Gestión del marco institucional de gobierno mediante la definición de estructuras, roles y niveles de autoridad, asegurando la legalidad, la transparencia y el cumplimiento normativo a través de la toma de decisión de los órganos de dirección, la asesoría jurídica, la validación de documentos de carácter estatutario, reglamentario y las políticas institucionales.",
+    "leaders": [],
+    "procs": [
+     "Modelo de gobernanza de TI",
+     "Formulación del Peti",
+     "Gestión de PQRSF",
+     "Análisis y diseño del plan estratégico de Sostenibilidad",
+     "Gestión social",
+     "Gobernanza",
+     "Gestión ambiental"
+    ]
+   },
+   {
+    "name": "Planeación estratégica",
+    "desc": "Diseño, ejecución y seguimiento de la estrategia institucional mediante el análisis del entorno, la formulación de objetivos, la planeación presupuestal, la asignación de recursos y la evaluación de resultados, alineando las decisiones estratégicas con criterios académicos, de acreditación, consultoría, formación personalizada, investigación y financieros, verificando que la experiencia, la disciplina operativa y la innovación se integren de manera coherente en la gestión diaria del CESA.",
+    "leaders": [],
+    "procs": []
+   },
+   {
+    "name": "Planeación de la estructura organizacional",
+    "desc": "Diseño de la estructura organizacional para asegurar la alineación entre estrategia, funciones y talento, mediante la planificación de cargos, escalas salariales y criterios de compensación que garanticen eficiencia y sostenibilidad institucional.",
+    "leaders": [],
+    "procs": []
+   },
+   {
+    "name": "Gestión de procesos, riesgos, control y auditoria",
+    "desc": "Aseguramiento de la disciplina operativa institucional mediante la gestión de procesos, la identificación y control de riesgos, la mejora continua y la ejecución de auditorías internas y externas que fortalezcan la transparencia, la eficiencia y el cumplimiento.",
+    "leaders": [
+     "Líder de Procesos"
+    ],
+    "procs": []
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "color": "--m2",
+  "layer": "core",
+  "name": "Inteligencia estratégica y experiencia del usuario",
+  "purpose": "Escuchamos y comprendemos audiencias.",
+  "objective": "Recolectar, analizar y gestionar información estratégica sobre la experiencia, percepción y comportamiento de los públicos del CESA y de actores clave del entorno, e impulsar acciones para consolidar la mejor experiencia y fortalecer la percepción institucional — mediante investigaciones segmentadas, benchmarking, testing tecnológico, auditorías digitales y análisis de reputación.",
+  "processes": [
+   {
+    "name": "Investigación estratégica, análisis del entorno y gestión de experiencia del usuario CESA",
+    "desc": "Análisis comparativo, reputacional y de posicionamiento del entorno institucional, académico y empresarial, a nivel nacional e internacional, mediante el estudio de referentes, tendencias, percepción en medios y desempeño de marca, e integración del análisis de la experiencia, percepción y comportamiento de los usuarios del CESA a lo largo de su ciclo de vida, incorporando la consolidación de datos académicos, relacionales y experienciales, metodologías de investigación UX/CX y la generación de insights accionables que permitan la personalización, fidelización y mejora continua.",
+    "leaders": [
+     "Director del Centro de Analítica"
+    ],
+    "procs": [
+     "Inteligencia institucional y analítica",
+     "Seguimiento de visualizadores",
+     "Medición de impacto",
+     "Formación y desarrollo Interno",
+     "Investigación estratégica y análisis del entorno"
+    ]
+   },
+   {
+    "name": "Análisis de usabilidad y rendimiento digital",
+    "desc": "Evaluación del desempeño y la experiencia digital mediante auditorías, análisis de comportamiento, pruebas técnicas y medición de usabilidad para optimizar la navegación y funcionalidad de las plataformas.",
+    "leaders": [
+     "Líder de Tecnología"
+    ],
+    "procs": [
+     "Diagnóstico de Experiencia Digital y Comportamiento del Usuario"
+    ]
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "color": "--m3",
+  "layer": "core",
+  "name": "Planeación, diseño y evolución de la oferta de valor",
+  "purpose": "Diseñamos ofertas pertinentes que incentivan la recompra.",
+  "objective": "Diseñar y planificar la oferta de valor del CESA — productos y experiencias interconectados, basados en la inteligencia institucional — para ofrecer soluciones pertinentes, de alta calidad e impacto, centradas en el usuario y alineadas con el entorno, fortaleciendo relaciones sostenibles a lo largo del ciclo de vida.",
+  "processes": [
+   {
+    "name": "Planeación de la oferta de valor",
+    "desc": "Identificación, análisis de viabilidad y priorización de oportunidades estratégicas, nacionales e internacionales, para el desarrollo de la oferta de valor del CESA, garantizando coherencia con las directrices institucionales y su potencial de impacto.",
+    "leaders": [],
+    "procs": [
+     "Planeación de oferta de valor formal",
+     "Planeación de oferta de valor LLL",
+     "Planeación de oferta de valor CESA Empresarial",
+     "Planeación Bienestar"
+    ]
+   },
+   {
+    "name": "Diseño y evolución de la oferta de valor",
+    "desc": "Diseño, validación y estructuración integral de la oferta académica formal y no formal, consultorías e investigaciones, integrando criterios curriculares, metodológicos y pedagógicos, así como la adaptación de contenidos y resultados al contexto y necesidades de los diferentes clientes y aliados.",
+    "leaders": [],
+    "procs": [
+     "Diseño de la oferta de valor",
+     "Diseño de producto filantrópico",
+     "Diseño de bienestar",
+     "Diseño LLL",
+     "Diseño CESA Empresarial"
+    ]
+   },
+   {
+    "name": "Innovación en pedagogía y experiencias de aprendizaje",
+    "desc": "Desarrollo, pilotaje y escalamiento de modelos educativos innovadores mediante laboratorios pedagógicos, experimentación institucional y difusión de buenas prácticas docentes alineadas con el enfoque propio del CESA.",
+    "leaders": [],
+    "procs": []
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "color": "--m4",
+  "layer": "core",
+  "name": "Posicionamiento y generación de demanda",
+  "purpose": "Atraemos y conectamos marca.",
+  "objective": "Diseñar y ejecutar estrategias de atracción, posicionamiento y comunicación institucional que fortalezcan la identidad del CESA, movilicen audiencias estratégicas y consoliden su reputación mediante contenidos relevantes, canales digitales y experiencias diferenciadas.",
+  "processes": [
+   {
+    "name": "Atracción de audiencias estratégicas",
+    "desc": "Diseño e implementación de estrategias de marketing para capturar audiencias, generando leads mediante contenidos relevantes, marketing de precisión, relacionamiento con organizaciones y gestión de comunidades.",
+    "leaders": [
+     "Decano de Crecimiento"
+    ],
+    "procs": [
+     "Análisis y diseño del plan estratégico de atracción",
+     "Atracción de Estudiantes",
+     "Inteligencia de mercados",
+     "Ejecución Eventos",
+     "Debida Diligencia"
+    ]
+   },
+   {
+    "name": "Gestión de comunicaciones y posicionamiento de la marca institucional",
+    "desc": "Gestión estratégica de la identidad, reputación y posicionamiento institucional del CESA, mediante la producción de contenidos de valor, la comunicación integral, la gestión de crisis y la difusión multicanal adaptada a distintos formatos y audiencias.",
+    "leaders": [
+     "Directora General de Comunicaciones y Sostenibilidad"
+    ],
+    "procs": [
+     "Análisis y diseño del plan estratégico de comunicación y gestión de marca",
+     "Implementación de la estrategia y generación de la narrativa CESA",
+     "Comunicaciones internas y externas",
+     "Gestión de Prensa",
+     "Premios y Reconocimientos",
+     "Voceros y embajadores de Marca",
+     "Participación en eventos"
+    ]
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "color": "--m5",
+  "layer": "core",
+  "name": "Conversión y fidelización estratégica",
+  "purpose": "Creamos vínculos para siempre.",
+  "objective": "Gestionar la conversión y fidelización de comunidades mediante un enfoque consultivo que profundice en las necesidades y retos estratégicos de los clientes — integrando tecnologías, personalización de experiencias y optimización de procesos para fortalecer vínculos y generar valor sostenible.",
+  "processes": [
+   {
+    "name": "Conversión y relacionamiento comercial",
+    "desc": "Gestión de la conversión y el relacionamiento comercial mediante la calificación de leads, el uso de CRM, la automatización de interacciones, la asistencia personalizada y la optimización de procesos clave y cierre de oportunidades.",
+    "leaders": [],
+    "procs": [
+     "Conversión de leads y relacionamiento comercial",
+     "Participación en convocatorias y procesos competitivos",
+     "Adquisición de productos filantrópicos - montos altos",
+     "Adquisición de productos filantrópicos - montos menores",
+     "Gestión de relacionamiento"
+    ]
+   },
+   {
+    "name": "Permanencia y conexión comunidad CESA",
+    "desc": "Fortalecimiento del relacionamiento con las comunidades CESA, asegurando la permanencia y retención a partir de las experiencias recibidas en cada punto de contacto, integrando una visión 360 personalizada según los distintos momentos de vida de las comunidades CESA, para consolidar vínculos bidireccionales, sentido de pertenencia y valor compartido a lo largo del tiempo.",
+    "leaders": [],
+    "procs": [
+     "Fidelización de donantes"
+    ]
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "color": "--m6",
+  "layer": "core",
+  "name": "Entrega de experiencias y soluciones integrales",
+  "purpose": "Entregamos experiencias memorables.",
+  "objective": "Articular, operar y fortalecer un ecosistema académico y de servicios integrados que genere más momentos de cercanía; garantice calidad, coherencia pedagógica y bienestar; y potencie el desarrollo vivencial de estudiantes, docentes, empresas y aliados mediante una oferta innovadora, flexible y conectada.",
+  "processes": [
+   {
+    "name": "Gestión académica del estudiante",
+    "desc": "Administración de la trayectoria académica del estudiante mediante procesos de admisión, matrícula, registro, homologación, gestión de solicitudes, soporte administrativo y acompañamiento académico, garantizando atención oportuna, permanencia y coherencia con la normativa institucional.",
+    "leaders": [],
+    "procs": []
+   },
+   {
+    "name": "Entrega de la oferta de valor CESA",
+    "desc": "Ejecución y mejora de experiencias en la entrega de la oferta de valor del CESA, integrando tecnologías educativas, evaluación continua, articulación con el entorno nacional e internacional, producción de conocimiento práctico y desarrollo de soluciones de impacto.",
+    "leaders": [],
+    "procs": [
+     "Asignación y renovación de beca permanente",
+     "Asignación y renovación de beca crédito",
+     "Asignación y renovación de beca temporal",
+     "Apoyo de sostenimiento",
+     "Certificado de donación"
+    ]
+   },
+   {
+    "name": "Gestión de entornos y recursos para el aprendizaje",
+    "desc": "Gestión de los recursos, tecnologías y entornos que enriquecen la experiencia de la oferta de valor del CESA, mediante la provisión de infraestructura física y virtual, servicios bibliotecarios, herramientas digitales y espacios diseñados para facilitar el acceso al conocimiento y fomentar la innovación pedagógica.",
+    "leaders": [],
+    "procs": [
+     "Análisis de los recursos de información",
+     "Selección y adquisición de recursos de información",
+     "Circulación y préstamos de recursos",
+     "Formación de usuarios - recursos de información"
+    ]
+   },
+   {
+    "name": "Desarrollo y gestión del cuerpo docente",
+    "desc": "Gestión integral del cuerpo docente a través de procesos de búsqueda, atracción, inducción, evaluación, formación y acompañamiento, que promueven el desarrollo profesional, la excelencia académica y la alineación con el modelo pedagógico del CESA, integrando tecnología, innovación y reconocimiento institucional.",
+    "leaders": [],
+    "procs": [
+     "Selección y contratación docente de planta",
+     "Selección y contratación docente de cátedra"
+    ]
+   },
+   {
+    "name": "Aseguramiento de la calidad académica",
+    "desc": "Aseguramiento y mejora continua de la calidad institucional y académica mediante la implementación de modelos de autoevaluación, procesos de acreditación nacional e internacional, análisis de resultados y gestión de planes de mejoramiento alineados con estándares y marcos de referencia.",
+    "leaders": [
+     "Directora de Aseguramiento de Calidad Académica"
+    ],
+    "procs": [
+     "Autoevaluación",
+     "Plan de mejoramiento nacional",
+     "Plan de mejoramiento internacional",
+     "Obtención y renovación de registro calificado",
+     "Modificación de registro calificado",
+     "Suspensión y cierre de programa",
+     "Acreditación internacional primera vez y reacreditación",
+     "Acreditación nacional primera vez o reacreditación",
+     "Visitas de pares"
+    ]
+   },
+   {
+    "name": "Gestión de contenidos de la oferta de valor del CESA",
+    "desc": "Diseño, curaduría, adaptación y actualización de contenidos de la oferta de valor del CESA, asegurando su coherencia pedagógica, pertinencia temática, diversidad de formatos y alineación con los objetivos de aprendizaje formal y no formal.",
+    "leaders": [
+     "Líder de Editorial"
+    ],
+    "procs": [
+     "Gestión de contenidos institucionales y educativos"
+    ]
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "color": "--m7",
+  "layer": "support",
+  "name": "Soporte institucional",
+  "purpose": "Activamos sinergias para mejorar experiencias.",
+  "objective": "Integrar y operar los procesos de soporte institucional para garantizar un funcionamiento eficiente, seguro y sostenible, alineado con la estrategia, fortaleciendo la identidad del CESA y generando experiencias significativas para su comunidad.",
+  "processes": [
+   {
+    "name": "Liderazgo, cultura y talento",
+    "desc": "Gestión integral del talento humano mediante la atracción, vinculación, desarrollo y bienestar del personal, promoviendo una cultura organizacional sólida, un clima laboral positivo y la adaptación al cambio, con políticas de compensación competitivas y el cumplimiento de los estándares del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST).",
+    "leaders": [
+     "Directora General Administrativa y de Personas y Cultura"
+    ],
+    "procs": [
+     "Búsqueda, postulación, selección de candidatos",
+     "Vinculación laboral o contractual",
+     "Selección y contratación aprendices",
+     "Sanciones disciplinarias - Colaboradores",
+     "Desvinculación laboral",
+     "Recepción novedades, emisión y pago de nomina",
+     "Seguridad social y prestaciones sociales",
+     "Liquidación de personal",
+     "Cierre contable de compensación y beneficios",
+     "Depuración de cartera - EPS, AFP, ARL, CCF",
+     "Cobro de incapacidades",
+     "Plan de bienestar y beneficios",
+     "Planeación, Ejecución y control de presupuesto de la planta personal",
+     "Organigrama y gestión salarial",
+     "Administración de beneficios",
+     "Gestión de solicitudes personas y cultura",
+     "Planeación, Ejecución y control de presupuesto del área",
+     "Cumplimiento de requisitos legales - Personas y cultura",
+     "Desarrollo del talento",
+     "Gestión de evaluación del desempeño",
+     "Plan anual SG-SST",
+     "Cumplimiento de requisitos legales SG-SST",
+     "Reporte e investigación de accidentes e incidentes laborales",
+     "Validación, elaboración y ejecución del plan epidemiológico",
+     "Auditoría externa e interna SG-SST",
+     "Exámenes médicos",
+     "Flujo padre SG-SST",
+     "Gestión del cambio SG-SST",
+     "Elaboración y revisión de informe de gestión SG-SST",
+     "Verificación del cumplimiento de requisitos SST contratistas",
+     "Gestión del cambio personas y cultura",
+     "Cultura"
+    ]
+   },
+   {
+    "name": "Gestión de compras",
+    "desc": "Administración del ciclo de adquisiciones mediante la selección, contratación y evaluación de proveedores, asegurando prácticas eficientes, transparentes y alineadas con las necesidades del CESA, con el propósito de garantizar la calidad y oportunidad en los bienes y servicios, que respaldan experiencias significativas y positivas en el cliente.",
+    "leaders": [
+     "Líder de Compras"
+    ],
+    "procs": [
+     "Gestión de compras",
+     "Gestión de proveedores",
+     "Gestión de garantías",
+     "Gestión de almacén",
+     "Planeación de compras"
+    ]
+   },
+   {
+    "name": "Gestión de infraestructura",
+    "desc": "Administración y mantenimiento de la infraestructura y la provisión de servicios a la comunidad, garantizando entornos seguros, funcionales y sostenibles.",
+    "leaders": [
+     "Directora de Infraestructura"
+    ],
+    "procs": [
+     "Planeación, elaboración y seguimiento al plan maestro infraestructura",
+     "Programación y desarrollo obras y adecuaciones",
+     "Mantenimiento locativo correctivo y de obras menores",
+     "Mantenimiento preventivo locativo",
+     "Elaboración y control del presupuesto de infraestructura",
+     "Permisos legales infraestructura",
+     "Diseño Proyectos Infraestructura",
+     "Solicitud y verificación de entrega de elementos de aseo y cafetería",
+     "Seguimiento y control de proveedor de seguridad y servicios generales",
+     "Manejo y custodia de objetos perdidos",
+     "Control de acceso y manejo de llaves",
+     "Reportes y atención de hurto o robo interno",
+     "Vigilancia y monitoreo de alarmas casas",
+     "Seguimiento y control para manejo de transporte",
+     "Seguimiento y control para manejo de parqueaderos",
+     "Adjudicación, supervisión y seguimiento para concesiones de servicios",
+     "Seguimiento y control de máquinas de café, de paquetes (snacks) y de agua",
+     "Seguimiento y gestión de servicios públicos"
+    ]
+   },
+   {
+    "name": "Administración de activos fijos",
+    "desc": "Gestión del ciclo de vida de los activos fijos institucionales mediante su inventario físico, asignación y baja, asegurando control, trazabilidad y uso eficiente de los recursos patrimoniales, de manera que estos respalden eficientemente la operación institucional.",
+    "leaders": [
+     "Director General Financiero"
+    ],
+    "procs": [
+     "Desempeño y monitoreo de la infraestructura",
+     "Manejo de activos fijos",
+     "Activos fijos"
+    ]
+   },
+   {
+    "name": "Gestión documental",
+    "desc": "Planificación, organización y preservación del archivo institucional mediante procesos de gestión documental que incluyen la transferencia, disposición y conservación de documentos y registros, garantizando su accesibilidad, integridad, confidencialidad y cumplimiento normativo, al servicio de una gestión académica y administrativa.",
+    "leaders": [
+     "Dirección de Biblioteca"
+    ],
+    "procs": [
+     "Planeación y valoración documental",
+     "Producción y gestión documental digital",
+     "Producción y gestión documental física",
+     "Organización y transferencia",
+     "Disposición y preservación de documentos",
+     "Capacitación gestión documental"
+    ]
+   },
+   {
+    "name": "Gestión financiera",
+    "desc": "Gestión de los recursos financieros del CESA mediante la planeación y control presupuestal, el registro y análisis contable, la facturación y administración del recaudo y cartera, la gestión de tesorería y el cumplimiento de las obligaciones tributarias, asegurando la sostenibilidad y transparencia en el uso de los recursos, y generando experiencias significativas y positivas para el cliente mediante un servicio confiable y ágil.",
+    "leaders": [],
+    "procs": []
+   },
+   {
+    "name": "Gestión jurídica",
+    "desc": "Gestión de los asuntos jurídicos, asegurando el cumplimiento normativo, la adecuada administración contractual, la emisión de conceptos y asesoría legal, y el soporte a procesos disciplinarios o administrativos, para garantizar la seguridad jurídica institucional y transmitir confianza que contribuya a experiencias significativas y positivas en el cliente.",
+    "leaders": [
+     "Secretaría General"
+    ],
+    "procs": [
+     "FAN- gestión jurídica",
+     "Gestión de consultorías y asesorías",
+     "Gestión de requerimientos jurídicos",
+     "Finalización de contratos",
+     "Régimen disciplinario académico",
+     "Tratamiento de datos",
+     "Gestión de contratos de compra y otro sí",
+     "Gestión de contratos de venta y otro sí"
+    ]
+   },
+   {
+    "name": "Gestión de TI",
+    "desc": "Gestión de la infraestructura, seguridad, continuidad de negocio, soporte y proyectos de TI del CESA, asegurando su disponibilidad, protección y alineación con los objetivos institucionales, para ofrecer soluciones tecnológicas confiables que favorezcan la calidad del servicio y la generación de experiencias significativas y positivas en el cliente.",
+    "leaders": [
+     "Líder de Tecnología"
+    ],
+    "procs": [
+     "Gestión de seguridad y riesgo de TI - Flujo padre",
+     "Gestión de incidentes de TI",
+     "Gestión de vulnerabilidades TI",
+     "Gestión de activos de información",
+     "Gestión y control de accesos TI",
+     "Gestión de seguridad en la nube",
+     "Gestión de infraestructura de TI - Flujo padre",
+     "Mantenimiento de bases de datos",
+     "Respaldo y recuperación de la información",
+     "Desempeño y monitoreo de la infraestructura",
+     "Gestión de Soporte Operativo de TI",
+     "Mantenimiento de TI",
+     "Gestión de requerimientos para proyectos TI",
+     "Gestión del cambio de proyectos de TI"
+    ]
+   }
+  ]
+ }
+];
+
+// Procedimientos marcados en verde en "Consolidado_Procesos_una_pagina_legible.pdf" (documentados/revisados
+// por el equipo CESA). Todo lo que no esté en este set se muestra con el tag "En construcción" — a nivel de
+// procedimiento individual, y a nivel de proceso solo cuando NO el 100% de sus procedimientos están aquí.
+const GREEN_PROCS = new Set([
+ "Gestión de PQRSF",
+ "Inteligencia institucional y analítica","Seguimiento de visualizadores","Medición de impacto",
+ "Formación y desarrollo Interno","Investigación estratégica y análisis del entorno",
+ "Diagnóstico de Experiencia Digital y Comportamiento del Usuario",
+ "Análisis y diseño del plan estratégico de comunicación y gestión de marca",
+ "Implementación de la estrategia y generación de la narrativa CESA",
+ "Comunicaciones internas y externas","Gestión de Prensa","Premios y Reconocimientos",
+ "Voceros y embajadores de Marca","Participación en eventos",
+ "Autoevaluación","Plan de mejoramiento nacional","Plan de mejoramiento internacional",
+ "Obtención y renovación de registro calificado","Modificación de registro calificado",
+ "Suspensión y cierre de programa","Acreditación internacional primera vez y reacreditación",
+ "Acreditación nacional primera vez o reacreditación","Visitas de pares",
+ "Gestión de contenidos institucionales y educativos",
+ "Búsqueda, postulación, selección de candidatos","Vinculación laboral o contractual",
+ "Selección y contratación aprendices","Sanciones disciplinarias - Colaboradores",
+ "Gestión de compras","Gestión de proveedores","Gestión de garantías","Gestión de almacén","Planeación de compras",
+ "Planeación, elaboración y seguimiento al plan maestro infraestructura",
+ "Programación y desarrollo obras y adecuaciones","Mantenimiento locativo correctivo y de obras menores",
+ "Mantenimiento preventivo locativo","Elaboración y control del presupuesto de infraestructura",
+ "Permisos legales infraestructura","Diseño Proyectos Infraestructura",
+ "Solicitud y verificación de entrega de elementos de aseo y cafetería",
+ "Seguimiento y control de proveedor de seguridad y servicios generales",
+ "Manejo y custodia de objetos perdidos","Control de acceso y manejo de llaves",
+ "Reportes y atención de hurto o robo interno","Vigilancia y monitoreo de alarmas casas",
+ "Seguimiento y control para manejo de transporte","Seguimiento y control para manejo de parqueaderos",
+ "Adjudicación, supervisión y seguimiento para concesiones de servicios",
+ "Seguimiento y control de máquinas de café, de paquetes (snacks) y de agua",
+ "Seguimiento y gestión de servicios públicos",
+ "Planeación y valoración documental","Producción y gestión documental digital",
+ "Producción y gestión documental física","Organización y transferencia",
+ "Disposición y preservación de documentos","Capacitación gestión documental"
+]);
+const procIsGreen = x => GREEN_PROCS.has(x);
+const procesoIsGreen = p => p.procs.length>0 && p.procs.every(procIsGreen);
+
+/* ====================== HELPERS ====================== */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const initials = n => n.split(/\s+/).filter(w=>!/^[a-z]/.test(w[0]||'')).slice(0,2).map(w=>w[0]).join('').toUpperCase() || n.slice(0,2).toUpperCase();
+const countProcs = m => m.processes.reduce((a,p)=>a+p.procs.length,0);
+const countLeaders = m => {const s=new Set();m.processes.forEach(p=>p.leaders.forEach(l=>s.add(l)));return s.size;};
+
+/* ====================== BUILD MAP ====================== */
+function nodeHTML(m){
+  const procN = countProcs(m);
+  return `<button class="node" style="--c:var(${m.color})" data-id="${m.id}" aria-label="Ver ${m.name}">
+    <span class="go"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    <div class="nh">
+      <span class="badge">${m.id}</span>
+      <span class="nt">${m.name}</span>
+    </div>
+    <span class="np">${m.purpose}</span>
+    <span class="nmeta">
+      <span class="chip"><b>${m.processes.length}</b> procesos</span>
+      <span class="chip"><b>${procN}</b> procedim.</span>
+    </span>
+  </button>`;
+}
+
+function buildMap(){
+  const gob = MACRO.filter(m=>m.layer==='gob');
+  const core = MACRO.filter(m=>m.layer==='core');
+  const sup = MACRO.filter(m=>m.layer==='support')[0];
+
+  const supProc = sup.processes;
+  const supHTML = `
+    <button class="node" style="--c:var(${sup.color})" data-id="${sup.id}">
+      <span class="go"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <div class="nh"><span class="badge">${sup.id}</span><span class="nt">${sup.name}</span></div>
+      <span class="np">${sup.purpose} — base transversal con ${sup.processes.length} procesos y ${countProcs(sup)} procedimientos.</span>
+      <span class="nmeta">${supProc.map(p=>`<span class="chip">${p.name.replace('Gestión de ','').replace('Gestión ','')}</span>`).join('')}</span>
+    </button>`;
+
+  $('#vchain').innerHTML = `
+    <div class="band-label">Gobierno · fija el rumbo</div>
+    ${gob.map(nodeHTML).join('')}
+
+    <div class="band-label" style="margin-top:12px">Núcleo de valor · del usuario a la experiencia</div>
+    <div class="flowline">
+      <span>Escuchar</span><span class="arrow"></span><span>Diseñar</span><span class="arrow"></span><span>Atraer</span><span class="arrow"></span><span>Convertir</span><span class="arrow"></span><span>Entregar</span>
+    </div>
+    <div class="core-grid">${core.map(nodeHTML).join('')}</div>
+
+    <div class="band-label" style="margin-top:12px">Soporte · sostiene toda la cadena</div>
+    <div class="support-grid">${supHTML}</div>
+  `;
+  $$('#vchain .node').forEach(b=>b.addEventListener('click',()=>openDrawer(+b.dataset.id)));
+  $$('.arch-svg-wrap .hotspot').forEach(b=>b.addEventListener('click',()=>openDrawer(+b.dataset.id)));
+}
+
+/* ====================== DRAWER ====================== */
+const drawer=$('#drawer'), scrim=$('#scrim');
+let lastFocus=null;
+
+function procHTML(p,i,color){
+  const lead = p.leaders.length
+    ? `<div class="meta-row"><span class="k">Líder${p.leaders.length>1?'es':''}</span><div class="leaders">${p.leaders.map(l=>`<span class="lead"><span class="av">${initials(l)}</span>${l}</span>`).join('')}</div></div>`
+    : `<div class="meta-row"><span class="k">Líder</span><span class="empty-note">Por asignar / documentar</span></div>`;
+  const procs = p.procs.length
+    ? `<div class="meta-row"><span class="k">Procedimientos · ${p.procs.length}</span><ul class="procs-list">${p.procs.map(x=>`<li>${x}${procIsGreen(x)?'':'<span class="wip-tag">En construcción</span>'}</li>`).join('')}</ul></div>`
+    : `<div class="meta-row"><span class="k">Procedimientos</span><span class="empty-note">Pendientes de documentar</span></div>`;
+  return `<div class="proc" data-pi="${i}">
+    <button class="proc-h" aria-expanded="false">
+      <span class="pn">${i+1}</span>
+      <span class="ptitle">${p.name}${procesoIsGreen(p)?'':'<span class="wip-tag">En construcción</span>'}</span>
+      <span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    </button>
+    <div class="proc-c"><div class="proc-c-in">
+      <p class="proc-desc">${p.desc}</p>
+      <div class="proc-meta">${lead}${procs}</div>
+    </div></div>
+  </div>`;
+}
+
+function openDrawer(id, openProc){
+  const m = MACRO.find(x=>x.id===id);
+  if(!m) return;
+  lastFocus=document.activeElement;
+  drawer.style.setProperty('--c',`var(${m.color})`);
+  drawer.innerHTML = `
+    <div class="dr-head">
+      <span class="bar"></span>
+      <button class="dr-close" id="drClose" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <div class="dr-kicker"><span class="badge">${m.id}</span><small>Macroproceso ${m.id} de 7</small></div>
+      <h3 id="drTitle">${m.name}</h3>
+      <div class="dr-purpose">“${m.purpose}”</div>
+    </div>
+    <div class="dr-body">
+      <div class="dr-stats">
+        <div class="dr-stat"><div class="n">${m.processes.length}</div><div class="l">Procesos</div></div>
+        <div class="dr-stat"><div class="n">${countProcs(m)}</div><div class="l">Procedimientos</div></div>
+        <div class="dr-stat"><div class="n">${countLeaders(m)}</div><div class="l">Líderes</div></div>
+      </div>
+      <div class="dr-obj-label">Objetivo del macroproceso</div>
+      <p class="dr-obj">${m.objective}</p>
+      <div class="dr-obj-label" style="margin-bottom:14px">Procesos · ${m.processes.length}</div>
+      ${m.processes.map((p,i)=>procHTML(p,i,m.color)).join('')}
+    </div>`;
+
+  $$('#drawer .proc-h').forEach(h=>h.addEventListener('click',()=>{
+    const proc=h.closest('.proc'), c=proc.querySelector('.proc-c'), open=proc.classList.toggle('open');
+    h.setAttribute('aria-expanded',open);
+    c.style.maxHeight = open ? c.scrollHeight+'px' : 0;
+  }));
+  $('#drClose').addEventListener('click',closeDrawer);
+
+  drawer.classList.add('on'); scrim.classList.add('on'); drawer.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  if(openProc!=null){
+    const h=$$('#drawer .proc-h')[openProc];
+    if(h){h.click(); setTimeout(()=>h.closest('.proc').scrollIntoView({block:'center',behavior:'smooth'}),120);}
+  } else { $('#drClose').focus(); }
+}
+function closeDrawer(){
+  drawer.classList.remove('on'); scrim.classList.remove('on'); drawer.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  if(lastFocus) lastFocus.focus();
+}
+scrim.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer.classList.contains('on'))closeDrawer();});
+
+/* ====================== SEARCH ====================== */
+const searchInput=$('#search'), searchPanel=$('#searchPanel'), srGrid=$('#srGrid'), srCount=$('#srCount'), srTitle=$('#srTitle');
+const INDEX=[];
+MACRO.forEach(m=>m.processes.forEach((p,i)=>{
+  INDEX.push({mp:m, pi:i, name:p.name, leaders:p.leaders, procs:p.procs,
+    hay:(p.name+' '+p.leaders.join(' ')+' '+p.procs.join(' ')+' '+m.name).toLowerCase()});
+}));
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const hl=(t,q)=> q ? t.replace(new RegExp('('+esc(q)+')','ig'),'<mark>$1</mark>') : t;
+
+function runSearch(q){
+  q=q.trim().toLowerCase();
+  if(!q){searchPanel.classList.remove('on');return;}
+  searchPanel.classList.add('on');
+  const res=INDEX.filter(r=>r.hay.includes(q));
+  srTitle.textContent=`“${searchInput.value.trim()}”`;
+  srCount.textContent=`${res.length} ${res.length===1?'proceso':'procesos'} ${res.length?'encontrados':'encontrado'}`;
+  srGrid.innerHTML=res.map(r=>{
+    const ld=r.leaders.length?r.leaders.join(' · '):'Por asignar';
+    const matchProcs=r.procs.filter(x=>x.toLowerCase().includes(q));
+    const extra=matchProcs.length?`<div class="ld" style="margin-top:5px">↳ ${hl(matchProcs[0],searchInput.value.trim())}${matchProcs.length>1?` +${matchProcs.length-1}`:''}</div>`:'';
+    return `<button class="sr-card" style="--c:var(${r.mp.color})" data-id="${r.mp.id}" data-pi="${r.pi}">
+      <div class="mp">${r.mp.id} · ${r.mp.name}</div>
+      <div class="tt">${hl(r.name,searchInput.value.trim())}</div>
+      <div class="ld">${hl(ld,searchInput.value.trim())}</div>${extra}
+    </button>`;
+  }).join('') || `<p class="empty-note" style="grid-column:1/-1">Sin resultados. Prueba con otro término (p. ej. “beca”, “TI”, “marca”).</p>`;
+  $$('#srGrid .sr-card').forEach(c=>c.addEventListener('click',()=>openDrawer(+c.dataset.id,+c.dataset.pi)));
+}
+let st;
+if(searchInput){
+  searchInput.addEventListener('input',e=>{clearTimeout(st);st=setTimeout(()=>runSearch(e.target.value),140);});
+  searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#macroprocesos').scrollIntoView({behavior:'smooth'});}});
+}
+
+/* ====================== REVEAL ====================== */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+$$('.reveal').forEach(el=>io.observe(el));
+
+/* Topbar unificada gestionada por /topbar.js */
+
+/* ====================== INIT ====================== */
+buildMap();
+
+document.addEventListener('DOMContentLoaded', function(){
+  if (typeof cesaShowIntro === 'function') {
+    cesaShowIntro('arquitectura', {
+      eyebrow: 'Cómo usar esta página',
+      title: 'Arquitectura de Macroprocesos',
+      items: [
+        'Vas a encontrar los 7 <b class="cs-tip cs-term" data-tip="Es el nivel más alto de la arquitectura de procesos del CESA: una agrupación estratégica de procesos relacionados que comparten un propósito institucional común y contribuyen al cumplimiento de la estrategia, la misión y los objetivos organizacionales.">macroprocesos</b> del CESA en un mapa visual — haz clic en cualquiera para ver su objetivo, procesos y líderes.',
+        'Dentro de cada macroproceso puedes explorar sus <b class="cs-tip cs-term" data-tip="Un conjunto estructurado de actividades interrelacionadas que transforma entradas en resultados mediante recursos, capacidades y controles coordinados, con el propósito de generar valor para los clientes y demás partes interesadas.">procesos</b>, <b class="cs-tip cs-term" data-tip="La descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso, definiendo responsables, decisiones y controles. En el CESA se documentan en diagramas BPMN mediante Bizagi Modeler.">procedimientos</b> y <b class="cs-tip cs-term" data-tip="Persona o cargo responsable de un proceso. Como Dueño de Proceso, identifica la documentación que soporta su ejecución, solicita su actualización y garantiza que permanezca vigente.">líderes</b> responsables.',
+        'Usa el buscador para saltar directo a un proceso, procedimiento o líder específico, sin recorrer todo el mapa.',
+        '¿Necesitas el documento oficial de un proceso? Está en <b class="cs-tip cs-term" data-tip="Es la herramienta definida por el CESA para la administración, control y publicación de la documentación que soporta el Sistema de Gestión por Procesos. Constituye la única fuente oficial de consulta para la documentación vigente, garantizando que toda la información utilizada por los colaboradores corresponda a versiones aprobadas, controladas y actualizadas.">DARUMA</b> — accede desde el banner debajo de las métricas o desde el pie de página.'
+      ]
+    });
+  }
+});
+</script>
+</body>
+</html>

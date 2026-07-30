@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arquitectura de Macroprocesos — CESA</title>
+<meta name="description" content="Mapa institucional de los 7 macroprocesos del CESA organizados en cadena de valor: gobierno, núcleo y soporte." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --azul-001: #013998;
+    --azul-002: #232BE6;
+    --azul-003: #305FFF;
+    --azul-005: #027BFF;
+    --azul-text: #041F3E;
+
+    --bg: #F5F7FB;
+    --surface: #FFFFFF;
+    --surface-2: #FAFBFD;
+    --border: #E4E8F0;
+    --border-strong: #CFD6E4;
+    --text: #041F3E;
+    --text-muted: #5A6B84;
+    --text-soft: #8494AD;
+
+    --shadow-sm: 0 1px 2px rgba(4, 31, 62, 0.04), 0 1px 3px rgba(4, 31, 62, 0.03);
+    --shadow-md: 0 4px 12px rgba(4, 31, 62, 0.06), 0 2px 4px rgba(4, 31, 62, 0.04);
+    --shadow-lg: 0 20px 40px -12px rgba(4, 31, 62, 0.15);
+
+    --radius: 12px;
+    --radius-lg: 16px;
+
+    /* Colores por macroproceso */
+    --c-gobierno: #013998;
+    --c-marketing: #5C214D;
+    --c-formacion: #305FFF;
+    --c-experiencia: #027BFF;
+    --c-investigacion: #2E0331;
+    --c-talento: #F8D210;
+    --c-financiero: #49903A;
+    --c-tecnologia: #FF8D00;
+  }
+
+  [data-theme="dark"] {
+    --bg: #060B18;
+    --surface: #0E152A;
+    --surface-2: #131C36;
+    --border: #1F2A47;
+    --border-strong: #2C3A5E;
+    --text: #E6ECF8;
+    --text-muted: #9AA8C4;
+    --text-soft: #6B7998;
+    --azul-text: #E6ECF8;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 20px 40px -12px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ===== Header ===== */
+  header {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in oklab, var(--surface) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    max-width: 1400px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--azul-001), var(--azul-003));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 15px;
+    box-shadow: 0 4px 12px rgba(1, 57, 152, 0.3);
+  }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .brand-text strong { font-weight: 700; font-size: 15px; }
+  .brand-text span { font-size: 11px; color: var(--text-muted); font-weight: 400; letter-spacing: 0.02em; }
+
+  .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .nav-links { display: flex; align-items: center; gap: 4px; margin-left: 24px; }
+  .nav-link {
+    font-size: 13.5px; font-weight: 500; color: var(--text-muted);
+    padding: 8px 12px; border-radius: 8px; transition: all 0.2s;
+  }
+  .nav-link:hover { color: var(--text); background: var(--surface-2); }
+  .nav-link.active { color: var(--azul-001); background: color-mix(in oklab, var(--azul-003) 10%, transparent); }
+  [data-theme="dark"] .nav-link.active { color: var(--azul-005); }
+  @media (max-width: 780px) { .nav-links { display: none; } }
+
+  .search {
+    position: relative;
+    display: flex; align-items: center;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    min-width: 320px;
+    transition: all 0.2s;
+  }
+  .search:focus-within {
+    border-color: var(--azul-003);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--azul-003) 15%, transparent);
+  }
+  .search svg { color: var(--text-soft); flex-shrink: 0; }
+  .search input {
+    background: none; border: none; outline: none;
+    color: var(--text); font-family: inherit; font-size: 14px;
+    padding: 0 10px; width: 100%;
+  }
+  .search input::placeholder { color: var(--text-soft); }
+  .search kbd {
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-muted); font-family: inherit;
+  }
+
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .icon-btn:hover { color: var(--text); border-color: var(--border-strong); transform: translateY(-1px); }
+
+  /* ===== Hero ===== */
+  .hero {
+    max-width: 1400px; margin: 0 auto;
+    padding: 48px 28px 32px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 99px;
+    background: color-mix(in oklab, var(--azul-003) 10%, transparent);
+    color: var(--azul-003); font-size: 12px; font-weight: 500;
+    margin-bottom: 20px;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--azul-003);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--azul-003) 25%, transparent);
+  }
+  .hero h1 {
+    font-size: clamp(32px, 4.5vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    max-width: 900px;
+    margin-bottom: 18px;
+  }
+  .hero h1 em { font-style: normal; color: var(--azul-001); }
+  [data-theme="dark"] .hero h1 em { color: var(--azul-005); }
+  .hero p.lead {
+    font-size: 17px; color: var(--text-muted);
+    max-width: 680px; margin-bottom: 36px;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 22px 20px;
+    transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .metric:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .metric::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--azul-001), var(--azul-003));
+    opacity: 0.9;
+  }
+  .metric-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric-value { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin: 8px 0 4px; }
+  .metric-hint { font-size: 13px; color: var(--text-soft); }
+
+  /* ===== Pilares ===== */
+  section.pilares {
+    max-width: 1400px; margin: 0 auto;
+    padding: 40px 28px;
+  }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .section-head h2 {
+    font-size: 24px; font-weight: 600; letter-spacing: -0.02em;
+  }
+  .section-head .section-sub { font-size: 13px; color: var(--text-muted); }
+
+  .pilares-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .pilar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: all 0.25s;
+    cursor: default;
+  }
+  .pilar:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .pilar-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px; font-size: 22px;
+  }
+  .pilar h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .pilar p { font-size: 14px; color: var(--text-muted); }
+
+  /* ===== Mapa de valor ===== */
+  section.mapa {
+    max-width: 1400px; margin: 0 auto;
+    padding: 24px 28px 80px;
+  }
+  .mapa-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+  .capa {
+    margin-bottom: 28px;
+  }
+  .capa:last-child { margin-bottom: 0; }
+  .capa-label {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+  .capa-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .nodos { display: grid; gap: 12px; }
+  .nodos.gobierno { grid-template-columns: 1fr; }
+  .nodos.nucleo { grid-template-columns: repeat(3, 1fr); }
+  .nodos.soporte { grid-template-columns: repeat(3, 1fr); }
+
+  .nodo {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .nodo::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--nodo-color, var(--azul-003));
+    transition: width 0.25s;
+  }
+  .nodo:hover {
+    transform: translateY(-3px);
+    border-color: var(--nodo-color, var(--azul-003));
+    box-shadow: var(--shadow-md);
+  }
+  .nodo:hover::before { width: 6px; }
+  .nodo-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .nodo-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .nodo-tag {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 5px;
+    background: color-mix(in oklab, var(--nodo-color) 12%, transparent);
+    color: var(--nodo-color);
+    letter-spacing: 0.05em;
+  }
+  .nodo-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .nodo-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 6px;
+    font-size: 12px; color: var(--text-soft);
+  }
+  .nodo-count { display: flex; align-items: center; gap: 5px; }
+  .nodo-arrow {
+    display: inline-flex; align-items: center; gap: 4px;
+    color: var(--nodo-color); font-weight: 500;
+    opacity: 0; transform: translateX(-4px); transition: all 0.2s;
+  }
+  .nodo:hover .nodo-arrow { opacity: 1; transform: translateX(0); }
+
+  .no-results {
+    padding: 40px; text-align: center; color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ===== Drawer ===== */
+  .drawer-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(4, 31, 62, 0.35);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(4px);
+  }
+  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 51;
+    width: min(560px, 100%);
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-head {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .drawer-close {
+    position: absolute; top: 18px; right: 18px;
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .drawer-close:hover { background: var(--border); color: var(--text); }
+  .drawer-tag {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 4px 10px; border-radius: 5px;
+    margin-bottom: 12px;
+    color: var(--drawer-color, var(--azul-001));
+    background: color-mix(in oklab, var(--drawer-color, var(--azul-001)) 12%, transparent);
+  }
+  .drawer h2 {
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .drawer-purpose { font-size: 14px; color: var(--text-muted); }
+
+  .drawer-body {
+    flex: 1; overflow-y: auto;
+    padding: 24px 28px 40px;
+  }
+
+  .objetivo {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--drawer-color, var(--azul-001));
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+  }
+  .objetivo-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--drawer-color, var(--azul-001));
+    margin-bottom: 4px;
+  }
+  .objetivo p { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+
+  .procesos-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .acordeon { display: flex; flex-direction: column; gap: 8px; }
+  .acc-item {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .acc-item[open] { border-color: var(--border-strong); }
+  .acc-summary {
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 14px; font-weight: 500;
+    user-select: none;
+  }
+  .acc-summary::-webkit-details-marker { display: none; }
+  .acc-summary::before {
+    content: ''; width: 8px; height: 8px;
+    border-right: 1.5px solid var(--text-muted);
+    border-bottom: 1.5px solid var(--text-muted);
+    transform: rotate(-45deg);
+    transition: transform 0.2s;
+    flex-shrink: 0; margin-right: 4px;
+  }
+  .acc-item[open] .acc-summary::before { transform: rotate(45deg); }
+  .acc-content { padding: 0 16px 16px 34px; }
+  .acc-content p {
+    font-size: 13px; color: var(--text-muted);
+    margin-bottom: 12px; line-height: 1.55;
+  }
+  .acc-content .field {
+    margin-bottom: 10px;
+  }
+  .acc-content .field:last-child { margin-bottom: 0; }
+  .acc-content .field-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-soft);
+    margin-bottom: 4px;
+  }
+  .acc-content ul { list-style: none; padding: 0; }
+  .acc-content ul li {
+    font-size: 13px; color: var(--text); padding: 3px 0;
+    padding-left: 14px; position: relative;
+  }
+  .acc-content ul li::before {
+    content: ''; position: absolute; left: 0; top: 12px;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--drawer-color, var(--azul-003));
+  }
+  .lideres {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .lider-chip {
+    font-size: 11.5px; padding: 3px 9px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 99px; color: var(--text-muted);
+  }
+
+  /* ===== Footer ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 28px;
+    text-align: center;
+    font-size: 12px; color: var(--text-soft);
+  }
+
+  /* Fade-in */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero, .pilares, .mapa { animation: fadeUp 0.6s ease both; }
+  .pilares { animation-delay: 0.1s; }
+  .mapa { animation-delay: 0.2s; }
+
+  @media (max-width: 900px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .pilares-grid { grid-template-columns: 1fr; }
+    .nodos.nucleo, .nodos.soporte { grid-template-columns: 1fr; }
+    .search { min-width: auto; flex: 1; }
+    .nav { padding: 12px 16px; gap: 10px; }
+    .brand-text { display: none; }
+    .hero, .pilares, .mapa { padding-left: 16px; padding-right: 16px; }
+    .mapa-wrap { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <div class="brand-text">
+        <strong>CESA</strong>
+        <span>Arquitectura de Macroprocesos</span>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-link active" href="/arquitectura.html">Arquitectura</a>
+      <a class="nav-link" href="/entrenamiento-daruma.html">Entrenamiento Daruma</a>
+    </nav>
+    <div class="nav-actions">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="buscador" placeholder="Buscar macroproceso o proceso…" />
+        <kbd>⌘K</kbd>
+      </div>
+      <button class="icon-btn" id="theme-toggle" aria-label="Cambiar tema">
+        <svg id="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">Marco institucional 2025</div>
+  <h1>La cadena de valor del <em>CESA</em>, mapeada en 7 macroprocesos.</h1>
+  <p class="lead">Un modelo de gobierno, núcleo académico y soporte que articula cómo creamos, entregamos y capturamos valor para nuestros estudiantes, egresados y aliados.</p>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Macroprocesos</div>
+      <div class="metric-value" id="m-macro">7</div>
+      <div class="metric-hint">En 3 capas de valor</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Procesos</div>
+      <div class="metric-value" id="m-proc">–</div>
+      <div class="metric-hint">Documentados end-to-end</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Pilares transversales</div>
+      <div class="metric-value">3</div>
+      <div class="metric-hint">Experiencia · Operación · Innovación</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Cobertura</div>
+      <div class="metric-value">100%</div>
+      <div class="metric-hint">Ciclo académico completo</div>
+    </div>
+  </div>
+</section>
+
+<section class="pilares">
+  <div class="section-head">
+    <h2>Pilares transversales</h2>
+    <span class="section-sub">Atraviesan los 7 macroprocesos</span>
+  </div>
+  <div class="pilares-grid">
+    <div class="pilar">
+      <div class="pilar-icon" style="background: color-mix(in oklab, var(--azul-003) 12%, transparent); color: var(--azul-003);">◎</div>
+      <h3>Experiencia</h3>
+      <p>Cada punto de contacto — estudiante, docente, aliado — diseñado con intención y consistencia institucional.</p>
+    </div>
+    <div class="pilar">
+      <div class="pilar-icon" style="background: color-mix(in oklab, var(--c-financiero) 14%, transparent); color: var(--c-financiero);">▤</div>
+      <h3>Disciplina operativa</h3>
+      <p>Procesos medibles, gobernados por indicadores y ejecutados con rigor. La operación como ventaja competitiva.</p>
+    </div>
+    <div class="pilar">
+      <div class="pilar-icon" style="background: color-mix(in oklab, var(--c-tecnologia) 14%, transparent); color: var(--c-tecnologia);">✦</div>
+      <h3>Innovación</h3>
+      <p>Capacidad instalada para experimentar, aprender y escalar. Innovación como práctica, no como eslogan.</p>
+    </div>
+  </div>
+</section>
+
+<section class="mapa">
+  <div class="section-head">
+    <h2>Mapa de valor</h2>
+    <span class="section-sub">Haz clic en un macroproceso para explorar sus procesos</span>
+  </div>
+  <div class="mapa-wrap" id="mapa-wrap">
+    <!-- Renderizado dinámicamente -->
+  </div>
+</section>
+
+<footer>
+  © CESA · Colegio de Estudios Superiores de Administración · Arquitectura institucional
+</footer>
+
+<!-- Drawer -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <button class="drawer-close" id="drawer-close" aria-label="Cerrar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <span class="drawer-tag" id="drawer-tag">Capa</span>
+    <h2 id="drawer-title">Título</h2>
+    <p class="drawer-purpose" id="drawer-purpose"></p>
+  </div>
+  <div class="drawer-body">
+    <div class="objetivo">
+      <div class="objetivo-label">Objetivo</div>
+      <p id="drawer-objetivo"></p>
+    </div>
+    <div class="procesos-label">Procesos</div>
+    <div class="acordeon" id="drawer-acordeon"></div>
+  </div>
+</aside>
+
+<script>
+  // ===== Datos =====
+  const MACRO = [
+    {
+      nombre: "Gobierno y Direccionamiento Estratégico",
+      proposito: "Definir el rumbo institucional y asegurar coherencia en toda la organización.",
+      objetivo: "Establecer, comunicar y hacer seguimiento a la estrategia, políticas y prioridades del CESA, garantizando alineación entre consejos, dirección y unidades operativas.",
+      color: "var(--c-gobierno)",
+      capa: "gobierno",
+      procesos: [
+        {
+          nombre: "Planeación estratégica",
+          descripcion: "Formulación del plan estratégico institucional, definición de objetivos y despliegue por unidades.",
+          lideres: ["Rectoría", "Consejo Superior"],
+          procedimientos: ["Formulación del PEI", "Despliegue por unidades", "Seguimiento trimestral"]
+        },
+        {
+          nombre: "Gobierno corporativo",
+          descripcion: "Funcionamiento de consejos, comités y órganos de gobierno.",
+          lideres: ["Consejo Directivo", "Secretaría General"],
+          procedimientos: ["Convocatoria de consejos", "Actas y decisiones", "Auditoría de cumplimiento"]
+        },
+        {
+          nombre: "Gestión de riesgos y cumplimiento",
+          descripcion: "Identificación, monitoreo y mitigación de riesgos institucionales.",
+          lideres: ["Auditoría Interna"],
+          procedimientos: ["Matriz de riesgos", "Planes de mitigación", "Reportes al comité"]
+        }
+      ]
+    },
+    {
+      nombre: "Marketing y Admisiones",
+      proposito: "Atraer, convertir y matricular a los estudiantes correctos para cada programa.",
+      objetivo: "Diseñar y ejecutar la estrategia de mercadeo, promoción y admisión que asegure el cumplimiento de las metas de matrícula con perfiles alineados al proyecto educativo.",
+      color: "var(--c-marketing)",
+      capa: "nucleo",
+      procesos: [
+        {
+          nombre: "Estrategia de marca y comunicación",
+          descripcion: "Posicionamiento de marca, campañas y contenidos institucionales.",
+          lideres: ["Dirección de Marketing"],
+          procedimientos: ["Brief de campaña", "Producción de contenidos", "Medición de alcance"]
+        },
+        {
+          nombre: "Captación y conversión",
+          descripcion: "Gestión de leads, embudo comercial y experiencias de prospecto.",
+          lideres: ["Coordinación Comercial"],
+          procedimientos: ["Ruta del prospecto", "Nurturing por programa", "Reporte de conversión"]
+        },
+        {
+          nombre: "Admisiones y matrícula",
+          descripcion: "Proceso de selección, admisión y formalización de matrícula.",
+          lideres: ["Oficina de Admisiones"],
+          procedimientos: ["Evaluación de aspirantes", "Comité de admisión", "Matrícula financiera y académica"]
+        }
+      ]
+    },
+    {
+      nombre: "Formación Académica",
+      proposito: "Entregar la experiencia académica que define al CESA: rigurosa, aplicada y transformadora.",
+      objetivo: "Diseñar, ejecutar y mejorar la oferta académica en pregrado, posgrado y educación ejecutiva, asegurando calidad, pertinencia y resultados de aprendizaje.",
+      color: "var(--c-formacion)",
+      capa: "nucleo",
+      procesos: [
+        {
+          nombre: "Diseño curricular",
+          descripcion: "Diseño y actualización de planes de estudio, competencias y microcurrículos.",
+          lideres: ["Vicerrectoría Académica", "Comité Curricular"],
+          procedimientos: ["Diseño de programa", "Revisión curricular", "Aprobación de MEN"]
+        },
+        {
+          nombre: "Programación y ejecución académica",
+          descripcion: "Programación de cursos, asignación docente y ejecución del semestre.",
+          lideres: ["Registro Académico"],
+          procedimientos: ["Programación semestral", "Asignación docente", "Ejecución de clases"]
+        },
+        {
+          nombre: "Evaluación y aseguramiento del aprendizaje",
+          descripcion: "Evaluación de estudiantes, docentes y logro de resultados de aprendizaje.",
+          lideres: ["Aseguramiento de la Calidad"],
+          procedimientos: ["Evaluación estudiantil", "Evaluación docente", "Cierre de brechas"]
+        }
+      ]
+    },
+    {
+      nombre: "Experiencia del Estudiante y Egresado",
+      proposito: "Acompañar el ciclo de vida completo del estudiante y consolidar la comunidad de egresados.",
+      objetivo: "Diseñar servicios y experiencias que fortalezcan el bienestar, el desarrollo integral y la vinculación permanente del estudiante y del egresado con el CESA.",
+      color: "var(--c-experiencia)",
+      capa: "nucleo",
+      procesos: [
+        {
+          nombre: "Bienestar y vida universitaria",
+          descripcion: "Programas de bienestar, cultura, deporte y salud mental.",
+          lideres: ["Bienestar Universitario"],
+          procedimientos: ["Ruta de acompañamiento", "Actividades de vida universitaria", "Salud mental"]
+        },
+        {
+          nombre: "Servicios académicos al estudiante",
+          descripcion: "Servicios de registro, tutorías, becas y trámites académicos.",
+          lideres: ["Registro Académico"],
+          procedimientos: ["Trámites académicos", "Programa de tutorías", "Gestión de becas"]
+        },
+        {
+          nombre: "Egresados y empleabilidad",
+          descripcion: "Vinculación con egresados, empleabilidad y desarrollo de carrera.",
+          lideres: ["Oficina de Egresados"],
+          procedimientos: ["Bolsa de empleo", "Red de egresados", "Educación continua"]
+        }
+      ]
+    },
+    {
+      nombre: "Investigación, Consultoría e Impacto",
+      proposito: "Generar y transferir conocimiento con impacto real en empresas y en la sociedad.",
+      objetivo: "Coordinar la producción científica, la consultoría empresarial y los proyectos de impacto que conectan al CESA con el ecosistema empresarial y social.",
+      color: "var(--c-investigacion)",
+      capa: "nucleo",
+      procesos: [
+        {
+          nombre: "Investigación aplicada",
+          descripcion: "Gestión de líneas, grupos, semilleros y producción científica.",
+          lideres: ["Dirección de Investigación"],
+          procedimientos: ["Convocatoria interna", "Ejecución de proyectos", "Divulgación científica"]
+        },
+        {
+          nombre: "Consultoría y educación ejecutiva",
+          descripcion: "Diseño y ejecución de proyectos de consultoría y programas in-company.",
+          lideres: ["Dirección de Educación Ejecutiva"],
+          procedimientos: ["Diagnóstico cliente", "Propuesta y contratación", "Entrega y cierre"]
+        },
+        {
+          nombre: "Impacto y sostenibilidad",
+          descripcion: "Medición de impacto institucional y proyectos con la comunidad.",
+          lideres: ["Sostenibilidad"],
+          procedimientos: ["Marco de impacto", "Proyectos comunitarios", "Reporte de sostenibilidad"]
+        }
+      ]
+    },
+    {
+      nombre: "Talento Humano y Cultura",
+      proposito: "Atraer, desarrollar y cuidar a las personas que hacen posible al CESA.",
+      objetivo: "Gestionar el ciclo de vida del colaborador y modelar una cultura consistente con los valores institucionales y la ambición estratégica.",
+      color: "var(--c-talento)",
+      capa: "soporte",
+      procesos: [
+        {
+          nombre: "Atracción y selección",
+          descripcion: "Reclutamiento, evaluación y vinculación de colaboradores y docentes.",
+          lideres: ["Dirección de Talento Humano"],
+          procedimientos: ["Requisición de vacante", "Proceso de selección", "Contratación"]
+        },
+        {
+          nombre: "Desarrollo y desempeño",
+          descripcion: "Formación, evaluación de desempeño y planes de desarrollo.",
+          lideres: ["Talento Humano"],
+          procedimientos: ["Evaluación de desempeño", "Plan de desarrollo", "Formación interna"]
+        },
+        {
+          nombre: "Cultura y clima",
+          descripcion: "Gestión de cultura, clima organizacional y experiencia del colaborador.",
+          lideres: ["Cultura Organizacional"],
+          procedimientos: ["Medición de clima", "Rituales culturales", "Reconocimiento"]
+        }
+      ]
+    },
+    {
+      nombre: "Financiero, Legal y Administrativo",
+      proposito: "Sostener la operación con solidez financiera, cumplimiento y servicios de calidad.",
+      objetivo: "Administrar los recursos financieros, jurídicos, contractuales y de servicios generales para asegurar la continuidad operativa y el cumplimiento normativo.",
+      color: "var(--c-financiero)",
+      capa: "soporte",
+      procesos: [
+        {
+          nombre: "Planeación financiera",
+          descripcion: "Presupuesto, forecast y control financiero.",
+          lideres: ["Vicerrectoría Financiera"],
+          procedimientos: ["Presupuesto anual", "Cierre mensual", "Análisis de desviaciones"]
+        },
+        {
+          nombre: "Legal y contratación",
+          descripcion: "Gestión jurídica, contratos y cumplimiento normativo.",
+          lideres: ["Secretaría General"],
+          procedimientos: ["Revisión de contratos", "Litigios", "Cumplimiento normativo"]
+        },
+        {
+          nombre: "Servicios generales y campus",
+          descripcion: "Operación de campus, mantenimiento y proveedores.",
+          lideres: ["Servicios Generales"],
+          procedimientos: ["Mantenimiento preventivo", "Gestión de proveedores", "Seguridad física"]
+        }
+      ]
+    }
+  ];
+
+  // ===== Render =====
+  const mapaWrap = document.getElementById('mapa-wrap');
+
+  function render(filter = '') {
+    const q = filter.trim().toLowerCase();
+    const capas = [
+      { key: 'gobierno', label: 'Gobierno · Direccionamiento' },
+      { key: 'nucleo', label: 'Núcleo · Cadena de valor' },
+      { key: 'soporte', label: 'Soporte · Habilitadores' }
+    ];
+
+    const filtered = MACRO.map((m, i) => ({ ...m, _idx: i })).filter(m => {
+      if (!q) return true;
+      if (m.nombre.toLowerCase().includes(q)) return true;
+      if (m.proposito.toLowerCase().includes(q)) return true;
+      return m.procesos.some(p => p.nombre.toLowerCase().includes(q) || p.descripcion.toLowerCase().includes(q));
+    });
+
+    if (filtered.length === 0) {
+      mapaWrap.innerHTML = `<div class="no-results">No encontramos coincidencias para "<strong>${filter}</strong>".</div>`;
+      return;
+    }
+
+    mapaWrap.innerHTML = capas.map(capa => {
+      const nodos = filtered.filter(m => m.capa === capa.key);
+      if (nodos.length === 0) return '';
+      return `
+        <div class="capa">
+          <div class="capa-label">${capa.label}</div>
+          <div class="nodos ${capa.key}">
+            ${nodos.map(m => `
+              <button class="nodo" data-idx="${m._idx}" style="--nodo-color: ${m.color};">
+                <div class="nodo-head">
+                  <span class="nodo-title">${m.nombre}</span>
+                  <span class="nodo-tag">${m.capa}</span>
+                </div>
+                <div class="nodo-desc">${m.proposito}</div>
+                <div class="nodo-foot">
+                  <span class="nodo-count">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                    ${m.procesos.length} procesos
+                  </span>
+                  <span class="nodo-arrow">Explorar →</span>
+                </div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    mapaWrap.querySelectorAll('.nodo').forEach(el => {
+      el.addEventListener('click', () => openDrawer(parseInt(el.dataset.idx, 10)));
+    });
+  }
+
+  // Métricas
+  document.getElementById('m-proc').textContent = MACRO.reduce((s, m) => s + m.procesos.length, 0);
+
+  render();
+
+  // ===== Buscador =====
+  const buscador = document.getElementById('buscador');
+  let debounce;
+  buscador.addEventListener('input', e => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => render(e.target.value), 120);
+  });
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      buscador.focus();
+      buscador.select();
+    }
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  // ===== Drawer =====
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('drawer-overlay');
+
+  function openDrawer(idx) {
+    const m = MACRO[idx];
+    drawer.style.setProperty('--drawer-color', m.color);
+    document.getElementById('drawer-tag').textContent = m.capa;
+    document.getElementById('drawer-title').textContent = m.nombre;
+    document.getElementById('drawer-purpose').textContent = m.proposito;
+    document.getElementById('drawer-objetivo').textContent = m.objetivo;
+
+    const acc = document.getElementById('drawer-acordeon');
+    acc.innerHTML = m.procesos.map((p, i) => `
+      <details class="acc-item" ${i === 0 ? 'open' : ''}>
+        <summary class="acc-summary">${p.nombre}</summary>
+        <div class="acc-content">
+          <p>${p.descripcion}</p>
+          <div class="field">
+            <div class="field-label">Líderes</div>
+            <div class="lideres">${p.lideres.map(l => `<span class="lider-chip">${l}</span>`).join('')}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Procedimientos</div>
+            <ul>${p.procedimientos.map(pr => `<li>${pr}</li>`).join('')}</ul>
+          </div>
+        </div>
+      </details>
+    `).join('');
+
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  // ===== Tema =====
+  const themeBtn = document.getElementById('theme-toggle');
+  const sunIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+  const moonIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.innerHTML = t === 'dark' ? sunIcon : moonIcon;
+  }
+  // Por preferencia de los usuarios, cada visita a la página siempre inicia en modo claro
+  // (el cambio a oscuro con el botón solo aplica durante esa sesión, no se recuerda entre visitas).
+  applyTheme('light');
+
+  themeBtn.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+ALTER TABLE public.procedimientos ADD COLUMN entregado_responsable boolean NOT NULL DEFAULT false;
