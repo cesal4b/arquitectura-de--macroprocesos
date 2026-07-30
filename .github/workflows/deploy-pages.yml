@@ -1,5 +1,11 @@
 name: Deploy to GitHub Pages
 
+# Publishes the static content pages in public/ (arquitectura de
+# macroprocesos, entrenamiento, glosario, diagrama interactivo) as a plain
+# static site. The TanStack Start / Supabase app (login, admin) is not part
+# of this build yet — it needs a server host (see AGENTS.md / project notes)
+# and will be wired in later.
+
 on:
   push:
     branches:
@@ -15,31 +21,50 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+env:
+  # Project Pages are served from /<repo>/, not the domain root.
+  # Switch this to "/" (and add a public/CNAME file) once a custom domain
+  # is attached to this repo's GitHub Pages site.
+  BASE_PATH: /arquitectura-de--macroprocesos/
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
+      - name: Assemble static site
+        run: |
+          set -e
+          rm -rf site
+          cp -r public site
 
-      - run: npm ci
+          # Rewrite root-absolute links/sources so they resolve under the
+          # GitHub Pages project subpath instead of the domain root.
+          find site -type f \( -name '*.html' -o -name '*.js' \) -print0 | \
+            xargs -0 sed -i \
+              -e "s#\(href\|src\)=\"/#\1=\"${BASE_PATH}#g" \
+              -e "s#href:'/#href:'${BASE_PATH}#g"
 
-      - run: npm run build
-        env:
-          NITRO_PRESET: github_pages
-          # Project Pages are served from /<repo>/, not the domain root.
-          # Switch this to "/" once a custom domain (CNAME) is attached.
-          GH_PAGES_BASE: /arquitectura-de--macroprocesos/
+          cat > site/index.html <<HTML
+          <!doctype html>
+          <html lang="es">
+            <head>
+              <meta charset="utf-8" />
+              <meta http-equiv="refresh" content="0; url=${BASE_PATH}arquitectura-macroprocesos.html" />
+              <title>Arquitectura de Macroprocesos — CESA</title>
+            </head>
+            <body>
+              <p><a href="${BASE_PATH}arquitectura-macroprocesos.html">Abrir Arquitectura de Macroprocesos</a></p>
+            </body>
+          </html>
+          HTML
 
-      - run: touch .output/public/.nojekyll
+          touch site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./.output/public
+          path: ./site
 
   deploy:
     needs: build

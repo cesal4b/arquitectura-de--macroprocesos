@@ -7,11 +7,6 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
-  // GH_PAGES_BASE is only set by the GitHub Pages deploy workflow, so this
-  // stays "/" for Lovable's own build/preview pipeline.
-  vite: {
-    base: process.env.GH_PAGES_BASE ?? "/",
-  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
