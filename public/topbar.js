@@ -60,9 +60,6 @@
         '<button class="tb-icon" id="cesaTheme" data-tip="Cambiar tema" aria-label="Cambiar tema">'+
           '<svg id="cesaThemeIcon" viewBox="0 0 24 24">'+sunIcon+'</svg>'+
         '</button>'+
-        '<a class="tb-icon primary" href="/auth" data-tip="Ingresar / Admin" aria-label="Ingresar / Admin">'+
-          '<svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>'+
-        '</a>'+
         '<button class="tb-icon tb-burger" id="cesaBurger" aria-label="Abrir menú" aria-expanded="false">'+
           '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'+
         '</button>'+
@@ -82,8 +79,6 @@
       '</button>'+
       '<h4>Documentos</h4>'+
       drawerDocsHTML +
-      '<h4>Cuenta</h4>'+
-      '<a href="/auth"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Ingresar / Admin</a>'+
     '</div>';
 
   function mount(){
