@@ -44,7 +44,8 @@ jobs:
           find site -type f \( -name '*.html' -o -name '*.js' \) -print0 | \
             xargs -0 sed -i \
               -e "s#\(href\|src\)=\"/#\1=\"${BASE_PATH}#g" \
-              -e "s#href:'/#href:'${BASE_PATH}#g"
+              -e "s#href:'/#href:'${BASE_PATH}#g" \
+              -e "s#fetch('/#fetch('${BASE_PATH}#g"
 
           cat > site/index.html <<HTML
           <!doctype html>
