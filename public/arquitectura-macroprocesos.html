@@ -416,6 +416,10 @@
   .daruma-callout h2{color:#fff;font-size:clamp(21px,2.6vw,28px);font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
   .daruma-callout p{color:rgba(255,255,255,.82);font-size:15px;line-height:1.65;max-width:56ch}
   .daruma-callout .dc-actions{display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;position:relative}
+  .dc-mascot{position:absolute;top:24px;right:32px;width:100px;height:100px;
+    filter:drop-shadow(0 14px 26px rgba(0,0,0,.3));pointer-events:none}
+  @media(min-width:901px){.daruma-callout{padding-right:170px}}
+  @media(max-width:900px){.dc-mascot{display:none}}
   .dc-btn{display:inline-flex;align-items:center;gap:9px;font-size:14.5px;font-weight:700;
     padding:13px 22px;border-radius:var(--radius-sm);text-decoration:none;transition:.2s var(--ease);white-space:nowrap}
   .dc-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -465,35 +469,6 @@
     <p class="insight">La estructura evidencia una arquitectura integral, con trazabilidad desde el nivel estratégico hasta los procedimientos operativos.<strong class="insight-highlight">Concentración relevante: a la fecha 52% de los procedimientos se ubican en soporte institucional.</strong></p>
   </div>
 </header>
-
-<!-- ============ CALLOUT DARUMA ============ -->
-<div class="wrap">
-  <div class="daruma-callout reveal">
-    <div class="dc-body">
-      <span class="eyebrow">Sistema de Gestión Documental</span>
-      <h2>¿Qué es DARUMA?</h2>
-      <p>Es la herramienta definida por el CESA para la administración, control y publicación de la documentación que soporta el Sistema de Gestión por Procesos — la única fuente oficial de consulta para la documentación vigente. Ahí es donde puedes aprender a operarla, paso a paso.</p>
-    </div>
-    <div class="dc-actions">
-      <a class="dc-btn primary" href="/entrenamiento-daruma.html">
-        <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg>
-        Conoce el contenido tutorial
-      </a>
-      <a class="dc-btn ghost" href="/glosario.html#t-14-1">
-        <svg viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
-        Leer definición completa
-      </a>
-      <a class="dc-btn ghost" href="https://cloud.darumasoftware.com/app_training.php/cesa/" target="_blank" rel="noopener" data-daruma-link="entrenamiento">
-        <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg>
-        Entorno Daruma Training
-      </a>
-      <a class="dc-btn gold" href="https://cloud.darumasoftware.com/app.php/cesa/" target="_blank" rel="noopener" data-daruma-link="daruma">
-        <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
-        Daruma
-      </a>
-    </div>
-  </div>
-</div>
 
 <!-- ============ PILARES ============ -->
 <section id="pilares">
@@ -699,6 +674,36 @@
     </div>
   </div>
 </section>
+
+<!-- ============ CALLOUT DARUMA ============ -->
+<div class="wrap">
+  <div class="daruma-callout reveal">
+    <img class="dc-mascot" src="/daruma-icon.svg" alt="" aria-hidden="true" width="120" height="120">
+    <div class="dc-body">
+      <span class="eyebrow">Sistema de Gestión Documental</span>
+      <h2>¿Qué es DARUMA?</h2>
+      <p>Es la herramienta definida por el CESA para la administración, control y publicación de la documentación que soporta el Sistema de Gestión por Procesos — la única fuente oficial de consulta para la documentación vigente. Ahí es donde puedes aprender a operarla, paso a paso.</p>
+    </div>
+    <div class="dc-actions">
+      <a class="dc-btn primary" href="/entrenamiento-daruma.html">
+        <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg>
+        Conoce el contenido tutorial
+      </a>
+      <a class="dc-btn ghost" href="/glosario.html#t-14-1">
+        <svg viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+        Leer definición completa
+      </a>
+      <a class="dc-btn ghost" href="https://cloud.darumasoftware.com/app_training.php/cesa/" target="_blank" rel="noopener" data-daruma-link="entrenamiento">
+        <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg>
+        Entorno Daruma Training
+      </a>
+      <a class="dc-btn gold" href="https://cloud.darumasoftware.com/app.php/cesa/" target="_blank" rel="noopener" data-daruma-link="daruma">
+        <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+        Daruma
+      </a>
+    </div>
+  </div>
+</div>
 
 <!-- ============ FOOTER ============ -->
 <footer>
