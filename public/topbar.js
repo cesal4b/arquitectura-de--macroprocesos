@@ -191,3 +191,67 @@ function cesaShowIntro(key, opts){
     run();
   }
 }
+
+/* ================================================================
+   CESA · Widget de retroalimentación (¿te fue útil?) por página
+   Uso: cesaMountFeedback('glosario');
+   Guarda el voto en Supabase (tabla page_feedback, solo INSERT anónimo)
+   y recuerda en localStorage para no volver a preguntar en esa página.
+   ================================================================ */
+function cesaMountFeedback(key){
+  var STORAGE_KEY = 'cesa-feedback-' + key;
+  try { if (localStorage.getItem(STORAGE_KEY)) return; } catch(e){}
+
+  var SUPABASE_URL = 'https://mbvubjijrgcgnbxztbvy.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idnViamlqcmdjZ25ieHp0YnZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjc1NzQsImV4cCI6MjA5ODk0MzU3NH0.PltsAos0prjHtzawopdfgEwRvT1eqdNFiPAEYqjMce8';
+
+  function remember(){ try { localStorage.setItem(STORAGE_KEY, '1'); } catch(e){} }
+
+  var run = function(){
+    var widget = document.createElement('div');
+    widget.className = 'cs-feedback';
+    widget.innerHTML =
+      '<button type="button" class="cs-feedback-close" aria-label="Cerrar">✕</button>' +
+      '<span class="cs-feedback-q">¿Te fue útil este contenido?</span>' +
+      '<div class="cs-feedback-actions">' +
+        '<button type="button" class="cs-feedback-btn" data-useful="1" aria-label="Sí, fue útil">👍</button>' +
+        '<button type="button" class="cs-feedback-btn" data-useful="0" aria-label="No fue útil">👎</button>' +
+      '</div>';
+    document.body.appendChild(widget);
+    requestAnimationFrame(function(){ widget.classList.add('show'); });
+
+    var goAway = function(){
+      widget.classList.remove('show');
+      setTimeout(function(){ widget.remove(); }, 260);
+    };
+
+    widget.querySelector('.cs-feedback-close').addEventListener('click', function(){
+      remember();
+      goAway();
+    });
+
+    widget.querySelectorAll('.cs-feedback-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var useful = btn.getAttribute('data-useful') === '1';
+        remember();
+        widget.innerHTML = '<span class="cs-feedback-thanks">✓ ¡Gracias por tu opinión!</span>';
+        setTimeout(goAway, 1800);
+        fetch(SUPABASE_URL + '/rest/v1/page_feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify({ page: key, useful: useful })
+        }).catch(function(){});
+      });
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+}

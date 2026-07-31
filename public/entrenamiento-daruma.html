@@ -1918,6 +1918,7 @@ renderCards();
       ]
     });
   }
+  if (typeof cesaMountFeedback === 'function') cesaMountFeedback('entrenamiento');
 
   // Todos los módulos son de acceso libre (renderCards()/openModule() ya no bloquean nada por sesión).
   // Lo que sigue de aquí en adelante es solo tracking/insignias — opcional, requiere sesión autorizada.
