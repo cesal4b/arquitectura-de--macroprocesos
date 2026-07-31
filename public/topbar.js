@@ -163,6 +163,7 @@ function cesaShowIntro(key, opts){
     }).join('');
     overlay.innerHTML =
       '<div class="cs-intro" role="dialog" aria-modal="true" aria-labelledby="cs-intro-title">' +
+        (opts.mascot ? '<img class="cs-intro-mascot" src="/mascota-cesa.png" alt="" aria-hidden="true">' : '') +
         (opts.eyebrow ? '<span class="cs-intro-eyebrow">' + opts.eyebrow + '</span>' : '') +
         '<h2 id="cs-intro-title">' + opts.title + '</h2>' +
         (opts.lede ? '<p style="font-size:13.5px;line-height:1.55;opacity:.85">' + opts.lede + '</p>' : '') +
