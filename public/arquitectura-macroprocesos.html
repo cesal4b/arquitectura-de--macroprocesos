@@ -1400,18 +1400,25 @@ $$('.reveal').forEach(el=>io.observe(el));
 buildMap();
 
 document.addEventListener('DOMContentLoaded', function(){
-  if (typeof cesaShowIntro === 'function') {
-    cesaShowIntro('arquitectura', {
-      mascot: true,
-      eyebrow: 'Cómo usar esta página',
-      title: 'Arquitectura de Macroprocesos',
-      items: [
-        'Vas a encontrar los 7 <b class="cs-tip cs-term" data-tip="Es el nivel más alto de la arquitectura de procesos del CESA: una agrupación estratégica de procesos relacionados que comparten un propósito institucional común y contribuyen al cumplimiento de la estrategia, la misión y los objetivos organizacionales.">macroprocesos</b> del CESA en un mapa visual — haz clic en cualquiera para ver su objetivo, procesos y líderes.',
-        'Dentro de cada macroproceso puedes explorar sus <b class="cs-tip cs-term" data-tip="Un conjunto estructurado de actividades interrelacionadas que transforma entradas en resultados mediante recursos, capacidades y controles coordinados, con el propósito de generar valor para los clientes y demás partes interesadas.">procesos</b>, <b class="cs-tip cs-term" data-tip="La descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso, definiendo responsables, decisiones y controles. En el CESA se documentan en diagramas BPMN mediante Bizagi Modeler.">procedimientos</b> y <b class="cs-tip cs-term" data-tip="Persona o cargo responsable de un proceso. Como Dueño de Proceso, identifica la documentación que soporta su ejecución, solicita su actualización y garantiza que permanezca vigente.">líderes</b> responsables.',
-        'Usa el buscador para saltar directo a un proceso, procedimiento o líder específico, sin recorrer todo el mapa.',
-        '¿Necesitas el documento oficial de un proceso? Está en <b class="cs-tip cs-term" data-tip="Es la herramienta definida por el CESA para la administración, control y publicación de la documentación que soporta el Sistema de Gestión por Procesos. Constituye la única fuente oficial de consulta para la documentación vigente, garantizando que toda la información utilizada por los colaboradores corresponda a versiones aprobadas, controladas y actualizadas.">DARUMA</b> — accede desde el banner debajo de las métricas o desde el pie de página.'
-      ]
-    });
+  function showIntro(){
+    if (typeof cesaShowIntro === 'function') {
+      cesaShowIntro('arquitectura', {
+        mascot: true,
+        eyebrow: 'Cómo usar esta página',
+        title: 'Arquitectura de Macroprocesos',
+        items: [
+          'Vas a encontrar los 7 <b class="cs-tip cs-term" data-tip="Es el nivel más alto de la arquitectura de procesos del CESA: una agrupación estratégica de procesos relacionados que comparten un propósito institucional común y contribuyen al cumplimiento de la estrategia, la misión y los objetivos organizacionales.">macroprocesos</b> del CESA en un mapa visual — haz clic en cualquiera para ver su objetivo, procesos y líderes.',
+          'Dentro de cada macroproceso puedes explorar sus <b class="cs-tip cs-term" data-tip="Un conjunto estructurado de actividades interrelacionadas que transforma entradas en resultados mediante recursos, capacidades y controles coordinados, con el propósito de generar valor para los clientes y demás partes interesadas.">procesos</b>, <b class="cs-tip cs-term" data-tip="La descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso, definiendo responsables, decisiones y controles. En el CESA se documentan en diagramas BPMN mediante Bizagi Modeler.">procedimientos</b> y <b class="cs-tip cs-term" data-tip="Persona o cargo responsable de un proceso. Como Dueño de Proceso, identifica la documentación que soporta su ejecución, solicita su actualización y garantiza que permanezca vigente.">líderes</b> responsables.',
+          'Usa el buscador para saltar directo a un proceso, procedimiento o líder específico, sin recorrer todo el mapa.',
+          '¿Necesitas el documento oficial de un proceso? Está en <b class="cs-tip cs-term" data-tip="Es la herramienta definida por el CESA para la administración, control y publicación de la documentación que soporta el Sistema de Gestión por Procesos. Constituye la única fuente oficial de consulta para la documentación vigente, garantizando que toda la información utilizada por los colaboradores corresponda a versiones aprobadas, controladas y actualizadas.">DARUMA</b> — accede desde el banner debajo de las métricas o desde el pie de página.'
+        ]
+      });
+    }
+  }
+  if (typeof cesaMountVisitorGate === 'function') {
+    cesaMountVisitorGate('arquitectura', showIntro);
+  } else {
+    showIntro();
   }
   if (typeof cesaMountFeedback === 'function') cesaMountFeedback('arquitectura');
 });

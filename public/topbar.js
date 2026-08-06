@@ -193,6 +193,96 @@ function cesaShowIntro(key, opts){
 }
 
 /* ================================================================
+   CESA · Puerta de acceso (nombre + correo institucional)
+   Uso: cesaMountVisitorGate('arquitectura', onDone)
+   Bloquea el contenido hasta que la persona escribe su nombre y un
+   correo @cesa.edu.co. Guarda el registro en Supabase (tabla
+   page_visitors, solo INSERT anónimo) para que el administrador vea
+   quién ha ingresado, y recuerda en localStorage para no volver a
+   pedirlo en ese navegador. onDone se invoca cuando ya se puede
+   mostrar el resto de la página (de inmediato si ya estaba registrado,
+   o tras el envío exitoso del formulario).
+   ================================================================ */
+function cesaMountVisitorGate(key, onDone){
+  var STORAGE_KEY = 'cesa-visitor';
+  var done = function(){ if (typeof onDone === 'function') onDone(); };
+
+  try {
+    if (localStorage.getItem(STORAGE_KEY)) { done(); return; }
+  } catch(e){}
+
+  var SUPABASE_URL = 'https://mbvubjijrgcgnbxztbvy.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idnViamlqcmdjZ25ieHp0YnZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNjc1NzQsImV4cCI6MjA5ODk0MzU3NH0.PltsAos0prjHtzawopdfgEwRvT1eqdNFiPAEYqjMce8';
+
+  var run = function(){
+    var overlay = document.createElement('div');
+    overlay.className = 'cs-gate-overlay';
+    overlay.innerHTML =
+      '<form class="cs-gate" role="dialog" aria-modal="true" aria-labelledby="cs-gate-title" novalidate>' +
+        '<span class="cs-gate-eyebrow">Acceso</span>' +
+        '<h2 id="cs-gate-title">Escribe tu nombre y correo CESA para ingresar</h2>' +
+        '<label class="cs-gate-field">' +
+          '<span>Nombre completo</span>' +
+          '<input type="text" name="name" autocomplete="name" required placeholder="Ej. Juana Pérez">' +
+        '</label>' +
+        '<label class="cs-gate-field">' +
+          '<span>Correo institucional CESA</span>' +
+          '<input type="email" name="email" autocomplete="email" required placeholder="nombre@cesa.edu.co">' +
+        '</label>' +
+        '<span class="cs-gate-error" hidden></span>' +
+        '<button type="submit">Ingresar</button>' +
+      '</form>';
+    document.body.appendChild(overlay);
+    requestAnimationFrame(function(){ overlay.classList.add('show'); });
+
+    var form = overlay.querySelector('.cs-gate');
+    var errorEl = overlay.querySelector('.cs-gate-error');
+    var nameInput = form.querySelector('[name="name"]');
+    var emailInput = form.querySelector('[name="email"]');
+    var btn = form.querySelector('button');
+
+    function showError(msg){
+      errorEl.textContent = msg;
+      errorEl.hidden = false;
+    }
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var name = nameInput.value.trim();
+      var email = emailInput.value.trim().toLowerCase();
+
+      if (name.length < 3) { showError('Escribe tu nombre completo.'); return; }
+      if (!/^[^\s@]+@cesa\.edu\.co$/.test(email)) { showError('Usa tu correo institucional @cesa.edu.co.'); return; }
+
+      errorEl.hidden = true;
+      btn.disabled = true;
+      btn.textContent = 'Ingresando…';
+
+      fetch(SUPABASE_URL + '/rest/v1/page_visitors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({ name: name, email: email, page: key })
+      }).catch(function(){}).then(function(){
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ name: name, email: email })); } catch(e){}
+        overlay.classList.remove('show');
+        setTimeout(function(){ overlay.remove(); }, 220);
+        done();
+      });
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+}
+
+/* ================================================================
    CESA · Widget de retroalimentación (¿te fue útil?) por página
    Uso: cesaMountFeedback('glosario');
    Guarda el voto en Supabase (tabla page_feedback, solo INSERT anónimo)

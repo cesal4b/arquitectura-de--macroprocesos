@@ -220,6 +220,44 @@ body{padding-top:60px}
 [data-theme="dark"] .cs-intro-close:hover{background:#4a6aa0}
 
 /* ================================================================
+   CESA · Puerta de acceso (nombre + correo institucional)
+   ================================================================ */
+.cs-gate-overlay{
+  position:fixed;inset:0;z-index:99999;background:rgba(4,31,62,.6);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:.2s cubic-bezier(.22,.61,.36,1);
+}
+.cs-gate-overlay.show{opacity:1;pointer-events:auto}
+.cs-gate{
+  position:relative;background:#fff;color:#041F3E;border-radius:16px;max-width:400px;width:100%;
+  padding:28px 26px 24px;box-shadow:0 30px 80px -20px rgba(4,31,62,.4);
+  transform:translateY(10px) scale(.98);transition:.22s cubic-bezier(.22,.61,.36,1);
+  display:flex;flex-direction:column;gap:14px;
+}
+.cs-gate-overlay.show .cs-gate{transform:none}
+[data-theme="dark"] .cs-gate{background:#141821;color:#e8ecf4}
+.cs-gate-eyebrow{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:11px;font-weight:800;
+  letter-spacing:.8px;text-transform:uppercase;color:#013998;background:rgba(2,123,255,.08);
+  padding:5px 11px;border-radius:999px}
+[data-theme="dark"] .cs-gate-eyebrow{color:#5aa9ff;background:rgba(90,169,255,.14)}
+.cs-gate h2{font-size:19px;font-weight:800;letter-spacing:-.3px;line-height:1.25}
+.cs-gate-field{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;color:#3a4256}
+[data-theme="dark"] .cs-gate-field{color:#9aa4ba}
+.cs-gate-field input{font:inherit;font-size:14px;font-weight:500;padding:11px 13px;border-radius:10px;
+  border:1px solid #D5D8DF;background:#fff;color:#041F3E;transition:.15s}
+.cs-gate-field input:focus{outline:none;border-color:#027bff;box-shadow:0 0 0 3px rgba(2,123,255,.14)}
+[data-theme="dark"] .cs-gate-field input{background:#0d0f14;border-color:#2a3040;color:#e8ecf4}
+.cs-gate-error{font-size:12.5px;font-weight:600;color:#c0392b}
+[data-theme="dark"] .cs-gate-error{color:#ff8577}
+.cs-gate button{width:100%;background:#013998;color:#fff;border:none;font:inherit;font-size:14px;
+  font-weight:700;padding:12px;border-radius:10px;cursor:pointer;transition:.15s}
+.cs-gate button:hover{background:#012a70}
+.cs-gate button:disabled{opacity:.65;cursor:default}
+[data-theme="dark"] .cs-gate button{background:#5a7ebc}
+[data-theme="dark"] .cs-gate button:hover{background:#4a6aa0}
+
+/* ================================================================
    CESA · Widget de retroalimentación (¿te fue útil?)
    ================================================================ */
 .cs-feedback{
