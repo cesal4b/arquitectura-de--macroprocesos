@@ -1224,7 +1224,10 @@ const GREEN_PROCS = new Set([
  "Gestión y control de accesos TI","Gestión de seguridad en la nube",
  "Respaldo y recuperación de la información","Desempeño y monitoreo de la infraestructura",
  "Gestión de Soporte Operativo de TI","Mantenimiento Bases de datos","Soporte y mantenimiento de TI",
- "Gestión de requerimientos para proyectos TI","Integraciones","Gestión del cambio de proyectos de TI"
+ "Gestión de requerimientos para proyectos TI","Integraciones","Gestión del cambio de proyectos de TI",
+ "FAN- gestión jurídica","Gestión de consultorías y asesorías","Gestión de requerimientos jurídicos",
+ "Finalización de contratos","Régimen disciplinario académico","Tratamiento de datos",
+ "Gestión de contratos de compra y otro sí","Gestión de contratos de venta y otro sí"
 ]);
 const procIsGreen = x => GREEN_PROCS.has(x);
 const procesoIsGreen = p => p.procs.length>0 && p.procs.every(procIsGreen);
