@@ -466,7 +466,7 @@
     <div class="metrics">
       <div class="metric cs-tip" data-tip="Es el nivel más alto de la arquitectura de procesos del CESA: una agrupación estratégica de procesos relacionados que comparten un propósito institucional común y contribuyen al cumplimiento de la estrategia, la misión y los objetivos organizacionales."><div class="n">7</div><div class="l">Macroprocesos</div></div>
       <div class="metric cs-tip" data-tip="Un conjunto estructurado de actividades interrelacionadas que transforma entradas en resultados mediante recursos, capacidades y controles coordinados, con el propósito de generar valor para los clientes y demás partes interesadas."><div class="n">27</div><div class="l">Procesos</div></div>
-      <div class="metric cs-tip" data-tip="La descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso, definiendo responsables, decisiones y controles. En el CESA se documentan en diagramas BPMN mediante Bizagi Modeler."><div class="n">146</div><div class="l">Procedimientos <span class="wip-tag">En construcción</span></div><div class="metric-sub">171 proyectos de 290 proyectados</div></div>
+      <div class="metric cs-tip" data-tip="La descripción secuencial y lógica de las actividades necesarias para ejecutar un proceso, definiendo responsables, decisiones y controles. En el CESA se documentan en diagramas BPMN mediante Bizagi Modeler."><div class="n">145</div><div class="l">Procedimientos <span class="wip-tag">En construcción</span></div><div class="metric-sub">171 proyectos de 290 proyectados</div></div>
     </div>
 
     <p class="insight">La estructura evidencia una arquitectura integral, con trazabilidad desde el nivel estratégico hasta los procedimientos operativos.<strong class="insight-highlight">Concentración relevante: a la fecha 52% de los procedimientos se ubican en soporte institucional.</strong></p>
@@ -1149,14 +1149,13 @@ const MACRO = [
      "Secretaría General"
     ],
     "procs": [
-     "FAN- gestión jurídica",
      "Gestión de consultorías y asesorías",
      "Gestión de requerimientos jurídicos",
      "Finalización de contratos",
      "Régimen disciplinario académico",
      "Tratamiento de datos",
-     "Gestión de contratos de compra y otro sí",
-     "Gestión de contratos de venta y otro sí"
+     "Gestión de contratos de compra y otro si",
+     "Gestión de contratos de venta y otro si"
     ]
    },
    {
@@ -1225,9 +1224,9 @@ const GREEN_PROCS = new Set([
  "Respaldo y recuperación de la información","Desempeño y monitoreo de la infraestructura",
  "Gestión de Soporte Operativo de TI","Mantenimiento Bases de datos","Soporte y mantenimiento de TI",
  "Gestión de requerimientos para proyectos TI","Integraciones","Gestión del cambio de proyectos de TI",
- "FAN- gestión jurídica","Gestión de consultorías y asesorías","Gestión de requerimientos jurídicos",
+ "Gestión de consultorías y asesorías","Gestión de requerimientos jurídicos",
  "Finalización de contratos","Régimen disciplinario académico","Tratamiento de datos",
- "Gestión de contratos de compra y otro sí","Gestión de contratos de venta y otro sí"
+ "Gestión de contratos de compra y otro si","Gestión de contratos de venta y otro si"
 ]);
 const procIsGreen = x => GREEN_PROCS.has(x);
 const procesoIsGreen = p => p.procs.length>0 && p.procs.every(procIsGreen);
